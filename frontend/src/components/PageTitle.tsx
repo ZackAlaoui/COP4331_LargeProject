@@ -1,9 +1,7 @@
-function PageTitle()
-{
-    return(
-        <h1 id="title">COP 4331 MERN Stack DEMO</h1>
-    );
+import "./pageTitle.css";
 
-};
+function PageTitle() {
+  return <h1 id="title">Wellness Pro</h1>;
+}
 
 export default PageTitle;
