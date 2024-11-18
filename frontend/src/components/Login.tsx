@@ -63,7 +63,7 @@ function Login() {
         <input
           type="text"
           id="loginName"
-          placeholder="Username"
+          placeholder="Enter username"
           onChange={handleSetLoginName}
         />
         <br />
