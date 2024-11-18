@@ -1,0 +1,54 @@
+#outerBox{
+    width: 1000px;
+    height: 200px;
+    padding: 200px;
+    border: 10px groove black;
+    margin-left: auto;
+    margin-top: 100px;
+    margin-right: auto;
+  }
+
+  #loginDiv{
+    position: fixed;
+    text-align: left;
+  }
+
+  #inner-title{
+    position: fixed;
+    top: 30vh;
+    left: 42vh;
+    font-size: 30px;
+    
+  }
+
+  #loginName{
+    position:fixed;
+    top: 35vh;
+    left: 32vh;
+    width: 250px;
+    height: 25px;
+ }
+
+
+  #loginPassword{
+    position: fixed;
+    top: 41vh;
+    left: 32vh;
+    width: 250px;
+    height: 25px;
+ }
+
+ #loginButton{
+    position: fixed;
+    left: 40vh;
+    width: 100px;
+    top: 47vh;
+  
+ }
+
+ #createAccountDiv{
+    position: fixed;
+    top: 75vh;
+    left: 120vh;
+ }
+
