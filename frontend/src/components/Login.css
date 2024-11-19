@@ -1,4 +1,4 @@
-#outerBox{
+/*#outerBox{
     width: 1000px;
     height: 200px;
     padding: 200px;
@@ -50,5 +50,128 @@
     position: fixed;
     top: 75vh;
     left: 120vh;
- }
+ }*/
 
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.mainContainer {
+    display: flex;
+    background: #fff;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    max-width: 900px;
+    min-height: 400px;
+    width: 100%;
+}
+
+.leftPanel {
+    padding: 40px;
+    width: 50%;
+}
+
+    .leftPanel h2 {
+        font-size: 24px;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+.inputFields {
+    margin-bottom: 20px;
+    font-weight: bold;
+    color: #333;
+    font-size: 12px;
+}
+
+    .inputFields input {
+        margin-top: 5px;
+        width: 90%;
+        padding: 10px;
+        border: 1px solid #f0f0f0;
+        border-radius: 20px;
+        font-size: 16px;
+        padding-left: 20px;
+        background-color: #f0f0f0;
+    }
+
+        .inputFields input:focus {
+            outline: none;
+            border-color: #55D0D1;
+            background-color: white;
+        }
+
+.btn {
+    transition: 0.2s;
+    width: 100%;
+    padding: 10px;
+    border: 2px solid white;
+    border-radius: 20px;
+    background: linear-gradient(45deg, #1F7EA1, #94D8D0);
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+    .btn:hover {
+        background: white;
+        color: #55D0D1;
+        border: 2px solid #94D8D0;
+    }
+
+.btnOther {
+    transition: 0.2s;
+    width: 50%;
+    padding: 10px;
+    border: 2px solid white;
+    border-radius: 20px;
+    background: transparent;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+    .btnOther:hover {
+        transition: 0.2s;
+        background: white;
+        color: #55D0D1;
+    }
+
+.rightPanel {
+    padding: 40px;
+    background: linear-gradient(45deg, #94D8D0, #1F7EA1);
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-align: center;
+}
+
+    .rightPanel h2 {
+        font-size: 28px;
+        margin-bottom: 10px;
+    }
+
+    .rightPanel p {
+        font-size: 16px;
+        margin-bottom: 5px;
+    }
+
+.loginResult {
+    font-size: 14px;
+    color: #950606;
+    font-weight: bold;
+}
