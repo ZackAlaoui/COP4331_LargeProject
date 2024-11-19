@@ -40,6 +40,10 @@ function Login() {
     }
   }
 
+  function doSignUp() {
+    window.location.href = "/createAccount";
+  }
+
   function handleSetLoginName(e: any): void {
     setLoginName(e.target.value);
   }
@@ -112,7 +116,9 @@ function Login() {
         <div className="rightPanel">
           <h2>Welcome, please login</h2>
           <p>Don't have an account?</p>
-          <button className="btnOther">Sign up</button>
+          <button className="btnOther" onClick={doSignUp}>
+            Sign up
+          </button>
         </div>
       </div>
     </>
