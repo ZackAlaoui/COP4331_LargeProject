@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #title {
     font-size: 40px;
     font-weight: bold;
@@ -6,3 +7,13 @@
     margin-bottom: 30px;
     text-align: center;
 }
+=======
+#title {
+    font-size: 40px;
+    font-weight: bold;
+    color: #333;
+    margin-top: -10vh;
+    margin-bottom: 30px;
+    text-align: center;
+}
+>>>>>>> 5057d5b492c6ab90867043a0a202e63d8700f6c1
