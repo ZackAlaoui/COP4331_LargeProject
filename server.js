@@ -45,7 +45,10 @@ app.post('/api/createaccount', async (req, res, next) => {
     catch (e) {
         error = e.toString();
     }
-    var ret = { error: error };
+
+    var complete = 'user added'
+
+    var ret = { complete: complete, error: error };
     res.status(200).json(ret);
 });
 
