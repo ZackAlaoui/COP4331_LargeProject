@@ -84,23 +84,36 @@ function Login() {
         <span id="loginResult">{message}</span>
       </div>
     </div>*/
+    //https://chatgpt.com/c/67362659-70dc-8006-9ee5-d4bf1498a0a8
     <>
-      <div class="mainContainer">
-        <div class="leftPanel">
+      <div className="mainContainer">
+        <div className="leftPanel">
           <h2>Login</h2>
-          <div class="inputFields">USERNAME
-            <input type="text" placeholder="Enter username" onChange={handleSetLoginName}/>
+          <div className="inputFields">
+            USERNAME
+            <input
+              type="text"
+              placeholder="Enter username"
+              onChange={handleSetLoginName}
+            />
           </div>
-          <div class="inputFields">PASSWORD
-            <input type="password" placeholder="Enter password" onChange={handleSetPassword}/>
+          <div className="inputFields">
+            PASSWORD
+            <input
+              type="password"
+              placeholder="Enter password"
+              onChange={handleSetPassword}
+            />
           </div>
-          <span class="loginResult">{message}</span>
-          <button class="btn" onClick={doLogin}>Sign In</button>
+          <span className="loginResult">{message}</span>
+          <button className="btn" onClick={doLogin}>
+            Sign In
+          </button>
         </div>
-        <div class="rightPanel">
+        <div className="rightPanel">
           <h2>Welcome, please login</h2>
           <p>Don't have an account?</p>
-          <button class="btnOther">Sign up</button>
+          <button className="btnOther">Sign up</button>
         </div>
       </div>
     </>
