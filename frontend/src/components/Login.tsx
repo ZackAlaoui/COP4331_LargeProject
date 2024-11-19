@@ -85,10 +85,10 @@ function Login() {
       </div>
     </div>*/
     <>
-      <div class="mainContainer">
-        <div class="leftPanel">
+      <div className="mainContainer">
+        <div className="leftPanel">
           <h2>Login</h2>
-          <div class="inputFields">
+          <div className="inputFields">
             USERNAME
             <input
               type="text"
@@ -96,7 +96,7 @@ function Login() {
               onChange={handleSetLoginName}
             />
           </div>
-          <div class="inputFields">
+          <div className="inputFields">
             PASSWORD
             <input
               type="password"
@@ -104,15 +104,15 @@ function Login() {
               onChange={handleSetPassword}
             />
           </div>
-          <span class="loginResult">{message}</span>
-          <button class="btn" onClick={doLogin}>
+          <span className="loginResult">{message}</span>
+          <button className="btn" onClick={doLogin}>
             Sign In
           </button>
         </div>
-        <div class="rightPanel">
+        <div className="rightPanel">
           <h2>Welcome, please login</h2>
           <p>Don't have an account?</p>
-          <button class="btnOther">Sign up</button>
+          <button className="btnOther">Sign up</button>
         </div>
       </div>
     </>
