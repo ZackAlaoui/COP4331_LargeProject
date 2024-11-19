@@ -1,6 +1,8 @@
-#title{
+#title {
+    font-size: 40px;
+    font-weight: bold;
+    color: #333;
+    margin-top: -10vh;
+    margin-bottom: 30px;
     text-align: center;
-    color: black;
-    font-size: 50px;
 }
-

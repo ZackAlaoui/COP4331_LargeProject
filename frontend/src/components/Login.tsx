@@ -23,7 +23,7 @@ function Login() {
       );
       var res = JSON.parse(await response.text());
       if (res.id <= 0) {
-        setMessage("User/Password combination incorrect");
+        setMessage("Incorrect username or password");
       } else {
         var user = {
           firstName: res.firstName,
@@ -48,7 +48,7 @@ function Login() {
   }
 
   return (
-    <div id="outerBox">
+    /*<div id="outerBox">
       <div id="createAccountDiv">
         <input
           type="submit"
@@ -63,7 +63,7 @@ function Login() {
         <input
           type="text"
           id="loginName"
-          placeholder="Username"
+          placeholder="Enter username"
           onChange={handleSetLoginName}
         />
         <br />
@@ -83,7 +83,27 @@ function Login() {
         />
         <span id="loginResult">{message}</span>
       </div>
-    </div>
+    </div>*/
+    <>
+      <div class="mainContainer">
+        <div class="leftPanel">
+          <h2>Login</h2>
+          <div class="inputFields">USERNAME
+            <input type="text" placeholder="Enter username" onChange={handleSetLoginName}/>
+          </div>
+          <div class="inputFields">PASSWORD
+            <input type="password" placeholder="Enter password" onChange={handleSetPassword}/>
+          </div>
+          <span class="loginResult">{message}</span>
+          <button class="btn" onClick={doLogin}>Sign In</button>
+        </div>
+        <div class="rightPanel">
+          <h2>Welcome, please login</h2>
+          <p>Don't have an account?</p>
+          <button class="btnOther">Sign up</button>
+        </div>
+      </div>
+    </>
   );
 }
 export default Login;
