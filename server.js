@@ -39,7 +39,7 @@ app.post('/api/createaccount', async (req, res, next) => {
     const User = { FirstName: firstName, LastName: lastName, Username: username, Password: password, Email: email, Age: age, Gender: gender, Height, height, Weight: weight};
     var error = '';
     try {
-        const db = client.db();
+        const db = client.db("LPN");
         const result = db.collection('Users').insertOne(User);
     }
     catch (e) {
@@ -60,7 +60,7 @@ app.post('/api/addcard', async (req, res, next) => {
     const newCard = { Card: card, UserId: userId };
     var error = '';
     try {
-        const db = client.db();
+        const db = client.db("LPN");
         const result = db.collection('Cards').insertOne(newCard);
     }
     catch (e) {
@@ -102,7 +102,7 @@ app.post('/api/searchcards', async (req, res, next) => {
     var error = '';
     const { userId, search } = req.body;
     var _search = search.trim();
-    const db = client.db();
+    const db = client.db("LPN");
     const results = await db.collection('Cards').find({ "Card": { $regex: _search + '.*' } }).toArray();
     var _ret = [];
     for (var i = 0; i < results.length; i++) {
