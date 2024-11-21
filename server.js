@@ -140,6 +140,9 @@ app.post('/v1/foods/search', async (req, res) => {
         results = usdaResponse.data.foods.map(food => ({
             description: food.description,
             fdcId: food.fdcId,
+            calories: food.calories,
+            protein: food.protein,
+            
         }));
 
         // Return results
