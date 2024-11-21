@@ -52,6 +52,24 @@ app.post('/api/createaccount', async (req, res, next) => {
     res.status(200).json(ret);
 });
 
+app.post('/api/editinfo', async (req, res, next) => {
+    // incoming: userId, Age, Gender, Height, Weight
+    // outgoing: error
+    const { userId, Age, Gender, Height, Weight } = req.body;
+    const newInfo = { UserId: userId, Age: Age, Gender: Gender, Height: Height, Weight: Weight };
+    var error = '';
+    try {
+        const db = client.db("LPN");
+        const result = db.collection('Info').insertOne(newInfo);
+    }
+    catch (e) {
+        error = e.toString();
+    }
+    infoList.push(info);
+    var ret = { complete: complete, error: error };
+    res.status(200).json(ret);
+});
+
 
 app.post('/api/addcard', async (req, res, next) => {
     // incoming: userId, color
