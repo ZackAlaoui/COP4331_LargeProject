@@ -2,9 +2,14 @@ import React, { useState } from "react";
 import "./Login.css";
 
 function Login() {
+  const [isSignUp, setIsSignUp] = useState(false);
   const [message, setMessage] = React.useState("");
   const [loginName, setLoginName] = React.useState("");
-  const [loginPassword, setPassword] = React.useState("");
+  const [loginPassword, setLoginPassword] = React.useState("");
+  const [firstName, setFirstName] = React.useState("");
+  const [lastName, setLastName] = React.useState("");
+  const [username, setUserName] = React.useState("");
+  const [password, setPassword] = React.useState("");
 
   async function doLogin(event: any): Promise<void> {
     event.preventDefault();
@@ -40,88 +45,116 @@ function Login() {
     }
   }
 
+    function toggleForm() {
+        setIsSignUp(!isSignUp);
+    }
+
   function doSignUp() {
-    window.location.href = "/createAccount";
+    //window.location.href = "/createAccount";
+    setIsSignUp(!isSignUp);
   }
 
   function handleSetLoginName(e: any): void {
     setLoginName(e.target.value);
   }
-  function handleSetPassword(e: any): void {
-    setPassword(e.target.value);
+  function handleSetLoginPassword(e: any): void {
+    setLoginPassword(e.target.value);
   }
 
-  return (
-    /*<div id="outerBox">
-      <div id="createAccountDiv">
-        <input
-          type="submit"
-          id="createButton"
-          className="buttons"
-          value="Create Account"
-        />
-      </div>
-      <div id="loginDiv">
-        <span id="inner-title">Login</span>
-        <br />
-        <input
-          type="text"
-          id="loginName"
-          placeholder="Enter username"
-          onChange={handleSetLoginName}
-        />
-        <br />
-        <input
-          type="password"
-          id="loginPassword"
-          placeholder="Password"
-          onChange={handleSetPassword}
-        />
-        <br />
-        <input
-          type="submit"
-          id="loginButton"
-          className="buttons"
-          value="Sign in"
-          onClick={doLogin}
-        />
-        <span id="loginResult">{message}</span>
-      </div>
-    </div>*/
-    <>
-      <div className="mainContainer">
-        <div className="leftPanel">
-          <h2>Login</h2>
-          <div className="inputFields">
-            USERNAME
-            <input
-              type="text"
-              placeholder="Enter username"
-              onChange={handleSetLoginName}
-            />
-          </div>
-          <div className="inputFields">
-            PASSWORD
-            <input
-              type="password"
-              placeholder="Enter password"
-              onChange={handleSetPassword}
-            />
-          </div>
-          <span className="loginResult">{message}</span>
-          <button className="btn" onClick={doLogin}>
-            Sign In
-          </button>
+    return (
+        <div className={`mainContainer ${isSignUp ? 'signUpActive' : ''}`}>
+            {/* Left Panel */}
+            <>
+                <div className="leftPanel">
+                    <h2>Login</h2>
+                    <div className="inputFields">
+                        USERNAME
+                        <input
+                            type="text"
+                            placeholder="Enter username"
+                            onChange={handleSetLoginName}
+                        />
+                    </div>
+                    <div className="inputFields">
+                        PASSWORD
+                        <input
+                            type="password"
+                            placeholder="Enter password"
+                            onChange={handleSetLoginPassword}
+                        />
+                    </div>
+                    <span className="loginResult">{message}</span>
+                    <button className="btn" onClick={doLogin}>
+                        Sign In
+                    </button>
+                </div>
+            </>
+
+            {/* Right Panel */}
+            <>
+                <div className="rightPanel">
+                    <h2>Create account</h2>
+                    <div className="otherInputFields">
+                        FIRST NAME
+                        <input
+                            type="text"
+                            placeholder="Enter first name"
+                            //onChange={/*handleSetFirstname*/}
+                        />
+                    </div>
+                    <div className="otherInputFields">
+                        LAST NAME
+                        <input
+                            type="text"
+                            placeholder="Enter last name"
+                            //onChange={/*handleSetLastname*/}
+                        />
+                    </div>
+                    <div className="otherInputFields">
+                        USERNAME
+                        <input
+                            type="text"
+                            placeholder="Enter username"
+                        //onChange={/*handleSetUserName*/}
+                        />
+                    </div>
+                    <div className="otherInputFields">
+                        PASSWORD
+                        <input
+                            type="text"
+                            placeholder="Enter password"
+                            //onChange={/*handleSetPassword*/}
+                        />
+                    </div>
+                    <button className="btn" /*onClick={doCreateAccount}*/>
+                        Create Account
+                    </button>
+                </div>
+            </>
+
+            {/* Gradient Panel */}
+            <>
+                <div className="gradientPanel">
+                    {isSignUp ? (
+                        <>
+                            <h2>Welcome</h2>
+                            <p>Already have an account?</p>
+                            <button className="btnOther" onClick={toggleForm}>
+                                Login
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <h2>Welcome, please login</h2>
+                            <p>Don't have an account?</p>
+                            <button className="btnOther" onClick={doSignUp}>
+                                Sign up
+                            </button>
+                        </>
+                    )}
+                </div>
+            </>
         </div>
-        <div className="rightPanel">
-          <h2>Welcome, please login</h2>
-          <p>Don't have an account?</p>
-          <button className="btnOther" onClick={doSignUp}>
-            Sign up
-          </button>
-        </div>
-      </div>
-    </>
-  );
+    );
 }
 export default Login;

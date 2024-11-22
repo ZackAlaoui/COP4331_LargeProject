@@ -1,57 +1,3 @@
-/*#outerBox{
-    width: 1000px;
-    height: 200px;
-    padding: 200px;
-    border: 10px groove black;
-    margin-left: auto;
-    margin-top: 100px;
-    margin-right: auto;
-  }
-
-  #loginDiv{
-    position: fixed;
-    text-align: left;
-  }
-
-  #inner-title{
-    position: fixed;
-    top: 30vh;
-    left: 42vh;
-    font-size: 30px;
-    
-  }
-
-  #loginName{
-    position:fixed;
-    top: 35vh;
-    left: 32vh;
-    width: 250px;
-    height: 25px;
- }
-
-
-  #loginPassword{
-    position: fixed;
-    top: 41vh;
-    left: 32vh;
-    width: 250px;
-    height: 25px;
- }
-
- #loginButton{
-    position: fixed;
-    left: 40vh;
-    width: 100px;
-    top: 47vh;
-  
- }
-
- #createAccountDiv{
-    position: fixed;
-    top: 75vh;
-    left: 120vh;
- }*/
-
 body {
     margin: 0;
     padding: 0;
@@ -70,14 +16,15 @@ body {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
     overflow: hidden;
-    max-width: 900px;
-    min-height: 400px;
+    min-width: 800px;
+    height: 450px;
     width: 100%;
 }
 
 .leftPanel {
     padding: 40px;
     width: 50%;
+    transform: translateX(0);
 }
 
     .leftPanel h2 {
@@ -105,6 +52,30 @@ body {
     }
 
         .inputFields input:focus {
+            outline: none;
+            border-color: #55D0D1;
+            background-color: white;
+        }
+
+.otherInputFields {
+    margin-bottom: 20px;
+    font-weight: bold;
+    color: #333;
+    font-size: 12px;
+}
+
+    .otherInputFields input {
+        margin-top: 5px;
+        width: 90%;
+        padding: 6px;
+        border: 1px solid #f0f0f0;
+        border-radius: 20px;
+        font-size: 16px;
+        padding-left: 20px;
+        background-color: #f0f0f0;
+    }
+
+        .otherInputFields input:focus {
             outline: none;
             border-color: #55D0D1;
             background-color: white;
@@ -148,7 +119,7 @@ body {
         color: #55D0D1;
     }
 
-.rightPanel {
+.gradientPanel {
     padding: 40px;
     background: linear-gradient(45deg, #94D8D0, #1F7EA1);
     width: 50%;
@@ -158,20 +129,39 @@ body {
     align-items: center;
     color: white;
     text-align: center;
+    transform: translateX(0);
+    transition: transform 0.5s ease-in-out;
 }
 
-    .rightPanel h2 {
+    .gradientPanel h2 {
         font-size: 28px;
         margin-bottom: 10px;
     }
 
-    .rightPanel p {
+    .gradientPanel p {
         font-size: 16px;
         margin-bottom: 5px;
     }
+
+.mainContainer.signUpActive .gradientPanel {
+    transform: translateX(-100%);
+}
 
 .loginResult {
     font-size: 14px;
     color: #950606;
     font-weight: bold;
 }
+
+.rightPanel {
+    position: absolute;
+    transform: translateX(110%);
+    padding: 40px;
+}
+
+    .rightPanel h2 {
+        font-size: 24px;
+        margin-top: -5px;
+        margin-bottom: 20px;
+        color: #333;
+    }
