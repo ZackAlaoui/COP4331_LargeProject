@@ -11,6 +11,7 @@ function CreateAccount() {
   const [reenterPassword, setPasswordAgain] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [message, setMessage] = React.useState("");
+  const [gender, setGender] = React.useState("");
 
   function handleSetFirstname(e: any): void {
     setFirstName(e.target.value);
@@ -44,6 +45,10 @@ function CreateAccount() {
     setEmail(e.target.value);
   }
 
+  function handleSetGender(e: any): void {
+    setGender(e.target.value);
+  }
+
   async function doCreateAccount(event: any): Promise<void> {
     event.preventDefault();
     var obj = {};
@@ -64,23 +69,25 @@ function CreateAccount() {
         setMessage("Unable to create account");
       } else {
         var user = {
-          firstName: res.firstName,
-          lastName: res.lastName,
-          username: res.username,
-          password: res.password,
-          age: res.age,
-          height: res.height,
-          weight: res.weight,
-          id: res.id,
+          FirstName: res.firstName,
+          LastName: res.lastName,
+          UserName: res.username,
+          Password: res.password,
+          Gender: res.gender,
+          Age: res.age,
+          Height: res.height,
+          Weight: res.weight,
+          Email: res.email,
+          UserId: res.id,
         };
         localStorage.setItem("user_data", JSON.stringify(user));
         setMessage("");
-        window.location.href = "/";
       }
     } catch (error: any) {
       alert(error.toString());
       return;
     }
+    window.location.href = "/";
   }
 
   return (
@@ -115,6 +122,14 @@ function CreateAccount() {
           type="text"
           placeholder="Enter Password"
           onChange={handleSetPassword}
+        />
+      </div>
+      <br />
+      <div>
+        <input
+          type="text"
+          placeholder="Enter Gender"
+          onChange={handleSetGender}
         />
       </div>
       <br />
