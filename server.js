@@ -52,14 +52,32 @@ app.post('/api/createaccount', async (req, res, next) => {
     res.status(200).json(ret);
 });
 
-app.post('/api/addcard', async (req, res, next) => {
+app.post('/api/editinfo', async (req, res, next) => {
+    // incoming: userId, Age, Gender, Height, Weight
+    // outgoing: error
+    const { userId, Age, Gender, Height, Weight } = req.body;
+    const newInfo = { UserId: userId, Age: Age, Gender: Gender, Height: Height, Weight: Weight };
+    var error = '';
+    try {
+        const db = client.db("LPN");
+        const result = db.collection('Info').insertOne(newInfo);
+    }
+    catch (e) {
+        error = e.toString();
+    }
+    infoList.push(info);
+    var ret = { complete: complete, error: error };
+    res.status(200).json(ret);
+});
+
+/*app.post('/api/addcard', async (req, res, next) => {
     // incoming: userId, color
     // outgoing: error
     const { userId, card } = req.body;
     const newCard = { Card: card, UserId: userId };
     var error = '';
     try {
-        const db = client.db("LPN");
+        const db = client.db();
         const result = db.collection('Cards').insertOne(newCard);
     }
     catch (e) {
@@ -68,7 +86,7 @@ app.post('/api/addcard', async (req, res, next) => {
     cardList.push(card);
     var ret = { error: error };
     res.status(200).json(ret);
-});
+});*/
 
 app.post('/api/login', async (req, res, next) => {
     // incoming: login, password
@@ -95,13 +113,58 @@ app.post('/api/login', async (req, res, next) => {
     res.status(200).json(ret);
 });
 
+// api for the USDA database
+const axios = require('axios');
+
+app.post('/v1/foods/search', async (req, res) => {
+    // incoming: query
+    // outgoing: results[], error
+    const { query } = req.body;
+
+    let error = '';
+    let results = [];
+
+    if (!query || query.trim() === '') {
+        res.status(400).json({ results, error: 'Search cannot be empty.' });
+        return;
+    }
+
+    try {
+        // Make a request to the USDA API
+        const usdaResponse = await axios.post(
+            'https://api.nal.usda.gov/fdc/v1/foods/search?api_key=NWgR0wlBc7YQOa8FcrSXGb3bPdXp9D0mE582U7SH',
+            { query: query.trim() }
+        );
+
+        // Extract food descriptions and FDC IDs from the response
+        results = usdaResponse.data.foods.map(food => ({
+            description: food.description,
+            fdcId: food.fdcId,
+           // calories: food.calories,
+            //protein: food.protein,
+            
+        }));
+
+        // Return results
+        res.status(200).json({ results, error });
+    } catch (err) {
+        // Handle errors
+        error = 'Error occurred while fetching data from the USDA API.';
+        console.error(err);
+        res.status(500).json({ results, error });
+    }
+});
+
+
+
+/* Search template
 app.post('/api/searchcards', async (req, res, next) => {
     // incoming: userId, search
     // outgoing: results[], error
     var error = '';
     const { userId, search } = req.body;
     var _search = search.trim();
-    const db = client.db("LPN");
+    const db = client.db();
     const results = await db.collection('Cards').find({ "Card": { $regex: _search + '.*' } }).toArray();
     var _ret = [];
     for (var i = 0; i < results.length; i++) {
@@ -110,5 +173,7 @@ app.post('/api/searchcards', async (req, res, next) => {
     var ret = { results: _ret, error: error };
     res.status(200).json(ret);
 });
+*/
+
 
 app.listen(5000); // start Node + Express server on port 5000
