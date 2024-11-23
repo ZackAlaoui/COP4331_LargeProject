@@ -29,14 +29,14 @@ app.use((req, res, next) => {
 app.post('/api/createaccount', async (req, res, next) => {
     // incoming: firstName, lastName, email, username, password, age, weight, gender, height
     // outgoing: error
-    const { firstName, lastName, username, password, email, age, gender, height, weight } = req.body;
+    const { firstName, lastName, username, password} = req.body;
     
     // Validate input
-    if (!firstName || !lastName || !phoneNumber || !email || !age || !gender || !height || !weight) {
+    if (!firstName || !lastName || !username || !password ) {
         return res.status(400).json({ error: "Missing required fields" });
     }
     
-    const User = { FirstName: firstName, LastName: lastName, Username: username, Password: password, Email: email, Age: age, Gender: gender, Height, height, Weight: weight};
+    const User = { FirstName: firstName, LastName: lastName, Username: username, Password: password};
     var error = '';
     try {
         const db = client.db("LPN");
@@ -93,11 +93,11 @@ app.post('/api/login', async (req, res, next) => {
     // outgoing: id, firstName, lastName, error
     var error = '';
 
-    const { login, password } = req.body;
+    const { username, password } = req.body;
     const db = client.db("LPN");
 
     const results = await
-        db.collection('Users').find({ Login: login, Password: password }).toArray();
+        db.collection('Users').find({ Username: username, Password: password }).toArray();
 
     var id = -1;
     var fn = '';
