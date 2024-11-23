@@ -13,7 +13,7 @@ function Login() {
 
   async function doLogin(event: any): Promise<void> {
     event.preventDefault();
-    var obj = { login: loginName, password: loginPassword };
+    var obj = { Username: username, password: loginPassword };
     var js = JSON.stringify(obj);
     try {
       const response = await fetch(
@@ -45,9 +45,9 @@ function Login() {
     }
   }
 
-    function toggleForm() {
-        setIsSignUp(!isSignUp);
-    }
+  function toggleForm() {
+    setIsSignUp(!isSignUp);
+  }
 
   function doSignUp() {
     //window.location.href = "/createAccount";
@@ -61,100 +61,100 @@ function Login() {
     setLoginPassword(e.target.value);
   }
 
-    return (
-        <div className={`mainContainer ${isSignUp ? 'signUpActive' : ''}`}>
-            {/* Left Panel */}
-            <>
-                <div className="leftPanel">
-                    <h2>Login</h2>
-                    <div className="inputFields">
-                        USERNAME
-                        <input
-                            type="text"
-                            placeholder="Enter username"
-                            onChange={handleSetLoginName}
-                        />
-                    </div>
-                    <div className="inputFields">
-                        PASSWORD
-                        <input
-                            type="password"
-                            placeholder="Enter password"
-                            onChange={handleSetLoginPassword}
-                        />
-                    </div>
-                    <span className="loginResult">{message}</span>
-                    <button className="btn" onClick={doLogin}>
-                        Sign In
-                    </button>
-                </div>
-            </>
-
-            {/* Right Panel */}
-            <>
-                <div className="rightPanel">
-                    <h2>Create account</h2>
-                    <div className="otherInputFields">
-                        FIRST NAME
-                        <input
-                            type="text"
-                            placeholder="Enter first name"
-                            //onChange={/*handleSetFirstname*/}
-                        />
-                    </div>
-                    <div className="otherInputFields">
-                        LAST NAME
-                        <input
-                            type="text"
-                            placeholder="Enter last name"
-                            //onChange={/*handleSetLastname*/}
-                        />
-                    </div>
-                    <div className="otherInputFields">
-                        USERNAME
-                        <input
-                            type="text"
-                            placeholder="Enter username"
-                        //onChange={/*handleSetUserName*/}
-                        />
-                    </div>
-                    <div className="otherInputFields">
-                        PASSWORD
-                        <input
-                            type="text"
-                            placeholder="Enter password"
-                            //onChange={/*handleSetPassword*/}
-                        />
-                    </div>
-                    <button className="btn" /*onClick={doCreateAccount}*/>
-                        Create Account
-                    </button>
-                </div>
-            </>
-
-            {/* Gradient Panel */}
-            <>
-                <div className="gradientPanel">
-                    {isSignUp ? (
-                        <>
-                            <h2>Welcome</h2>
-                            <p>Already have an account?</p>
-                            <button className="btnOther" onClick={toggleForm}>
-                                Login
-                            </button>
-                        </>
-                    ) : (
-                        <>
-                            <h2>Welcome, please login</h2>
-                            <p>Don't have an account?</p>
-                            <button className="btnOther" onClick={doSignUp}>
-                                Sign up
-                            </button>
-                        </>
-                    )}
-                </div>
-            </>
+  return (
+    <div className={`mainContainer ${isSignUp ? "signUpActive" : ""}`}>
+      {/* Left Panel */}
+      <>
+        <div className="leftPanel">
+          <h2>Login</h2>
+          <div className="inputFields">
+            USERNAME
+            <input
+              type="text"
+              placeholder="Enter username"
+              onChange={handleSetLoginName}
+            />
+          </div>
+          <div className="inputFields">
+            PASSWORD
+            <input
+              type="password"
+              placeholder="Enter password"
+              onChange={handleSetLoginPassword}
+            />
+          </div>
+          <span className="loginResult">{message}</span>
+          <button className="btn" onClick={doLogin}>
+            Sign In
+          </button>
         </div>
-    );
+      </>
+
+      {/* Right Panel */}
+      <>
+        <div className="rightPanel">
+          <h2>Create account</h2>
+          <div className="otherInputFields">
+            FIRST NAME
+            <input
+              type="text"
+              placeholder="Enter first name"
+              //onChange={/*handleSetFirstname*/}
+            />
+          </div>
+          <div className="otherInputFields">
+            LAST NAME
+            <input
+              type="text"
+              placeholder="Enter last name"
+              //onChange={/*handleSetLastname*/}
+            />
+          </div>
+          <div className="otherInputFields">
+            USERNAME
+            <input
+              type="text"
+              placeholder="Enter username"
+              //onChange={/*handleSetUserName*/}
+            />
+          </div>
+          <div className="otherInputFields">
+            PASSWORD
+            <input
+              type="text"
+              placeholder="Enter password"
+              //onChange={/*handleSetPassword*/}
+            />
+          </div>
+          <button className="btn" /*onClick={doCreateAccount}*/>
+            Create Account
+          </button>
+        </div>
+      </>
+
+      {/* Gradient Panel */}
+      <>
+        <div className="gradientPanel">
+          {isSignUp ? (
+            <>
+              <h2>Welcome</h2>
+              <p>Already have an account?</p>
+              <button className="btnOther" onClick={toggleForm}>
+                Login
+              </button>
+            </>
+          ) : (
+            <>
+              <h2>Welcome, please login</h2>
+              <p>Don't have an account?</p>
+              <button className="btnOther" onClick={doSignUp}>
+                Sign up
+              </button>
+            </>
+          )}
+        </div>
+      </>
+    </div>
+  );
 }
 export default Login;
