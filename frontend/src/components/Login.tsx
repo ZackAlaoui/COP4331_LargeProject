@@ -13,7 +13,7 @@ function Login() {
 
   async function doLogin(event: any): Promise<void> {
     event.preventDefault();
-    var obj = { Username: username, password: loginPassword };
+    var obj = { username: username, password: loginPassword };
     var js = JSON.stringify(obj);
     try {
       const response = await fetch(
