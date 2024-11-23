@@ -4,7 +4,7 @@ import "./Login.css";
 function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [message, setMessage] = React.useState("");
-  const [loginName, setLoginName] = React.useState("");
+  //const [loginName, setLoginName] = React.useState("");
   const [loginPassword, setLoginPassword] = React.useState("");
   const [firstName, setFirstName] = React.useState("");
   const [lastName, setLastName] = React.useState("");
@@ -54,8 +54,8 @@ function Login() {
     setIsSignUp(!isSignUp);
   }
 
-  function handleSetLoginName(e: any): void {
-    setLoginName(e.target.value);
+  function handleSetUserName(e: any): void {
+    setUserName(e.target.value);
   }
   function handleSetLoginPassword(e: any): void {
     setLoginPassword(e.target.value);
@@ -72,7 +72,7 @@ function Login() {
             <input
               type="text"
               placeholder="Enter username"
-              onChange={handleSetLoginName}
+              onChange={handleSetUserName}
             />
           </div>
           <div className="inputFields">
