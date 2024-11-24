@@ -4,6 +4,7 @@ import "./Login.css";
 function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [message, setMessage] = React.useState("");
+  const [createAccountMessage, setCreateAccountMessage] = React.useState("");
   const [username, setUserName] = React.useState("");
   const [loginPassword, setLoginPassword] = React.useState("");
   const [firstName, setFirstName] = React.useState("");
@@ -71,7 +72,7 @@ function Login() {
       );
       var res = JSON.parse(await response.text());
       if (res.complete != "user added") {
-        setMessage("Unable to create account");
+        setCreateAccountMessage("Unable to create account");
       } else {
         var user = {
           FirstName: res.firstName,
@@ -86,7 +87,7 @@ function Login() {
           // UserId: res.id,
         };
         localStorage.setItem("user_data", JSON.stringify(user));
-        setMessage("Account Created");
+        setCreateAccountMessage("Account Created");
       }
     } catch (error: any) {
       alert(error.toString());
@@ -192,7 +193,7 @@ function Login() {
               onChange={handleSetPassword}
             />
           </div>
-          <span className="createAccountResult">{message}</span>
+          <span className="createAccountResult">{createAccountMessage}</span>
           <button className="btn" onClick={doCreateAccount}>
             Create Account
           </button>
