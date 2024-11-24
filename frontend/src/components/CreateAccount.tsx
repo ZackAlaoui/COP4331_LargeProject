@@ -5,13 +5,13 @@ function CreateAccount() {
   const [lastName, setLastName] = React.useState("");
   const [username, setUserName] = React.useState("");
   const [password, setPassword] = React.useState("");
-  const [age, setAge] = React.useState("");
-  const [weight, setWeight] = React.useState("");
-  const [height, setHeight] = React.useState("");
-  const [reenterPassword, setPasswordAgain] = React.useState("");
-  const [email, setEmail] = React.useState("");
+  // const [age, setAge] = React.useState("");
+  // const [weight, setWeight] = React.useState("");
+  // const [height, setHeight] = React.useState("");
+  // const [reenterPassword, setPasswordAgain] = React.useState("");
+  // const [email, setEmail] = React.useState("");
   const [message, setMessage] = React.useState("");
-  const [gender, setGender] = React.useState("");
+  // const [gender, setGender] = React.useState("");
 
   function handleSetFirstname(e: any): void {
     setFirstName(e.target.value);
@@ -29,29 +29,34 @@ function CreateAccount() {
     setPassword(e.target.value);
   }
 
-  function handleSetAge(e: any): void {
-    setAge(e.target.value);
-  }
+  // function handleSetAge(e: any): void {
+  //   setAge(e.target.value);
+  // }
 
-  function handleSetHeight(e: any): void {
-    setLastName(e.target.value);
-  }
+  // function handleSetHeight(e: any): void {
+  //   setLastName(e.target.value);
+  // }
 
-  function handleSetWeight(e: any): void {
-    setWeight(e.target.value);
-  }
+  // function handleSetWeight(e: any): void {
+  //   setWeight(e.target.value);
+  // }
 
-  function handleSetEmail(e: any): void {
-    setEmail(e.target.value);
-  }
+  // function handleSetEmail(e: any): void {
+  //   setEmail(e.target.value);
+  // }
 
-  function handleSetGender(e: any): void {
-    setGender(e.target.value);
-  }
+  // function handleSetGender(e: any): void {
+  //   setGender(e.target.value);
+  // }
 
   async function doCreateAccount(event: any): Promise<void> {
     event.preventDefault();
-    var obj = {};
+    var obj = {
+      firstName: firstName,
+      lastName: lastName,
+      username: username,
+      password: password,
+    };
     var js = JSON.stringify(obj);
     try {
       const response = await fetch(
@@ -73,12 +78,12 @@ function CreateAccount() {
           LastName: res.lastName,
           UserName: res.username,
           Password: res.password,
-          Gender: res.gender,
-          Age: res.age,
-          Height: res.height,
-          Weight: res.weight,
-          Email: res.email,
-          UserId: res.id,
+          // Gender: res.gender,
+          // Age: res.age,
+          // Height: res.height,
+          // Weight: res.weight,
+          // Email: res.email,
+          // UserId: res.id,
         };
         localStorage.setItem("user_data", JSON.stringify(user));
         setMessage("");
@@ -87,7 +92,7 @@ function CreateAccount() {
       alert(error.toString());
       return;
     }
-    window.location.href = "/";
+    // window.location.href = "/";
   }
 
   return (
@@ -125,26 +130,26 @@ function CreateAccount() {
         />
       </div>
       <br />
-      <div>
+      {/* <div>
         <input
           type="text"
           placeholder="Enter Gender"
           onChange={handleSetGender}
         />
-      </div>
-      <br />
+      </div> */}
+      {/* <br />
       <div>
         <input type="text" placeholder="Enter Age" onChange={handleSetAge} />
       </div>
-      <br />
-      <div>
+      <br /> */}
+      {/* <div>
         <input
           type="text"
           placeholder="Enter Height"
           onChange={handleSetHeight}
         />
-      </div>
-      <br />
+      </div> */}
+      {/* <br />
       <div>
         <input
           type="text"
@@ -159,7 +164,7 @@ function CreateAccount() {
           placeholder="Enter Email"
           onChange={handleSetEmail}
         />
-      </div>
+      </div> */}
       <br />
       <button className="btnCreateAccount" onClick={doCreateAccount}>
         Create Account
