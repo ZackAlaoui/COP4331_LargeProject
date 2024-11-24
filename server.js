@@ -27,7 +27,7 @@ app.use((req, res, next) => {
 
 // create account API
 app.post('/api/createaccount', async (req, res, next) => {
-    // incoming: firstName, lastName, email, username, password, age, weight, gender, height
+    // incoming: firstName, lastName, username, password
     // outgoing: error
     const { firstName, lastName, username, password} = req.body;
     
