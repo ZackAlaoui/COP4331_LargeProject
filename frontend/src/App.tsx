@@ -3,7 +3,7 @@ import "./App.css";
 
 import CardPage from "./pages/CardPage.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
-import CreateAccountPage from "./pages/CreateAccountPage.tsx";
+import Home from "./pages/HomePage.tsx";
 
 function App() {
   return (
@@ -11,7 +11,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="cards" element={<CardPage />} />
-        <Route path="createAccount" element={<CreateAccountPage />}></Route>
+        <Route path="homepage" element={<Home />}></Route>
       </Routes>
     </Router>
   );
