@@ -5,13 +5,13 @@ function CreateAccount() {
   const [lastName, setLastName] = React.useState("");
   const [username, setUserName] = React.useState("");
   const [password, setPassword] = React.useState("");
-  // const [age, setAge] = React.useState("");
-  // const [weight, setWeight] = React.useState("");
-  // const [height, setHeight] = React.useState("");
+  const [age, setAge] = React.useState("");
+  const [weight, setWeight] = React.useState("");
+  const [height, setHeight] = React.useState("");
   // const [reenterPassword, setPasswordAgain] = React.useState("");
-  // const [email, setEmail] = React.useState("");
+  const [email, setEmail] = React.useState("");
   const [message, setMessage] = React.useState("");
-  // const [gender, setGender] = React.useState("");
+  const [gender, setGender] = React.useState("");
 
   function handleSetFirstname(e: any): void {
     setFirstName(e.target.value);
@@ -29,25 +29,25 @@ function CreateAccount() {
     setPassword(e.target.value);
   }
 
-  // function handleSetAge(e: any): void {
-  //   setAge(e.target.value);
-  // }
+  function handleSetAge(e: any): void {
+    setAge(e.target.value);
+  }
 
-  // function handleSetHeight(e: any): void {
-  //   setLastName(e.target.value);
-  // }
+  function handleSetHeight(e: any): void {
+    setHeight(e.target.value);
+  }
 
-  // function handleSetWeight(e: any): void {
-  //   setWeight(e.target.value);
-  // }
+  function handleSetWeight(e: any): void {
+    setWeight(e.target.value);
+  }
 
-  // function handleSetEmail(e: any): void {
-  //   setEmail(e.target.value);
-  // }
+  function handleSetEmail(e: any): void {
+    setEmail(e.target.value);
+  }
 
-  // function handleSetGender(e: any): void {
-  //   setGender(e.target.value);
-  // }
+  function handleSetGender(e: any): void {
+    setGender(e.target.value);
+  }
 
   async function doCreateAccount(event: any): Promise<void> {
     event.preventDefault();
@@ -56,6 +56,11 @@ function CreateAccount() {
       lastName: lastName,
       username: username,
       password: password,
+      age: age,
+      weight: weight,
+      height: height,
+      email: email,
+      gender: gender,
     };
     var js = JSON.stringify(obj);
     try {
@@ -134,26 +139,26 @@ function CreateAccount() {
       <button className="btnCreateAccount" onClick={doCreateAccount}>
         Create Account
       </button>
-      {/* <div>
+      <div>
         <input
           type="text"
           placeholder="Enter Gender"
           onChange={handleSetGender}
         />
-      </div> */}
-      {/* <br />
+      </div>
+      <br />
       <div>
         <input type="text" placeholder="Enter Age" onChange={handleSetAge} />
       </div>
-      <br /> */}
-      {/* <div>
+      <br />
+      <div>
         <input
           type="text"
           placeholder="Enter Height"
           onChange={handleSetHeight}
         />
-      </div> */}
-      {/* <br />
+      </div>{" "}
+      */
       <div>
         <input
           type="text"
@@ -168,7 +173,7 @@ function CreateAccount() {
           placeholder="Enter Email"
           onChange={handleSetEmail}
         />
-      </div> */}
+      </div>
     </div>
   );
 }

@@ -93,7 +93,7 @@ function Login() {
       alert(error.toString());
       return;
     }
-    //window.location.href = "/";
+    window.location.href = "/editprofile";
   }
 
   function handleSetFirstname(e: any): void {
