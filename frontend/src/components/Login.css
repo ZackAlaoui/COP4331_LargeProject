@@ -153,6 +153,12 @@ body {
     font-weight: bold;
 }
 
+.createAccountResult{
+    font-size: 14px;
+    color: #950606;
+    font-weight: bold;
+}
+
 .rightPanel {
     position: absolute;
     transform: translateX(110%);
