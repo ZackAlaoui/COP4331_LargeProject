@@ -6,6 +6,9 @@ function Login() {
   const [message, setMessage] = React.useState("");
   const [username, setUserName] = React.useState("");
   const [loginPassword, setLoginPassword] = React.useState("");
+  const [firstName, setFirstName] = React.useState("");
+  const [lastName, setLastName] = React.useState("");
+  const [password, setPassword] = React.useState("");
 
   //const [loginName, setLoginName] = React.useState("");
   // const [firstName, setFirstName] = React.useState("");
@@ -44,6 +47,68 @@ function Login() {
       alert(error.toString());
       return;
     }
+  }
+
+  async function doCreateAccount(event: any): Promise<void> {
+    event.preventDefault();
+    var obj = {
+      firstName: firstName,
+      lastName: lastName,
+      username: username,
+      password: password,
+    };
+    var js = JSON.stringify(obj);
+    try {
+      const response = await fetch(
+        "https://lp.largeprojectnutrition.fit/api/createaccount",
+        {
+          method: "POST",
+          body: js,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      var res = JSON.parse(await response.text());
+      if (res.complete != "user added") {
+        setMessage("Unable to create account");
+      } else {
+        var user = {
+          FirstName: res.firstName,
+          LastName: res.lastName,
+          UserName: res.username,
+          Password: res.password,
+          // Gender: res.gender,
+          // Age: res.age,
+          // Height: res.height,
+          // Weight: res.weight,
+          // Email: res.email,
+          // UserId: res.id,
+        };
+        localStorage.setItem("user_data", JSON.stringify(user));
+        setMessage("Account Created");
+      }
+    } catch (error: any) {
+      alert(error.toString());
+      return;
+    }
+    //window.location.href = "/";
+  }
+
+  function handleSetFirstname(e: any): void {
+    setFirstName(e.target.value);
+  }
+
+  function handleSetLastname(e: any): void {
+    setLastName(e.target.value);
+  }
+
+  function handleSetUsername(e: any): void {
+    setUserName(e.target.value);
+  }
+
+  function handleSetPassword(e: any): void {
+    setPassword(e.target.value);
   }
 
   function toggleForm() {
@@ -100,7 +165,7 @@ function Login() {
             <input
               type="text"
               placeholder="Enter first name"
-              //onChange={/*handleSetFirstname*/}
+              onChange={handleSetFirstname}
             />
           </div>
           <div className="otherInputFields">
@@ -108,7 +173,7 @@ function Login() {
             <input
               type="text"
               placeholder="Enter last name"
-              //onChange={/*handleSetLastname*/}
+              onChange={handleSetLastname}
             />
           </div>
           <div className="otherInputFields">
@@ -116,7 +181,7 @@ function Login() {
             <input
               type="text"
               placeholder="Enter username"
-              //onChange={/*handleSetUserName*/}
+              onChange={handleSetUserName}
             />
           </div>
           <div className="otherInputFields">
@@ -124,10 +189,10 @@ function Login() {
             <input
               type="text"
               placeholder="Enter password"
-              //onChange={/*handleSetPassword*/}
+              onChange={handleSetPassword}
             />
           </div>
-          <button className="btn" /*onClick={doCreateAccount}*/>
+          <button className="btn" onClick={doCreateAccount}>
             Create Account
           </button>
         </div>
