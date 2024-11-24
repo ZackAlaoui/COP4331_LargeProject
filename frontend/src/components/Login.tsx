@@ -192,6 +192,7 @@ function Login() {
               onChange={handleSetPassword}
             />
           </div>
+          <span className="loginResult">{message}</span>
           <button className="btn" onClick={doCreateAccount}>
             Create Account
           </button>
