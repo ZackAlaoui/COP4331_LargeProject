@@ -86,13 +86,13 @@ function CreateAccount() {
           // UserId: res.id,
         };
         localStorage.setItem("user_data", JSON.stringify(user));
-        setMessage("");
+        setMessage("Account Created");
       }
     } catch (error: any) {
       alert(error.toString());
       return;
     }
-    // window.location.href = "/";
+    //window.location.href = "/";
   }
 
   return (
@@ -130,6 +130,10 @@ function CreateAccount() {
         />
       </div>
       <br />
+      <span className="createAccountResult">{message}</span>
+      <button className="btnCreateAccount" onClick={doCreateAccount}>
+        Create Account
+      </button>
       {/* <div>
         <input
           type="text"
@@ -165,10 +169,6 @@ function CreateAccount() {
           onChange={handleSetEmail}
         />
       </div> */}
-      <br />
-      <button className="btnCreateAccount" onClick={doCreateAccount}>
-        Create Account
-      </button>
     </div>
   );
 }

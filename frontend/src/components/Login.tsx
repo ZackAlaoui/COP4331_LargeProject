@@ -4,12 +4,13 @@ import "./Login.css";
 function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [message, setMessage] = React.useState("");
-  //const [loginName, setLoginName] = React.useState("");
-  const [loginPassword, setLoginPassword] = React.useState("");
-  const [firstName, setFirstName] = React.useState("");
-  const [lastName, setLastName] = React.useState("");
   const [username, setUserName] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const [loginPassword, setLoginPassword] = React.useState("");
+
+  //const [loginName, setLoginName] = React.useState("");
+  // const [firstName, setFirstName] = React.useState("");
+  // const [lastName, setLastName] = React.useState("");
+  // const [password, setPassword] = React.useState("");
 
   async function doLogin(event: any): Promise<void> {
     event.preventDefault();
