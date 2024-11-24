@@ -70,7 +70,7 @@ function CreateAccount() {
         }
       );
       var res = JSON.parse(await response.text());
-      if (res.id <= 0) {
+      if (res.complete != "user added") {
         setMessage("Unable to create account");
       } else {
         var user = {
