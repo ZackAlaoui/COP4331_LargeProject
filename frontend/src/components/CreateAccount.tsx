@@ -60,7 +60,7 @@ function CreateAccount() {
     var js = JSON.stringify(obj);
     try {
       const response = await fetch(
-        "https://lp.largeprojectnutrition.fit/api/createAccount",
+        "https://lp.largeprojectnutrition.fit/api/createaccount",
         {
           method: "POST",
           body: js,
