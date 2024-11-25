@@ -1,33 +1,33 @@
 import React, { useState } from "react";
 
-function CreateAccount() {
-  const [firstName, setFirstName] = React.useState("");
-  const [lastName, setLastName] = React.useState("");
-  const [username, setUserName] = React.useState("");
-  const [password, setPassword] = React.useState("");
+function EditProfile() {
+  // const [firstName, setFirstName] = React.useState("");
+  // const [lastName, setLastName] = React.useState("");
+  // const [username, setUserName] = React.useState("");
+  // const [password, setPassword] = React.useState("");
+  // const [reenterPassword, setPasswordAgain] = React.useState("");
   const [age, setAge] = React.useState("");
   const [weight, setWeight] = React.useState("");
   const [height, setHeight] = React.useState("");
-  // const [reenterPassword, setPasswordAgain] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [message, setMessage] = React.useState("");
   const [gender, setGender] = React.useState("");
 
-  function handleSetFirstname(e: any): void {
-    setFirstName(e.target.value);
-  }
+  // function handleSetFirstname(e: any): void {
+  //   setFirstName(e.target.value);
+  // }
 
-  function handleSetLastname(e: any): void {
-    setLastName(e.target.value);
-  }
+  // function handleSetLastname(e: any): void {
+  //   setLastName(e.target.value);
+  // }
 
-  function handleSetUsername(e: any): void {
-    setUserName(e.target.value);
-  }
+  // function handleSetUsername(e: any): void {
+  //   setUserName(e.target.value);
+  // }
 
-  function handleSetPassword(e: any): void {
-    setPassword(e.target.value);
-  }
+  // function handleSetPassword(e: any): void {
+  //   setPassword(e.target.value);
+  // }
 
   function handleSetAge(e: any): void {
     setAge(e.target.value);
@@ -52,10 +52,6 @@ function CreateAccount() {
   async function doCreateAccount(event: any): Promise<void> {
     event.preventDefault();
     var obj = {
-      firstName: firstName,
-      lastName: lastName,
-      username: username,
-      password: password,
       age: age,
       weight: weight,
       height: height,
@@ -102,42 +98,42 @@ function CreateAccount() {
 
   return (
     <div className="container">
-      <h2 id="createAccount">CreateAccount</h2>
-      <div className="createAccountFields">
+      <h2 id="completeProfile">Complete Profile</h2>
+      {/* <div className="createAccountFields">
         <input
           type="text"
           placeholder="Enter Firstname"
           onChange={handleSetFirstname}
         />
       </div>
-      <br />
-      <div>
+      <br /> */}
+      {/* <div>
         <input
           type="text"
           placeholder="Enter Lastname"
           onChange={handleSetLastname}
         />
       </div>
-      <br />
-      <div>
+      <br /> */}
+      {/* <div>
         <input
           type="text"
           placeholder="Enter Username"
           onChange={handleSetUsername}
         />
-      </div>
-      <br />
-      <div>
+      </div> */}
+      {/* <br /> */}
+      {/* <div>
         <input
           type="text"
           placeholder="Enter Password"
           onChange={handleSetPassword}
         />
-      </div>
-      <br />
+      </div> */}
+      {/* <br /> */}
       <span className="createAccountResult">{message}</span>
       <button className="btnCreateAccount" onClick={doCreateAccount}>
-        Create Account
+        Save
       </button>
       <div>
         <input
@@ -178,4 +174,4 @@ function CreateAccount() {
   );
 }
 
-export default CreateAccount;
+export default EditProfile;
