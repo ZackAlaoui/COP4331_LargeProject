@@ -116,7 +116,7 @@ app.post('/api/login', async (req, res, next) => {
 // api for the USDA database
 const axios = require('axios');
 
-    app.post('/v1/foods/search', async (req, res) => {
+app.post('/v1/foods/search', async (req, res) => {
     // incoming: query
     // outgoing: results[], error
     const { query } = req.body;
@@ -150,7 +150,7 @@ const axios = require('axios');
 
         const additionalData = additionalDataResponse.data;
 
-        
+    
 
         // Extract food descriptions and FDC IDs from the response
         const results = {
@@ -159,23 +159,23 @@ const axios = require('axios');
             //fdcId: food.fdcId,
             calories: food.foodNutrients.find(n => n.nutrientName === 'Energy').value,
             protein: food.foodNutrients.find(n => n.nutrientName === 'Protein').value
-            
-    
         
-        };
-        enrichedResults.push(results);
 
-    }
+    
+    };
+    enrichedResults.push(results);
 
-    // Return results
-    res.status(200).json({ results: enrichedResults, error: '' });
-    } catch (err) {
-    // Handle errors
-    error = 'No results found';
-    console.error(err);
-    res.status(500).json({ results, error });
-    }
-    });
+}
+
+// Return results
+res.status(200).json({ results: enrichedResults, error: '' });
+} catch (err) {
+// Handle errors
+error = 'No results found';
+console.error(err);
+res.status(500).json({ results, error });
+}
+});
 
 
 
