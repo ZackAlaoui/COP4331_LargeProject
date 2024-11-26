@@ -62,7 +62,7 @@ app.post('/api/createaccount', async (req, res, next) => {
     try {
         const db = client.db("LPN");
         const insertResult = await db.collection('Users').insertOne(newUser);
-        const result = await db.collection('Users').findOne({ _id: insertResult._id });
+        const result = await db.collection('Users').findOne({ _id: insertResult.insertedId });
 
         if (result.length > 0) {
             req.session.username = username;
