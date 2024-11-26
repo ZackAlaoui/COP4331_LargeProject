@@ -74,9 +74,9 @@ app.post('/api/createaccount', async (req, res, next) => {
         if (result) {
             req.session.username = username;
             const ret = {
-                firstname: result.FirstName,
-                lastname: result.LastName,
-                username: result.Username,
+                firstName: result.FirstName,
+                lastName: result.LastName,
+                userName: result.Username,
                 message: "Account Created"
             };
             return res.status(200).json(ret);
