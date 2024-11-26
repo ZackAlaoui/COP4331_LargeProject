@@ -32,7 +32,8 @@ function Login() {
         }
       );
       var res = JSON.parse(await response.text());
-      if (res.id <= 0) {
+      console.log(res);
+      if (res.message === "Login Successful") {
         setMessage(res.message);
         var user = {
           firstName: res.firstName,

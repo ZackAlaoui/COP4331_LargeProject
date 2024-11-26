@@ -143,50 +143,52 @@ app.post('/api/login', async (req, res, next) => {
 
     const { username, password } = req.body;
 
+    if (!username || !password) {
+        return res.status(400).json({ message: "Username and password are required" });
+    }
 
     try {
+
+        const db = client.db("LPN");
 
         //Get the user credentials from the database
         const getDocument = await db.collection('Users').findOne({ Username: username });
 
-        if (getDocument) {
-            //Get password from database
-            const hashedPassword = getDocument.Password;
+        if (!getDocument) {
 
-            //Check if password matches the hashpassword in our database
-            const isMatch = await bcrypt.compare(password, hashedPassword);
-
-            var id = -1;
-            var fn = '';
-            var ln = '';
-
-            if (isMatch) {
-                const db = client.db("LPN");
-
-                const results = await
-                    db.collection('Users').findOne({ Username: username });
-
-                if (results) {
-                    ret = {
-                        id: results._id,
-                        fn: results.FirstName,
-                        ln: results.LastName,
-                        message: "Success"
-                    };
-
-                    var ret = { id: id, firstName: fn, lastName: ln, message: "", error: '' };
-                    return res.status(200).json(ret);
-                }
-            }
-        }
-        else {
-            return res.status(400).json({ message: "Username or Password is incorrect", id: id });
+            return res.status(400).json({ message: "Username and password is incorrect" });
         }
 
+        //Get password from database
+        const hashedPassword = getDocument.Password;
+
+        //Check if password matches the hashpassword in our database
+        const isMatch = await bcrypt.compare(password, hashedPassword);
+
+        var id = -1;
+        var fn = '';
+        var ln = '';
+
+        //If no match return 
+        if (!isMatch) {
+            return res.status(400).json({ message: "Username or password is incorrect." });
+        }
+
+        ret = {
+            id: getDocument._id,
+            firstName: getDocument.FirstName,
+            lastName: getDocument.LastName,
+            message: "Login Successful",
+            error: ''
+        };
+        return res.status(200).json(ret);
     }
 
     catch (e) {
         error = e.toString();
+        console.error(e)
+        return res.status(500).json({ message: "Server error occurred.", error: e.toString() });
+
     }
 
 });
