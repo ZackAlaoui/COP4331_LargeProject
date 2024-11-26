@@ -62,10 +62,12 @@ app.post('/api/createaccount', async (req, res, next) => {
     var error = '';
     try {
         const db = client.db("LPN");
+
+        //Hash the password so that we store the hash password in our database
+        const hashedPsw = await bcrypt.hash(newUser.Password, 12);
+
         const insertResult = await db.collection('Users').insertOne(newUser);
         const result = await db.collection('Users').findOne({ _id: insertResult.insertedId });
-        //Hash the password so that we store the hash password in our database
-        const hashedPsw = await bcrypt.hash(password, 12);
 
         if (result) {
             req.session.username = username;
