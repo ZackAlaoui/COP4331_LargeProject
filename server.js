@@ -64,7 +64,7 @@ app.post('/api/createaccount', async (req, res, next) => {
         const insertResult = await db.collection('Users').insertOne(newUser);
         const result = await db.collection('Users').findOne({ _id: insertResult.insertedId });
 
-        if (result.length > 0) {
+        if (result) {
             req.session.username = username;
             const ret = {
                 firstname: result[0].FirstName,
@@ -73,10 +73,10 @@ app.post('/api/createaccount', async (req, res, next) => {
                 password: result[0].Password,
                 message: "User added successfully"
             };
-            res.status(200).json(ret);
+            return res.status(200).json(ret);
 
         } else {
-            return res.status(500).json({ message: 'Error retrieving user after insert' });
+            return res.status(500).json({ message: 'Server Error', error: e.toString() });
 
         }
     }
@@ -157,6 +157,7 @@ app.post('/api/login', async (req, res, next) => {
 
 // api for the USDA database
 const axios = require('axios');
+const e = require('express');
 
 app.post('/v1/foods/search', async (req, res) => {
     // incoming: query
