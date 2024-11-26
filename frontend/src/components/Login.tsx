@@ -33,7 +33,7 @@ function Login() {
       );
       var res = JSON.parse(await response.text());
       if (res.id <= 0) {
-        setMessage("Incorrect username or password");
+        setMessage(res.message);
       } else {
         var user = {
           firstName: res.firstName,
