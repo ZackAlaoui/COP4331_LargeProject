@@ -58,7 +58,6 @@ app.post('/api/createaccount', async (req, res, next) => {
         return res.status(400).json({ message: 'You already have an account' });
     }
 
-    const newUser = { FirstName: firstName, LastName: lastName, Username: username, Password: password };
     var error = '';
     try {
         const db = client.db("LPN");
@@ -78,7 +77,7 @@ app.post('/api/createaccount', async (req, res, next) => {
                 firstname: result.FirstName,
                 lastname: result.LastName,
                 username: result.Username,
-                password: hashedPsw,
+                password: result.Password,
                 message: "Account Created"
             };
             return res.status(200).json(ret);
