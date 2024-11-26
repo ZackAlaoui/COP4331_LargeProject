@@ -78,7 +78,6 @@ function Login() {
           firstName: res.firstName,
           lastName: res.lastName,
           userName: res.username,
-          password: res.password,
           // Gender: res.gender,
           // Age: res.age,
           // Height: res.height,

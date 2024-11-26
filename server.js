@@ -77,7 +77,6 @@ app.post('/api/createaccount', async (req, res, next) => {
                 firstname: result.FirstName,
                 lastname: result.LastName,
                 username: result.Username,
-                password: result.Password,
                 message: "Account Created"
             };
             return res.status(200).json(ret);
