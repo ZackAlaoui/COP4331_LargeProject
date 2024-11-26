@@ -143,40 +143,50 @@ app.post('/api/login', async (req, res, next) => {
 
     const { username, password } = req.body;
 
-    //Get the user credentials from the database
-    const getDocument = await db.collection('Users').findOne({ Username: username });
 
-    //Get password from database
-    const hashedPassword = getDocument.Password;
-
-    //Check if password matches the hashpassword in our database
-    const isMatch = await bcrypt.compare(password, hashedPassword);
     try {
-        if (isMatch) {
-            const db = client.db("LPN");
 
-            const results = await
-                db.collection('Users').findOne({ Username: username, Password: password });
+        //Get the user credentials from the database
+        const getDocument = await db.collection('Users').findOne({ Username: username });
 
-            var id = -1;
-            var fn = '';
-            var ln = '';
+        if (getDocument) {
+            //Get password from database
+            const hashedPassword = getDocument.Password;
 
-            if (results) {
-                ret = {
-                    id: results._id,
-                    fn: results.FirstName,
-                    ln: results.LastName,
-                    message: ""
-                };
+            //Check if password matches the hashpassword in our database
+            const isMatch = await bcrypt.compare(password, hashedPassword);
+
+            if (isMatch) {
+                const db = client.db("LPN");
+
+                const results = await
+                    db.collection('Users').findOne({ Username: username, Password: password });
+
+                var id = -1;
+                var fn = '';
+                var ln = '';
+
+                if (results) {
+                    ret = {
+                        id: results._id,
+                        fn: results.FirstName,
+                        ln: results.LastName,
+                        message: ""
+                    };
+                }
+
+                var ret = { id: id, firstName: fn, lastName: ln, error: '' };
+                return res.status(200).json(ret);
+            }
+            else {
+                return res.status(400).json({ message: "Passwords is incorrect", id: id });
             }
 
-            var ret = { id: id, firstName: fn, lastName: ln, error: '' };
-            res.status(200).json(ret);
         }
         else {
-            res.status(400).json({ message: "Passwords is incorrect", id: id });
+            return res.status(400).json({ message: "Username or Password is incorrect", id: id });
         }
+
     }
 
     catch (e) {
