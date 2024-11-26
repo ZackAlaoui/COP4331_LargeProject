@@ -71,7 +71,7 @@ function Login() {
         }
       );
       var res = JSON.parse(await response.text());
-      if (res.message === "user added successfully") {
+      if (res.message === "Account Created") {
         setCreateAccountMessage(res.message);
         var user = {
           firstName: res.firstName,
