@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 
 //middleware
 app.use(session({
-    secret: 'Key that will sign our cookie that is saved in our browser', 
+    secret: 'Key that will sign our cookie that is saved in our browser',
     resave: false,
     saveUninitialized: false
 }));
@@ -44,54 +44,58 @@ app.get("/", (req, res) => {
 app.post('/api/createaccount', async (req, res, next) => {
     // incoming: firstName, lastName, username, password
     // outgoing: error
-    const { firstName, lastName, username, password} = req.body;
-    
+    const { firstName, lastName, username, password } = req.body;
+
     // Validate input
-    if (!firstName || !lastName || !username || !password ) {
+    if (!firstName || !lastName || !username || !password) {
         return res.status(400).json({ message: "Missing required fields" });
     }
-    
-    let user = await client.db("LPN").collection.findOne({firstName,lastName});
 
-    if(user){
-        return res.status(400).json({message: 'You already have an account'});
+    let existingUser = await client.db("LPN").collection.findOne({ username });
+
+    if (existingUser) {
+        return res.status(400).json({ message: 'You already have an account' });
     }
 
-    const newUser = { FirstName: firstName, LastName: lastName, Username: username, Password: password};
-    req.session.username = username;
+    const newUser = { FirstName: firstName, LastName: lastName, Username: username, Password: password };
     var error = '';
     try {
         const db = client.db("LPN");
-        const userId = db.collection('Users').insertOne(newUser);
-        const result = db.collection('Users').findOne(userId).toArray();
+        const insertResult = await db.collection('Users').insertOne(newUser);
+        const result = await db.collection('Users').findOne({ _id: insertResult._id });
+
+        if (result.length > 0) {
+            req.session.username = username;
+            const ret = {
+                firstname: result[0].FirstName,
+                lastname: result[0].LastName,
+                username: result[0].Username,
+                password: result[0].Password,
+                message: "User added successfully"
+            };
+            res.status(200).json(ret);
+
+        } else {
+            return res.status(500).json({ message: 'Error retrieving user after insert' });
+
+        }
     }
+
     catch (e) {
         error = e.toString();
     }
-
-    if(result.length > 0){
-       firstName = result[0].FirstName;
-       lastName = result[0].LastName;
-       username = result[0].Username;
-       password = result[0].Password;
-    }
-
-    message = 'user added'
-
-    var ret = {firstName:firstName, lastName: lastName, password:password, username:username, message: message, error: error };
-    res.status(200).json(ret);
 });
 
 app.post('/api/editinfo', async (req, res, next) => {
 
-    
+
     // incoming: userId, Age, Gender, Height, Weight
     // outgoing: error
     const { age, gender, height, weight, email } = req.body;
-    const newInfo = { Age: age, Gender: gender, Height: height, Weight: weight , Email: email};
+    const newInfo = { Age: age, Gender: gender, Height: height, Weight: weight, Email: email };
     var error = '';
 
-    if (!age || !gender || !height || !weight || !email ) {
+    if (!age || !gender || !height || !weight || !email) {
         return res.status(400).json({ error: "Missing required fields" });
     }
 
@@ -163,56 +167,56 @@ app.post('/v1/foods/search', async (req, res) => {
     let results = [];
 
     if (!query || query.trim() === '') {
-    res.status(400).json({ results, error: 'Search cannot be empty.' });
-    return;
+        res.status(400).json({ results, error: 'Search cannot be empty.' });
+        return;
     }
 
     try {
-    // Make a request to the USDA API https://app.swaggerhub.com/apis/fdcnal/food-data_central_api/1.0.1#/FDC/postFoodsSearch
-    const usdaResponse = await axios.post(
-        'https://api.nal.usda.gov/fdc/v1/foods/search?api_key=NWgR0wlBc7YQOa8FcrSXGb3bPdXp9D0mE582U7SH',
-        { query: query.trim() }
-    );
-
-    const usdaResults = usdaResponse.data.foods;
-
-    const enrichedResults = [];
-
-    // Iterate over USDA results to fetch additional data
-    for (const food of usdaResults) {
-        // Example: Fetch additional data from another API
-        const additionalDataResponse = await axios.get(
-            `https://api.nal.usda.gov/fdc/v1/food/2038064?api_key=NWgR0wlBc7YQOa8FcrSXGb3bPdXp9D0mE582U7SH`,
-            { query: query.trim()}
+        // Make a request to the USDA API https://app.swaggerhub.com/apis/fdcnal/food-data_central_api/1.0.1#/FDC/postFoodsSearch
+        const usdaResponse = await axios.post(
+            'https://api.nal.usda.gov/fdc/v1/foods/search?api_key=NWgR0wlBc7YQOa8FcrSXGb3bPdXp9D0mE582U7SH',
+            { query: query.trim() }
         );
 
-        const additionalData = additionalDataResponse.data;
+        const usdaResults = usdaResponse.data.foods;
 
-    
+        const enrichedResults = [];
 
-        // Extract food descriptions and FDC IDs from the response
-        const results = {
-            description: food.description,
-            brandName: food.brandName || null,
-            //fdcId: food.fdcId,
-            calories: food.foodNutrients.find(n => n.nutrientName === 'Energy').value,
-            protein: food.foodNutrients.find(n => n.nutrientName === 'Protein').value
-        
+        // Iterate over USDA results to fetch additional data
+        for (const food of usdaResults) {
+            // Example: Fetch additional data from another API
+            const additionalDataResponse = await axios.get(
+                `https://api.nal.usda.gov/fdc/v1/food/2038064?api_key=NWgR0wlBc7YQOa8FcrSXGb3bPdXp9D0mE582U7SH`,
+                { query: query.trim() }
+            );
 
-    
-    };
-    enrichedResults.push(results);
+            const additionalData = additionalDataResponse.data;
 
-}
 
-// Return results
-res.status(200).json({ results: enrichedResults, error: '' });
-} catch (err) {
-// Handle errors
-error = 'No results found';
-console.error(err);
-res.status(500).json({ results, error });
-}
+
+            // Extract food descriptions and FDC IDs from the response
+            const results = {
+                description: food.description,
+                brandName: food.brandName || null,
+                //fdcId: food.fdcId,
+                calories: food.foodNutrients.find(n => n.nutrientName === 'Energy').value,
+                protein: food.foodNutrients.find(n => n.nutrientName === 'Protein').value
+
+
+
+            };
+            enrichedResults.push(results);
+
+        }
+
+        // Return results
+        res.status(200).json({ results: enrichedResults, error: '' });
+    } catch (err) {
+        // Handle errors
+        error = 'No results found';
+        console.error(err);
+        res.status(500).json({ results, error });
+    }
 });
 
 

@@ -71,18 +71,13 @@ function Login() {
         }
       );
       var res = JSON.parse(await response.text());
-      if (
-        res.message != "user added" ||
-        res.message == "You already have an account" ||
-        res.message == "Missing required fields"
-      ) {
+      if (res.message === "user added successfully") {
         setCreateAccountMessage(res.message);
-      } else {
         var user = {
-          FirstName: res.firstName,
-          LastName: res.lastName,
-          UserName: res.username,
-          Password: res.password,
+          firstName: res.firstName,
+          lastName: res.lastName,
+          userName: res.username,
+          password: res.password,
           // Gender: res.gender,
           // Age: res.age,
           // Height: res.height,
@@ -92,12 +87,14 @@ function Login() {
         };
         localStorage.setItem("user_data", JSON.stringify(user));
         setCreateAccountMessage("Account Created");
+        window.location.href = "/editprofile";
+      } else {
+        setCreateAccountMessage(res.message);
       }
     } catch (error: any) {
       alert(error.toString());
       return;
     }
-    window.location.href = "/editprofile";
   }
 
   function handleSetFirstname(e: any): void {
