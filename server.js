@@ -52,7 +52,7 @@ app.post('/api/createaccount', async (req, res, next) => {
         return res.status(400).json({ message: "Missing required fields" });
     }
 
-    let existingUser = await client.db("LPN").collection("Users").findOne({ UserName: username });
+    let existingUser = await client.db("LPN").collection("Users").findOne({ Username: username });
 
     if (existingUser) {
         return res.status(400).json({ message: 'You already have an account' });
