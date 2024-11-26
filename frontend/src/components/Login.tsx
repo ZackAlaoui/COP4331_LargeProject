@@ -71,8 +71,13 @@ function Login() {
         }
       );
       var res = JSON.parse(await response.text());
-      if (res.complete != "user added") {
-        setCreateAccountMessage("Unable to create account");
+      if (
+        res.message != "user added" ||
+        res.message == "You already have an account" ||
+        res.message == "Missing required fields"
+      ) {
+        setCreateAccountMessage(res.message);
+        return;
       } else {
         var user = {
           FirstName: res.firstName,

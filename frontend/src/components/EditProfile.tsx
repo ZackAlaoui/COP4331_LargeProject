@@ -78,10 +78,10 @@ function EditProfile() {
       var res = JSON.parse(await response.text());
       if (
         res.message != "user added" ||
-        res.message == "Username already exists" ||
         res.message == "Missing required fields"
       ) {
         setMessage(res.message);
+        return;
       } else {
         var user = {
           FirstName: res.firstName,

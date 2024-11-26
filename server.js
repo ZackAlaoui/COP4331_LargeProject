@@ -48,13 +48,13 @@ app.post('/api/createaccount', async (req, res, next) => {
     
     // Validate input
     if (!firstName || !lastName || !username || !password ) {
-        return res.status(400).json({ error: "Missing required fields" });
+        return res.status(400).json({ message: "Missing required fields" });
     }
     
-    let user = await client.db("LPN").collection.findOne({username});
+    let user = await client.db("LPN").collection.findOne({firstName,lastName});
 
     if(user){
-        return res.status(400).json({message: 'Username already exists'});
+        return res.status(400).json({message: 'You already have an account'});
     }
 
     const newUser = { FirstName: firstName, LastName: lastName, Username: username, Password: password};
@@ -62,15 +62,23 @@ app.post('/api/createaccount', async (req, res, next) => {
     var error = '';
     try {
         const db = client.db("LPN");
-        const result = db.collection('Users').insertOne(newUser);
+        const userId = db.collection('Users').insertOne(newUser);
+        const result = db.collection('Users').findOne(userId).toArray();
     }
     catch (e) {
         error = e.toString();
     }
 
+    if(result.length > 0){
+       firstName = result[0].FirstName;
+       lastName = result[0].LastName;
+       username = result[0].Username;
+       password = result[0].Password;
+    }
+
     message = 'user added'
 
-    var ret = { message: message, error: error };
+    var ret = {firstName:firstName, lastName: lastName, password:password, username:username, message: message, error: error };
     res.status(200).json(ret);
 });
 
@@ -83,6 +91,10 @@ app.post('/api/editinfo', async (req, res, next) => {
     const newInfo = { Age: age, Gender: gender, Height: height, Weight: weight , Email: email};
     var error = '';
 
+    if (!age || !gender || !height || !weight || !email ) {
+        return res.status(400).json({ error: "Missing required fields" });
+    }
+
     try {
         const db = client.db("LPN");
         //const results = await db.collection('Users').find({ "Card": { $regex: _search + '.*' } }).toArray();
@@ -90,6 +102,7 @@ app.post('/api/editinfo', async (req, res, next) => {
     catch (e) {
         error = e.toString();
     }
+
     infoList.push(info);
     var ret = { complete: complete, error: error };
     res.status(200).json(ret);
