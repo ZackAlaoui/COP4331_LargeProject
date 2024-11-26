@@ -1,6 +1,7 @@
 const express = require('express');
 const session = require('express-session')
 const bodyParser = require('body-parser');
+const bcrypt = require('bcryptjs');
 const cors = require('cors');
 const app = express();
 const MongoDBSession = require('connect-mongodb-session')(session);
@@ -63,6 +64,8 @@ app.post('/api/createaccount', async (req, res, next) => {
         const db = client.db("LPN");
         const insertResult = await db.collection('Users').insertOne(newUser);
         const result = await db.collection('Users').findOne({ _id: insertResult.insertedId });
+        //Hash the password so that we store the hash password in our database
+        const hashedPsw = await bcrypt.hash(password, 12);
 
         if (result) {
             req.session.username = username;
@@ -70,7 +73,7 @@ app.post('/api/createaccount', async (req, res, next) => {
                 firstname: result.FirstName,
                 lastname: result.LastName,
                 username: result.Username,
-                password: result.Password,
+                password: hashedPsw,
                 message: "Account Created"
             };
             return res.status(200).json(ret);
