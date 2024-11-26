@@ -77,7 +77,6 @@ function Login() {
         res.message == "Missing required fields"
       ) {
         setCreateAccountMessage(res.message);
-        return;
       } else {
         var user = {
           FirstName: res.firstName,
