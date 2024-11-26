@@ -71,9 +71,11 @@ function Login() {
         }
       );
       var res = JSON.parse(await response.text());
+      console.log("Entire Response ", res);
+
       if (res.message === "Account Created") {
         // setCreateAccountMessage(res.message);
-        console.log(res.firstName);
+        console.log("Response ", res.firstName);
         var user = {
           firstName: res.firstName,
           lastName: res.lastName,
