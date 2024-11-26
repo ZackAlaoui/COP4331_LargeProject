@@ -34,7 +34,6 @@ function Login() {
       var res = JSON.parse(await response.text());
       if (res.id <= 0) {
         setMessage(res.message);
-      } else {
         var user = {
           firstName: res.firstName,
           lastName: res.lastName,
@@ -43,6 +42,8 @@ function Login() {
         localStorage.setItem("user_data", JSON.stringify(user));
         setMessage("");
         window.location.href = "/homepage";
+      } else {
+        setMessage(res.message);
       }
     } catch (error: any) {
       alert(error.toString());

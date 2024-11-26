@@ -156,32 +156,28 @@ app.post('/api/login', async (req, res, next) => {
             //Check if password matches the hashpassword in our database
             const isMatch = await bcrypt.compare(password, hashedPassword);
 
+            var id = -1;
+            var fn = '';
+            var ln = '';
+
             if (isMatch) {
                 const db = client.db("LPN");
 
                 const results = await
-                    db.collection('Users').findOne({ Username: username, Password: password });
-
-                var id = -1;
-                var fn = '';
-                var ln = '';
+                    db.collection('Users').findOne({ Username: username });
 
                 if (results) {
                     ret = {
                         id: results._id,
                         fn: results.FirstName,
                         ln: results.LastName,
-                        message: ""
+                        message: "Success"
                     };
+
+                    var ret = { id: id, firstName: fn, lastName: ln, message: "", error: '' };
+                    return res.status(200).json(ret);
                 }
-
-                var ret = { id: id, firstName: fn, lastName: ln, error: '' };
-                return res.status(200).json(ret);
             }
-            else {
-                return res.status(400).json({ message: "Passwords is incorrect", id: id });
-            }
-
         }
         else {
             return res.status(400).json({ message: "Username or Password is incorrect", id: id });
