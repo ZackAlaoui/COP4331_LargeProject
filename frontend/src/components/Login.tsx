@@ -72,7 +72,7 @@ function Login() {
       );
       var res = JSON.parse(await response.text());
       if (res.message === "Account Created") {
-        setCreateAccountMessage(res.message);
+        // setCreateAccountMessage(res.message);
         console.log(res.firstName);
         var user = {
           firstName: res.firstName,
@@ -104,10 +104,6 @@ function Login() {
 
   function handleSetLastname(e: any): void {
     setLastName(e.target.value);
-  }
-
-  function handleSetUsername(e: any): void {
-    setUserName(e.target.value);
   }
 
   function handleSetPassword(e: any): void {

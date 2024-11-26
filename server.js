@@ -63,7 +63,7 @@ app.post('/api/createaccount', async (req, res, next) => {
         const db = client.db("LPN");
 
         //Hash the password so that we store the hash password in our database
-        const hashedPsw = await bcrypt.hash(newUser.Password, 12);
+        const hashedPsw = await bcrypt.hash(password, 12);
 
         const newUser = { FirstName: firstName, LastName: lastName, Username: username, Password: hashedPsw };
 
