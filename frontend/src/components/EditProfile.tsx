@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import App from "../App";
+import axios from "axios";
+import { useHistory } from "react-router-dom";
 
 function EditProfile() {
   // const [firstName, setFirstName] = React.useState("");
@@ -12,6 +15,7 @@ function EditProfile() {
   const [email, setEmail] = React.useState("");
   const [message, setMessage] = React.useState("");
   const [gender, setGender] = React.useState("");
+  const [error, setError] = useState("");
 
   // function handleSetFirstname(e: any): void {
   //   setFirstName(e.target.value);
@@ -49,8 +53,9 @@ function EditProfile() {
     setGender(e.target.value);
   }
 
-  async function doCreateAccount(event: any): Promise<void> {
+  async function completeAccount(event: any): Promise<void> {
     event.preventDefault();
+
     var obj = {
       age: age,
       weight: weight,
@@ -61,7 +66,7 @@ function EditProfile() {
     var js = JSON.stringify(obj);
     try {
       const response = await fetch(
-        "https://lp.largeprojectnutrition.fit/api/createaccount",
+        "https://lp.largeprojectnutrition.fit/api/editinfo",
         {
           method: "POST",
           body: js,
@@ -71,8 +76,12 @@ function EditProfile() {
         }
       );
       var res = JSON.parse(await response.text());
-      if (res.complete != "user added") {
-        setMessage("Unable to create account");
+      if (
+        res.message != "user added" ||
+        res.message == "Username already exists" ||
+        res.message == "Missing required fields"
+      ) {
+        setMessage(res.message);
       } else {
         var user = {
           FirstName: res.firstName,
@@ -87,13 +96,13 @@ function EditProfile() {
           // UserId: res.id,
         };
         localStorage.setItem("user_data", JSON.stringify(user));
-        setMessage("Account Created");
+        setMessage("Profile Saved");
       }
     } catch (error: any) {
       alert(error.toString());
       return;
     }
-    //window.location.href = "/";
+    window.location.href = "/";
   }
 
   return (
@@ -132,7 +141,7 @@ function EditProfile() {
       </div> */}
       {/* <br /> */}
       <span className="createAccountResult">{message}</span>
-      <button className="btnCreateAccount" onClick={doCreateAccount}>
+      <button className="btnCreateAccount" onClick={completeAccount}>
         Save
       </button>
       <div>
