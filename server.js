@@ -1,8 +1,9 @@
 const express = require('express');
+const session = require('express-session')
 const bodyParser = require('body-parser');
 const cors = require('cors');
-
 const app = express();
+const MongoDBSession = require('connect-mongodb-session')(session);
 
 const MongoClient = require('mongodb').MongoClient;
 const url = 'mongodb+srv://largeproject:largeproject@cluster0.go0gv.mongodb.net/LPN?retryWrites=true&w=majority&appName=Cluster0';
@@ -11,6 +12,13 @@ client.connect();
 
 app.use(cors());
 app.use(bodyParser.json());
+
+//middleware
+app.use(session({
+    secret: 'Key that will sign our cookie that is saved in our browser', 
+    resave: false,
+    saveUninitialized: false
+}));
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -25,6 +33,13 @@ app.use((req, res, next) => {
     next();
 });
 
+app.get("/", (req, res) => {
+    req.session.isAuth = true;
+    console.log(req.session);
+    console.log(req.session.id);
+    res.send("Hello Session")
+});
+
 // create account API
 app.post('/api/createaccount', async (req, res, next) => {
     // incoming: firstName, lastName, username, password
@@ -36,31 +51,41 @@ app.post('/api/createaccount', async (req, res, next) => {
         return res.status(400).json({ error: "Missing required fields" });
     }
     
-    const User = { FirstName: firstName, LastName: lastName, Username: username, Password: password};
+    let user = await client.db("LPN").collection.findOne({username});
+
+    if(user){
+        return res.status(400).json({message: 'Username already exists'});
+    }
+
+    const newUser = { FirstName: firstName, LastName: lastName, Username: username, Password: password};
+    req.session.username = username;
     var error = '';
     try {
         const db = client.db("LPN");
-        const result = db.collection('Users').insertOne(User);
+        const result = db.collection('Users').insertOne(newUser);
     }
     catch (e) {
         error = e.toString();
     }
 
-    var complete = 'user added'
+    message = 'user added'
 
-    var ret = { complete: complete, error: error };
+    var ret = { message: message, error: error };
     res.status(200).json(ret);
 });
 
 app.post('/api/editinfo', async (req, res, next) => {
+
+    
     // incoming: userId, Age, Gender, Height, Weight
     // outgoing: error
-    const { userId, Age, Gender, Height, Weight } = req.body;
-    const newInfo = { UserId: userId, Age: Age, Gender: Gender, Height: Height, Weight: Weight };
+    const { age, gender, height, weight, email } = req.body;
+    const newInfo = { Age: age, Gender: gender, Height: height, Weight: weight , Email: email};
     var error = '';
+
     try {
         const db = client.db("LPN");
-        const result = db.collection('Info').insertOne(newInfo);
+        //const results = await db.collection('Users').find({ "Card": { $regex: _search + '.*' } }).toArray();
     }
     catch (e) {
         error = e.toString();
@@ -125,34 +150,56 @@ app.post('/v1/foods/search', async (req, res) => {
     let results = [];
 
     if (!query || query.trim() === '') {
-        res.status(400).json({ results, error: 'Search cannot be empty.' });
-        return;
+    res.status(400).json({ results, error: 'Search cannot be empty.' });
+    return;
     }
 
     try {
-        // Make a request to the USDA API
-        const usdaResponse = await axios.post(
-            'https://api.nal.usda.gov/fdc/v1/foods/search?api_key=NWgR0wlBc7YQOa8FcrSXGb3bPdXp9D0mE582U7SH',
-            { query: query.trim() }
+    // Make a request to the USDA API https://app.swaggerhub.com/apis/fdcnal/food-data_central_api/1.0.1#/FDC/postFoodsSearch
+    const usdaResponse = await axios.post(
+        'https://api.nal.usda.gov/fdc/v1/foods/search?api_key=NWgR0wlBc7YQOa8FcrSXGb3bPdXp9D0mE582U7SH',
+        { query: query.trim() }
+    );
+
+    const usdaResults = usdaResponse.data.foods;
+
+    const enrichedResults = [];
+
+    // Iterate over USDA results to fetch additional data
+    for (const food of usdaResults) {
+        // Example: Fetch additional data from another API
+        const additionalDataResponse = await axios.get(
+            `https://api.nal.usda.gov/fdc/v1/food/2038064?api_key=NWgR0wlBc7YQOa8FcrSXGb3bPdXp9D0mE582U7SH`,
+            { query: query.trim()}
         );
 
-        // Extract food descriptions and FDC IDs from the response
-        results = usdaResponse.data.foods.map(food => ({
-            description: food.description,
-            fdcId: food.fdcId,
-           // calories: food.calories,
-            //protein: food.protein,
-            
-        }));
+        const additionalData = additionalDataResponse.data;
 
-        // Return results
-        res.status(200).json({ results, error });
-    } catch (err) {
-        // Handle errors
-        error = 'Error occurred while fetching data from the USDA API.';
-        console.error(err);
-        res.status(500).json({ results, error });
-    }
+    
+
+        // Extract food descriptions and FDC IDs from the response
+        const results = {
+            description: food.description,
+            brandName: food.brandName || null,
+            //fdcId: food.fdcId,
+            calories: food.foodNutrients.find(n => n.nutrientName === 'Energy').value,
+            protein: food.foodNutrients.find(n => n.nutrientName === 'Protein').value
+        
+
+    
+    };
+    enrichedResults.push(results);
+
+}
+
+// Return results
+res.status(200).json({ results: enrichedResults, error: '' });
+} catch (err) {
+// Handle errors
+error = 'No results found';
+console.error(err);
+res.status(500).json({ results, error });
+}
 });
 
 
