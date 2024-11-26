@@ -150,34 +150,56 @@ app.post('/v1/foods/search', async (req, res) => {
     let results = [];
 
     if (!query || query.trim() === '') {
-        res.status(400).json({ results, error: 'Search cannot be empty.' });
-        return;
+    res.status(400).json({ results, error: 'Search cannot be empty.' });
+    return;
     }
 
     try {
-        // Make a request to the USDA API
-        const usdaResponse = await axios.post(
-            'https://api.nal.usda.gov/fdc/v1/foods/search?api_key=NWgR0wlBc7YQOa8FcrSXGb3bPdXp9D0mE582U7SH',
-            { query: query.trim() }
+    // Make a request to the USDA API https://app.swaggerhub.com/apis/fdcnal/food-data_central_api/1.0.1#/FDC/postFoodsSearch
+    const usdaResponse = await axios.post(
+        'https://api.nal.usda.gov/fdc/v1/foods/search?api_key=NWgR0wlBc7YQOa8FcrSXGb3bPdXp9D0mE582U7SH',
+        { query: query.trim() }
+    );
+
+    const usdaResults = usdaResponse.data.foods;
+
+    const enrichedResults = [];
+
+    // Iterate over USDA results to fetch additional data
+    for (const food of usdaResults) {
+        // Example: Fetch additional data from another API
+        const additionalDataResponse = await axios.get(
+            `https://api.nal.usda.gov/fdc/v1/food/2038064?api_key=NWgR0wlBc7YQOa8FcrSXGb3bPdXp9D0mE582U7SH`,
+            { query: query.trim()}
         );
 
-        // Extract food descriptions and FDC IDs from the response
-        results = usdaResponse.data.foods.map(food => ({
-            description: food.description,
-            fdcId: food.fdcId,
-           // calories: food.calories,
-            //protein: food.protein,
-            
-        }));
+        const additionalData = additionalDataResponse.data;
 
-        // Return results
-        res.status(200).json({ results, error });
-    } catch (err) {
-        // Handle errors
-        error = 'Error occurred while fetching data from the USDA API.';
-        console.error(err);
-        res.status(500).json({ results, error });
-    }
+    
+
+        // Extract food descriptions and FDC IDs from the response
+        const results = {
+            description: food.description,
+            brandName: food.brandName || null,
+            //fdcId: food.fdcId,
+            calories: food.foodNutrients.find(n => n.nutrientName === 'Energy').value,
+            protein: food.foodNutrients.find(n => n.nutrientName === 'Protein').value
+        
+
+    
+    };
+    enrichedResults.push(results);
+
+}
+
+// Return results
+res.status(200).json({ results: enrichedResults, error: '' });
+} catch (err) {
+// Handle errors
+error = 'No results found';
+console.error(err);
+res.status(500).json({ results, error });
+}
 });
 
 
