@@ -144,7 +144,7 @@ app.post('/api/login', async (req, res, next) => {
     const { username, password } = req.body;
 
     //Get the user credentials from the database
-    const getDocument = await db.collection('Users').find({ Username: username });
+    const getDocument = await db.collection('Users').findOne({ Username: username });
 
     //Get password from database
     const hashedPassword = getDocument.Password;
