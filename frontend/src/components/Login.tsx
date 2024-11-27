@@ -81,7 +81,7 @@ function Login() {
         var user = {
           firstName: res.firstName,
           lastName: res.lastName,
-          userName: res.username,
+          userName: res.userName,
           // Gender: res.gender,
           // Age: res.age,
           // Height: res.height,
