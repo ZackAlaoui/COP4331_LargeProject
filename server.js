@@ -3,23 +3,38 @@ const session = require('express-session')
 const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
 const cors = require('cors');
-const app = express();
-const MongoDBSession = require('connect-mongodb-session')(session);
 
+const MongoDBSession = require('connect-mongodb-session')(session);
 const MongoClient = require('mongodb').MongoClient;
 const url = 'mongodb+srv://largeproject:largeproject@cluster0.go0gv.mongodb.net/LPN?retryWrites=true&w=majority&appName=Cluster0';
 const client = new MongoClient(url);
 client.connect();
 
+const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+
+const mongoURI = 'mongodb+srv://largeproject:largeproject@cluster0.go0gv.mongodb.net/LPN?retryWrites=true&w=majority&appName=Cluster0';
+
+const store = new MongoDBSession({
+    uri: mongoURI,
+    collection: 'mySessions'
+});
 
 //middleware
 app.use(session({
     secret: 'Key that will sign our cookie that is saved in our browser',
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    store: store
 }));
+
+app.get("/", (req, res) => {
+    req.session.isAuth = true;
+    console.log(req.session);
+    console.log(req.session.id);
+    res.send("Hello Session")
+});
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -34,12 +49,13 @@ app.use((req, res, next) => {
     next();
 });
 
-app.get("/", (req, res) => {
-    req.session.isAuth = true;
-    console.log(req.session);
-    console.log(req.session.id);
-    res.send("Hello Session")
-});
+const isAuth = (req, res, next) => {
+    if (req.session.isAuth) {
+        next()
+    } else {
+        res.redirect('/api/login')
+    }
+}
 
 // create account API
 app.post('/api/createaccount', async (req, res, next) => {
