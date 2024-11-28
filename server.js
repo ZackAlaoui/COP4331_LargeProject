@@ -118,6 +118,7 @@ app.post('/api/editinfo', async (req, res, next) => {
     const newInfo = { Age: age, Gender: gender, Height: height, Weight: weight, Email: email };
     var error = '';
     const objectId = new ObjectId(_id);
+    console.log(objectId);
 
 
     // Validate input
