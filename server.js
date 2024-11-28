@@ -130,7 +130,7 @@ app.post('/api/editinfo', async (req, res, next) => {
     try {
         const db = client.db("LPN");
         const result = await db.collection('Users').findOneAndUpdate(
-            { _id: objectId },
+            { _id: _id },
             { $set: newInfo },
             { returnDocument: 'after' }
         );
