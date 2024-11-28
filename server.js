@@ -142,14 +142,13 @@ app.post('/api/editinfo', async (req, res, next) => {
         console.log("This is the result object : " + result);
 
         if (result) {
-            const insertInfo = result.value;
             const ret = {
-                Age: insertInfo.Age,
-                Gender: insertInfo.Gender,
-                Height: insertInfo.Height,
-                Weight: insertInfo.Weight,
-                Email: insertInfo.Email,
-                id: insertInfo.id,
+                Age: result.Age,
+                Gender: result.Gender,
+                Height: result.Height,
+                Weight: result.Weight,
+                Email: result.Email,
+                id: result.id,
                 message: "Profile Updated"
             };
             return res.status(200).json(ret);
