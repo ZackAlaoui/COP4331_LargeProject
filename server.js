@@ -92,7 +92,7 @@ app.post('/api/createaccount', async (req, res, next) => {
         const objectIdString = objectId.toString();
 
         console.log(objectIdString);
-        const addId = await db.collection('Users').findOneAndUpdate({ _id: insertResult.insertedId }, objectIdString);
+        const addId = await db.collection('Users').findOneAndUpdate({ _id: insertResult.insertedId }, { id: objectIdString }, { returnDocument: 'after' });
 
         if (result) {
 
