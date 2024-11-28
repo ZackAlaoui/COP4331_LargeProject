@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import App from "../App";
+import App from "../App.tsx";
 import axios from "axios";
 // import { useHistory } from "react-router-dom";
 
