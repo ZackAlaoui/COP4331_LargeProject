@@ -48,11 +48,11 @@ function EditProfile() {
 
     var obj = {
       id: retrievedUser.id,
-      age: age,
-      weight: weight,
-      height: height,
-      email: email,
-      gender: gender,
+      Age: age,
+      Weight: weight,
+      Height: height,
+      Email: email,
+      Gender: gender,
     };
 
     console.log(retrievedUser.id);

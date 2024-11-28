@@ -5,7 +5,7 @@ function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [message, setMessage] = React.useState("");
   const [createAccountMessage, setCreateAccountMessage] = React.useState("");
-  const [username, setUserName] = React.useState("");
+  const [userName, setUserName] = React.useState("");
   const [loginPassword, setLoginPassword] = React.useState("");
   const [firstName, setFirstName] = React.useState("");
   const [lastName, setLastName] = React.useState("");
@@ -18,7 +18,7 @@ function Login() {
 
   async function doLogin(event: any): Promise<void> {
     event.preventDefault();
-    var obj = { username: username, password: loginPassword };
+    var obj = { userName: userName, password: loginPassword };
     var js = JSON.stringify(obj);
     try {
       const response = await fetch(
@@ -57,7 +57,7 @@ function Login() {
     var obj = {
       firstName: firstName,
       lastName: lastName,
-      username: username,
+      userName: userName,
       password: password,
     };
     var js = JSON.stringify(obj);

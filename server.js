@@ -62,14 +62,14 @@ const isAuth = (req, res, next) => {
 app.post('/api/createaccount', async (req, res, next) => {
     // incoming: firstName, lastName, username, password
     // outgoing: error
-    const { firstName, lastName, username, password } = req.body;
+    const { firstName, lastName, userName, password } = req.body;
 
     // Validate input
-    if (!firstName || !lastName || !username || !password) {
+    if (!firstName || !lastName || !userName || !password) {
         return res.status(400).json({ message: "Missing required fields" });
     }
 
-    let existingUser = await client.db("LPN").collection("Users").findOne({ Username: username });
+    let existingUser = await client.db("LPN").collection("Users").findOne({ Username: userName });
 
     if (existingUser) {
         return res.status(400).json({ message: 'You already have an account' });
@@ -82,7 +82,7 @@ app.post('/api/createaccount', async (req, res, next) => {
         // Hash the password so that we store the hash password in our database
         const hashedPsw = await bcrypt.hash(password, 12);
 
-        const newUser = { FirstName: firstName, LastName: lastName, Username: username, Password: hashedPsw };
+        const newUser = { FirstName: firstName, LastName: lastName, Username: userName, Password: hashedPsw };
 
         const insertResult = await db.collection('Users').insertOne(newUser);
         const result = await db.collection('Users').findOne({ _id: insertResult.insertedId });
@@ -96,7 +96,7 @@ app.post('/api/createaccount', async (req, res, next) => {
         if (result) {
 
             // const addId = await db.collection('Users').findOneAndUpdate({ Username: username }, { $set: { id: objectId } });
-
+            console("This is the id :" + addId.id);
             const ret = {
                 firstName: result.FirstName,
                 lastName: result.LastName,
@@ -119,15 +119,15 @@ app.post('/api/createaccount', async (req, res, next) => {
 app.post('/api/editinfo', async (req, res, next) => {
     // incoming: userId, Age, Gender, Height, Weight, Email
     // outgoing: error
-    const { age, gender, height, weight, email, id } = req.body;
-    const newInfo = { Age: age, Gender: gender, Height: height, Weight: weight, Email: email };
+    const { Age, Gender, Height, Weight, Email, id } = req.body;
+    const newInfo = { Age: Age, Gender: Gender, Height: Height, Weight: Weight, Email: Email };
     var error = '';
     // console.log(id);
-    console.log(req.body.id)
+    console.log("This is the id " + req.body.id);
 
 
     // Validate input
-    if (!age || !gender || !height || !weight || !email) {
+    if (!Age || !Gender || !Height || !Weight || !Email) {
         return res.status(400).json({ error: "Missing required fields" });
     }
 
@@ -140,7 +140,7 @@ app.post('/api/editinfo', async (req, res, next) => {
             { returnDocument: 'after' }
         );
 
-        console.log(result);
+        console.log("This is the result object : " + result);
 
         if (result.value) {
             const insertInfo = result.value;
@@ -170,9 +170,9 @@ app.post('/api/login', async (req, res, next) => {
     // outgoing: id, firstName, lastName, error
     var error = '';
 
-    const { username, password } = req.body;
+    const { userName, password } = req.body;
 
-    if (!username || !password) {
+    if (!userName || !password) {
         return res.status(400).json({ message: "Username and password are required" });
     }
 
@@ -180,7 +180,7 @@ app.post('/api/login', async (req, res, next) => {
         const db = client.db("LPN");
 
         // Get the user credentials from the database
-        const getDocument = await db.collection('Users').findOne({ Username: username });
+        const getDocument = await db.collection('Users').findOne({ Username: userName });
 
         if (!getDocument) {
             return res.status(400).json({ message: "Username and password is incorrect" });
