@@ -124,10 +124,10 @@ app.post('/api/editinfo', async (req, res, next) => {
 
     try {
         const db = client.db("LPN");
-        insertInfo = await db.collection('Users').findOneAndUpdate({ _id: _id }, { $set: { Age: age, Gender: gender, Height: height, Weight: weight, Email: email } }, { ReturnDocument: 'after' });
+        result = await db.collection('Users').findOneAndUpdate({ _id: _id }, { $set: { Age: age, Gender: gender, Height: height, Weight: weight, Email: email } }, { returnDocument: 'after' });
 
-        if (insertInfo) {
-
+        if (result.value) {
+            const insertInfo = result.value
             ret = {
                 Age: insertInfo.Age,
                 Gender: insertInfo.Gender,
@@ -137,7 +137,7 @@ app.post('/api/editinfo', async (req, res, next) => {
                 _id: insertInfo._id,
                 message: "Profile Updated"
             }
-            res.status(200).json(ret);
+            return res.status(200).json(ret);
         }
         else {
             return res.status(500).json({ message: 'Server Error', error: e.toString() });
