@@ -71,7 +71,7 @@ function EditProfile() {
       var res = JSON.parse(await response.text());
       if (res.message === "Profile Updated") {
         var user = {
-          _id: res._id,
+          id: res.id,
         };
         localStorage.setItem("user_data", JSON.stringify(user));
         setMessage("Profile Updated");

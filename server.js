@@ -101,7 +101,7 @@ app.post('/api/createaccount', async (req, res, next) => {
                 firstName: result.FirstName,
                 lastName: result.LastName,
                 userName: result.Username,
-                _id: objectIdString,
+                id: addId.id,
                 message: "Account Created"
             };
             return res.status(200).json(ret);
