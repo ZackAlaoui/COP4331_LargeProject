@@ -37,6 +37,7 @@ function EditProfile() {
     let retrievedUser = null;
     //Get username from the user that created the account
     const userJson = localStorage.getItem("user_data");
+    console.log(userJson);
 
     if (userJson != null) {
       retrievedUser = JSON.parse(userJson);
