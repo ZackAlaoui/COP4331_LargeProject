@@ -54,6 +54,7 @@ function EditProfile() {
       gender: gender,
     };
 
+    console.log(obj);
     var js = JSON.stringify(obj);
     try {
       const response = await fetch(

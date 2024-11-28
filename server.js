@@ -125,6 +125,7 @@ app.post('/api/editinfo', async (req, res, next) => {
     try {
         const db = client.db("LPN");
         result = await db.collection('Users').findOneAndUpdate({ _id: _id }, { $set: { Age: age, Gender: gender, Height: height, Weight: weight, Email: email } }, { returnDocument: 'after' });
+        console.log(result);
 
         if (result.value) {
             const insertInfo = result.value
