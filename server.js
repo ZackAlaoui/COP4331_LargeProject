@@ -6,7 +6,7 @@ const cors = require('cors');
 const MongoDBSession = require('connect-mongodb-session')(session);
 const MongoClient = require('mongodb').MongoClient;
 const axios = require('axios');
-const { ObjectId } = require('mongodb').ObjectId;
+const { ObjectId } = require('mongodb');
 const url = 'mongodb+srv://largeproject:largeproject@cluster0.go0gv.mongodb.net/LPN?retryWrites=true&w=majority&appName=Cluster0';
 const client = new MongoClient(url);
 client.connect();
@@ -86,7 +86,9 @@ app.post('/api/createaccount', async (req, res, next) => {
 
         const insertResult = await db.collection('Users').insertOne(newUser);
         const result = await db.collection('Users').findOne({ _id: insertResult.insertedId });
-        const objectId = insertResult.insertedId;
+        const _id = insertResult.insertedId;
+        const objectId = ObjectId(_id);
+        console.log(objectId);
 
         if (result) {
 
@@ -96,7 +98,7 @@ app.post('/api/createaccount', async (req, res, next) => {
                 firstName: result.FirstName,
                 lastName: result.LastName,
                 userName: result.Username,
-                // _id: objectId,
+                _id: objectId,
                 message: "Account Created"
             };
             return res.status(200).json(ret);
