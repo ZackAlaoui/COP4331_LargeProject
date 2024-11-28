@@ -55,7 +55,7 @@ function EditProfile() {
       gender: gender,
     };
 
-    console.log(obj);
+    console.log(retrievedUser._id);
     var js = JSON.stringify(obj);
     try {
       const response = await fetch(
