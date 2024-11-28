@@ -119,7 +119,7 @@ app.post('/api/editinfo', async (req, res, next) => {
     const { age, gender, height, weight, email, _id } = req.body;
     const newInfo = { Age: age, Gender: gender, Height: height, Weight: weight, Email: email };
     var error = '';
-    console.log(objectId);
+    console.log(_id);
 
 
     // Validate input
