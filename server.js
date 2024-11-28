@@ -93,6 +93,7 @@ app.post('/api/createaccount', async (req, res, next) => {
                 firstName: result.FirstName,
                 lastName: result.LastName,
                 userName: result.Username,
+                _id: result._id,
                 message: "Account Created"
             };
             return res.status(200).json(ret);
@@ -111,9 +112,9 @@ app.post('/api/createaccount', async (req, res, next) => {
 app.post('/api/editinfo', async (req, res, next) => {
 
 
-    // incoming: userId, Age, Gender, Height, Weight
+    // incoming: userId, Age, Gender, Height, Weight, Email
     // outgoing: error
-    const { age, gender, height, weight, email } = req.body;
+    const { age, gender, height, weight, email, _id } = req.body;
     const newInfo = { Age: age, Gender: gender, Height: height, Weight: weight, Email: email };
     var error = '';
 
@@ -123,15 +124,29 @@ app.post('/api/editinfo', async (req, res, next) => {
 
     try {
         const db = client.db("LPN");
-        //const results = await db.collection('Users').find({ "Card": { $regex: _search + '.*' } }).toArray();
+        insertInfo = await db.collection('Users').findOneAndUpdate({ _id: _id }, { $set: { Age: age, Gender: gender, Height: height, Weight: weight, Email: email } }, { ReturnDocument: 'after' });
+
+        if (insertInfo) {
+
+            ret = {
+                Age: insertInfo.Age,
+                Gender: insertInfo.Gender,
+                Height: insertInfo.Height,
+                Weight: insertInfo.Weight,
+                Email: insertInfo.Email,
+                _id: insertInfo._id,
+                message: "Profile Updated"
+            }
+            res.status(200).json(ret);
+        }
+        else {
+            return res.status(500).json({ message: 'Server Error', error: e.toString() });
+        }
     }
     catch (e) {
         error = e.toString();
     }
 
-    infoList.push(info);
-    var ret = { complete: complete, error: error };
-    res.status(200).json(ret);
 });
 
 /*app.post('/api/addcard', async (req, res, next) => {
@@ -212,6 +227,7 @@ app.post('/api/login', async (req, res, next) => {
 // api for the USDA database
 const axios = require('axios');
 const e = require('express');
+const { ReturnDocument } = require('mongodb');
 
 app.post('/v1/foods/search', async (req, res) => {
     // incoming: query

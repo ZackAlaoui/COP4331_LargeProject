@@ -82,6 +82,7 @@ function Login() {
           firstName: res.firstName,
           lastName: res.lastName,
           userName: res.userName,
+          _id: res._id,
           // Gender: res.gender,
           // Age: res.age,
           // Height: res.height,
@@ -91,7 +92,7 @@ function Login() {
         };
         localStorage.setItem("user_data", JSON.stringify(user));
         setCreateAccountMessage("Account Created");
-        // window.location.href = "/editprofile";
+        window.location.href = "/editprofile";
       } else {
         setCreateAccountMessage(res.message);
       }

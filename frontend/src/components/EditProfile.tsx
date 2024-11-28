@@ -4,11 +4,6 @@ import axios from "axios";
 // import { useHistory } from "react-router-dom";
 
 function EditProfile() {
-  // const [firstName, setFirstName] = React.useState("");
-  // const [lastName, setLastName] = React.useState("");
-  // const [username, setUserName] = React.useState("");
-  // const [password, setPassword] = React.useState("");
-  // const [reenterPassword, setPasswordAgain] = React.useState("");
   const [age, setAge] = React.useState("");
   const [weight, setWeight] = React.useState("");
   const [height, setHeight] = React.useState("");
@@ -16,22 +11,6 @@ function EditProfile() {
   const [message, setMessage] = React.useState("");
   const [gender, setGender] = React.useState("");
   const [error, setError] = useState("");
-
-  // function handleSetFirstname(e: any): void {
-  //   setFirstName(e.target.value);
-  // }
-
-  // function handleSetLastname(e: any): void {
-  //   setLastName(e.target.value);
-  // }
-
-  // function handleSetUsername(e: any): void {
-  //   setUserName(e.target.value);
-  // }
-
-  // function handleSetPassword(e: any): void {
-  //   setPassword(e.target.value);
-  // }
 
   function handleSetAge(e: any): void {
     setAge(e.target.value);
@@ -55,14 +34,26 @@ function EditProfile() {
 
   async function completeAccount(event: any): Promise<void> {
     event.preventDefault();
+    let retrievedUser = null;
+    //Get username from the user that created the account
+    const userJson = localStorage.getItem("user_data");
+
+    if (userJson != null) {
+      retrievedUser = JSON.parse(userJson);
+      console.log(userJson);
+    } else {
+      console.error("No user data found in localStorage");
+    }
 
     var obj = {
+      _id: retrievedUser._id,
       age: age,
       weight: weight,
       height: height,
       email: email,
       gender: gender,
     };
+
     var js = JSON.stringify(obj);
     try {
       const response = await fetch(
@@ -76,33 +67,21 @@ function EditProfile() {
         }
       );
       var res = JSON.parse(await response.text());
-      if (
-        res.message != "user added" ||
-        res.message == "Missing required fields"
-      ) {
-        setMessage(res.message);
-        return;
-      } else {
+      if (res.message === "Profile Updated") {
         var user = {
-          FirstName: res.firstName,
-          LastName: res.lastName,
-          UserName: res.username,
-          Password: res.password,
-          // Gender: res.gender,
-          // Age: res.age,
-          // Height: res.height,
-          // Weight: res.weight,
-          // Email: res.email,
-          // UserId: res.id,
+          _id: res._id,
         };
         localStorage.setItem("user_data", JSON.stringify(user));
-        setMessage("Profile Saved");
+        setMessage("Profile Updated");
+        return;
+      } else {
+        setMessage(res.message);
       }
     } catch (error: any) {
       alert(error.toString());
       return;
     }
-    window.location.href = "/";
+    // window.location.href = "/";
   }
 
   return (
