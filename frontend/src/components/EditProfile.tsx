@@ -83,7 +83,7 @@ function EditProfile() {
       alert(error.toString());
       return;
     }
-    // window.location.href = "/";
+    window.location.href = "/";
   }
 
   return (
