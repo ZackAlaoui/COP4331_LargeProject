@@ -140,7 +140,7 @@ app.post('/api/editinfo', async (req, res, next) => {
             { returnDocument: 'after' }
         );
 
-        console.log("This is the result object : " + result);
+        console.log("This is the result object : " + result.value);
 
         if (result.value) {
             const insertInfo = result.value;
