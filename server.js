@@ -119,15 +119,15 @@ app.post('/api/createaccount', async (req, res, next) => {
 app.post('/api/editinfo', async (req, res, next) => {
     // incoming: userId, Age, Gender, Height, Weight, Email
     // outgoing: error
-    const { age, gender, height, weight, email, _id } = req.body;
+    const { age, gender, height, weight, email, id } = req.body;
     const newInfo = { Age: age, Gender: gender, Height: height, Weight: weight, Email: email };
     var error = '';
-    // console.log(_id);
-    console.log(req.body._id)
+    // console.log(id);
+    console.log(req.body.id)
 
 
     // Validate input
-    if (!age || !gender || !height || !weight || !email || !_id) {
+    if (!age || !gender || !height || !weight || !email) {
         return res.status(400).json({ error: "Missing required fields" });
     }
 
@@ -135,7 +135,7 @@ app.post('/api/editinfo', async (req, res, next) => {
     try {
         const db = client.db("LPN");
         const result = await db.collection('Users').findOneAndUpdate(
-            { _id: req.body._id },
+            { id: req.body.id },
             { $set: newInfo },
             { returnDocument: 'after' }
         );
@@ -150,7 +150,7 @@ app.post('/api/editinfo', async (req, res, next) => {
                 Height: insertInfo.Height,
                 Weight: insertInfo.Weight,
                 Email: insertInfo.Email,
-                _id: insertInfo._id,
+                id: insertInfo.id,
                 message: "Profile Updated"
             };
             return res.status(200).json(ret);

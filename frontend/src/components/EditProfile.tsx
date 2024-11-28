@@ -47,7 +47,7 @@ function EditProfile() {
     }
 
     var obj = {
-      _id: retrievedUser._id,
+      id: retrievedUser.id,
       age: age,
       weight: weight,
       height: height,
@@ -55,7 +55,7 @@ function EditProfile() {
       gender: gender,
     };
 
-    console.log(retrievedUser._id);
+    console.log(retrievedUser.id);
     var js = JSON.stringify(obj);
     try {
       const response = await fetch(
