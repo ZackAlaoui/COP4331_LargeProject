@@ -75,6 +75,7 @@ function EditProfile() {
         };
         localStorage.setItem("user_data", JSON.stringify(user));
         setMessage("Profile Updated");
+        window.location.href = "/";
         return;
       } else {
         setMessage(res.message);
@@ -83,7 +84,6 @@ function EditProfile() {
       alert(error.toString());
       return;
     }
-    window.location.href = "/";
   }
 
   return (
