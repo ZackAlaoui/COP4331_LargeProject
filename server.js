@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
 const cors = require('cors');
 
+import { ObjectId } from 'mongodb';
 const MongoDBSession = require('connect-mongodb-session')(session);
 const MongoClient = require('mongodb').MongoClient;
 const url = 'mongodb+srv://largeproject:largeproject@cluster0.go0gv.mongodb.net/LPN?retryWrites=true&w=majority&appName=Cluster0';
@@ -88,7 +89,9 @@ app.post('/api/createaccount', async (req, res, next) => {
         const result = await db.collection('Users').findOne({ _id: insertResult.insertedId });
 
         if (result) {
-            req.session.username = username;
+
+            const addId = await db.collection('Users').findOneAndUpdate({ Username: username }, { $set: { id: result.id } });
+
             const ret = {
                 firstName: result.FirstName,
                 lastName: result.LastName,
@@ -117,6 +120,9 @@ app.post('/api/editinfo', async (req, res, next) => {
     const { age, gender, height, weight, email, _id } = req.body;
     const newInfo = { Age: age, Gender: gender, Height: height, Weight: weight, Email: email };
     var error = '';
+    const objectId = new ObjectId(_id);
+
+    // Generate a new ObjectId
 
     if (!age || !gender || !height || !weight || !email) {
         return res.status(400).json({ error: "Missing required fields" });
