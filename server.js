@@ -6,7 +6,7 @@ const cors = require('cors');
 const MongoDBSession = require('connect-mongodb-session')(session);
 const MongoClient = require('mongodb').MongoClient;
 const axios = require('axios');
-const { ObjectId } = require('mongodb');
+const { ObjectId } = require('mongodb').ObjectId;
 const url = 'mongodb+srv://largeproject:largeproject@cluster0.go0gv.mongodb.net/LPN?retryWrites=true&w=majority&appName=Cluster0';
 const client = new MongoClient(url);
 client.connect();
@@ -90,13 +90,13 @@ app.post('/api/createaccount', async (req, res, next) => {
 
         if (result) {
 
-            const addId = await db.collection('Users').findOneAndUpdate({ Username: username }, { $set: { id: objectId } });
+            // const addId = await db.collection('Users').findOneAndUpdate({ Username: username }, { $set: { id: objectId } });
 
             const ret = {
                 firstName: result.FirstName,
                 lastName: result.LastName,
                 userName: result.Username,
-                _id: objectId,
+                // _id: objectId,
                 message: "Account Created"
             };
             return res.status(200).json(ret);
@@ -117,9 +117,8 @@ app.post('/api/editinfo', async (req, res, next) => {
     const { age, gender, height, weight, email, _id } = req.body;
     const newInfo = { Age: age, Gender: gender, Height: height, Weight: weight, Email: email };
     var error = '';
-    // const objectId = new ObjectId(_id);
+    const objectId = new ObjectId(_id);
 
-    // Generate a new ObjectId
 
     // Validate input
     if (!age || !gender || !height || !weight || !email || !_id) {
@@ -129,7 +128,7 @@ app.post('/api/editinfo', async (req, res, next) => {
     try {
         const db = client.db("LPN");
         const result = await db.collection('Users').findOneAndUpdate(
-            { _id: _id },
+            { _id: objectId },
             { $set: newInfo },
             { returnDocument: 'after' }
         );
