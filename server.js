@@ -134,15 +134,14 @@ app.post('/api/editinfo', async (req, res, next) => {
 
     try {
         const db = client.db("LPN");
-        const result = await db.collection('Users').findOneAndUpdate(
+        const result = await db.collection('Users').updateOne(
             { id: req.body.id },
             { $set: newInfo },
-            { returnDocument: 'after' }
         );
 
-        console.log("This is the result object : " + result.value);
+        console.log("This is the result object : " + result);
 
-        if (result.value) {
+        if (result) {
             const insertInfo = result.value;
             const ret = {
                 Age: insertInfo.Age,
