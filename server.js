@@ -90,9 +90,8 @@ app.post('/api/createaccount', async (req, res, next) => {
         const _id = insertResult.insertedId;
         const objectId = new ObjectId(_id);
         const objectIdString = objectId.toString();
-
         console.log(objectIdString);
-        const addId = await db.collection('Users').findOneAndUpdate({ _id: insertResult.insertedId }, { id: objectIdString }, { returnDocument: 'after' });
+        const addId = await db.collection('Users').findOneAndUpdate({ _id: insertResult.insertedId }, { $set: { id: objectIdString } }, { returnDocument: 'after' });
 
         if (result) {
 
