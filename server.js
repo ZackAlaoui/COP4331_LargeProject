@@ -1,12 +1,12 @@
 const express = require('express');
-const session = require('express-session')
+const session = require('express-session');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
 const cors = require('cors');
-
-import { ObjectId } from 'mongodb';
 const MongoDBSession = require('connect-mongodb-session')(session);
 const MongoClient = require('mongodb').MongoClient;
+const axios = require('axios');
+
 const url = 'mongodb+srv://largeproject:largeproject@cluster0.go0gv.mongodb.net/LPN?retryWrites=true&w=majority&appName=Cluster0';
 const client = new MongoClient(url);
 client.connect();
@@ -22,7 +22,7 @@ const store = new MongoDBSession({
     collection: 'mySessions'
 });
 
-//middleware
+// Middleware
 app.use(session({
     secret: 'Key that will sign our cookie that is saved in our browser',
     resave: false,
@@ -34,7 +34,7 @@ app.get("/", (req, res) => {
     req.session.isAuth = true;
     console.log(req.session);
     console.log(req.session.id);
-    res.send("Hello Session")
+    res.send("Hello Session");
 });
 
 app.use((req, res, next) => {
@@ -52,13 +52,13 @@ app.use((req, res, next) => {
 
 const isAuth = (req, res, next) => {
     if (req.session.isAuth) {
-        next()
+        next();
     } else {
-        res.redirect('/api/login')
+        res.redirect('/api/login');
     }
-}
+};
 
-// create account API
+// Create account API
 app.post('/api/createaccount', async (req, res, next) => {
     // incoming: firstName, lastName, username, password
     // outgoing: error
@@ -79,11 +79,10 @@ app.post('/api/createaccount', async (req, res, next) => {
     try {
         const db = client.db("LPN");
 
-        //Hash the password so that we store the hash password in our database
+        // Hash the password so that we store the hash password in our database
         const hashedPsw = await bcrypt.hash(password, 12);
 
         const newUser = { FirstName: firstName, LastName: lastName, Username: username, Password: hashedPsw };
-
 
         const insertResult = await db.collection('Users').insertOne(newUser);
         const result = await db.collection('Users').findOne({ _id: insertResult.insertedId });
@@ -100,21 +99,18 @@ app.post('/api/createaccount', async (req, res, next) => {
                 message: "Account Created"
             };
             return res.status(200).json(ret);
-
         } else {
-            return res.status(500).json({ message: 'Server Error', error: e.toString() });
-
+            return res.status(500).json({ message: 'Server Error', error: 'No document found' });
         }
-    }
-
-    catch (e) {
+    } catch (e) {
         error = e.toString();
+        console.error(e);
+        return res.status(500).json({ message: 'Server Error', error: error });
     }
 });
 
+// Edit info API
 app.post('/api/editinfo', async (req, res, next) => {
-
-
     // incoming: userId, Age, Gender, Height, Weight, Email
     // outgoing: error
     const { age, gender, height, weight, email, _id } = req.body;
@@ -124,18 +120,24 @@ app.post('/api/editinfo', async (req, res, next) => {
 
     // Generate a new ObjectId
 
-    if (!age || !gender || !height || !weight || !email) {
+    // Validate input
+    if (!age || !gender || !height || !weight || !email || !_id) {
         return res.status(400).json({ error: "Missing required fields" });
     }
 
     try {
         const db = client.db("LPN");
-        result = await db.collection('Users').findOneAndUpdate({ _id: _id }, { $set: { Age: age, Gender: gender, Height: height, Weight: weight, Email: email } }, { returnDocument: 'after' });
+        const result = await db.collection('Users').findOneAndUpdate(
+            { _id: _id },
+            { $set: newInfo },
+            { returnDocument: 'after' }
+        );
+
         console.log(result);
 
         if (result.value) {
-            const insertInfo = result.value
-            ret = {
+            const insertInfo = result.value;
+            const ret = {
                 Age: insertInfo.Age,
                 Gender: insertInfo.Gender,
                 Height: insertInfo.Height,
@@ -143,37 +145,19 @@ app.post('/api/editinfo', async (req, res, next) => {
                 Email: insertInfo.Email,
                 _id: insertInfo._id,
                 message: "Profile Updated"
-            }
+            };
             return res.status(200).json(ret);
+        } else {
+            return res.status(500).json({ message: 'Server Error', error: 'No document found' });
         }
-        else {
-            return res.status(500).json({ message: 'Server Error', error: e.toString() });
-        }
-    }
-    catch (e) {
+    } catch (e) {
         error = e.toString();
+        console.error(e);
+        return res.status(500).json({ message: 'Server Error', error: error });
     }
-
 });
 
-/*app.post('/api/addcard', async (req, res, next) => {
-    // incoming: userId, color
-    // outgoing: error
-    const { userId, card } = req.body;
-    const newCard = { Card: card, UserId: userId };
-    var error = '';
-    try {
-        const db = client.db();
-        const result = db.collection('Cards').insertOne(newCard);
-    }
-    catch (e) {
-        error = e.toString();
-    }
-    cardList.push(card);
-    var ret = { error: error };
-    res.status(200).json(ret);
-});*/
-
+// Login API
 app.post('/api/login', async (req, res, next) => {
     // incoming: login, password
     // outgoing: id, firstName, lastName, error
@@ -186,33 +170,31 @@ app.post('/api/login', async (req, res, next) => {
     }
 
     try {
-
         const db = client.db("LPN");
 
-        //Get the user credentials from the database
+        // Get the user credentials from the database
         const getDocument = await db.collection('Users').findOne({ Username: username });
 
         if (!getDocument) {
-
             return res.status(400).json({ message: "Username and password is incorrect" });
         }
 
-        //Get password from database
+        // Get password from database
         const hashedPassword = getDocument.Password;
 
-        //Check if password matches the hashpassword in our database
+        // Check if password matches the hash password in our database
         const isMatch = await bcrypt.compare(password, hashedPassword);
 
         var id = -1;
         var fn = '';
         var ln = '';
 
-        //If no match return 
+        // If no match return
         if (!isMatch) {
             return res.status(400).json({ message: "Username or password is incorrect." });
         }
 
-        ret = {
+        const ret = {
             id: getDocument._id,
             firstName: getDocument.FirstName,
             lastName: getDocument.LastName,
@@ -220,22 +202,14 @@ app.post('/api/login', async (req, res, next) => {
             error: ''
         };
         return res.status(200).json(ret);
-    }
-
-    catch (e) {
+    } catch (e) {
         error = e.toString();
-        console.error(e)
+        console.error(e);
         return res.status(500).json({ message: "Server error occurred.", error: e.toString() });
-
     }
-
 });
 
-// api for the USDA database
-const axios = require('axios');
-const e = require('express');
-const { ReturnDocument } = require('mongodb');
-
+// API for the USDA database
 app.post('/v1/foods/search', async (req, res) => {
     // incoming: query
     // outgoing: results[], error
@@ -250,7 +224,7 @@ app.post('/v1/foods/search', async (req, res) => {
     }
 
     try {
-        // Make a request to the USDA API https://app.swaggerhub.com/apis/fdcnal/food-data_central_api/1.0.1#/FDC/postFoodsSearch
+        // Make a request to the USDA API
         const usdaResponse = await axios.post(
             'https://api.nal.usda.gov/fdc/v1/foods/search?api_key=NWgR0wlBc7YQOa8FcrSXGb3bPdXp9D0mE582U7SH',
             { query: query.trim() }
@@ -270,21 +244,14 @@ app.post('/v1/foods/search', async (req, res) => {
 
             const additionalData = additionalDataResponse.data;
 
-
-
             // Extract food descriptions and FDC IDs from the response
             const results = {
                 description: food.description,
                 brandName: food.brandName || null,
-                //fdcId: food.fdcId,
                 calories: food.foodNutrients.find(n => n.nutrientName === 'Energy').value,
                 protein: food.foodNutrients.find(n => n.nutrientName === 'Protein').value
-
-
-
             };
             enrichedResults.push(results);
-
         }
 
         // Return results
@@ -297,25 +264,4 @@ app.post('/v1/foods/search', async (req, res) => {
     }
 });
 
-
-
-/* Search template
-app.post('/api/searchcards', async (req, res, next) => {
-    // incoming: userId, search
-    // outgoing: results[], error
-    var error = '';
-    const { userId, search } = req.body;
-    var _search = search.trim();
-    const db = client.db();
-    const results = await db.collection('Cards').find({ "Card": { $regex: _search + '.*' } }).toArray();
-    var _ret = [];
-    for (var i = 0; i < results.length; i++) {
-        _ret.push(results[i].Card);
-    }
-    var ret = { results: _ret, error: error };
-    res.status(200).json(ret);
-});
-*/
-
-
-app.listen(5000); // start Node + Express server on port 5000
+app.listen(5000); // Start Node + Express server on port 5000
