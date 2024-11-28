@@ -86,10 +86,13 @@ app.post('/api/createaccount', async (req, res, next) => {
 
         const insertResult = await db.collection('Users').insertOne(newUser);
         const result = await db.collection('Users').findOne({ _id: insertResult.insertedId });
+
         const _id = insertResult.insertedId;
         const objectId = new ObjectId(_id);
         const objectIdString = objectId.toString();
+
         console.log(objectIdString);
+        const addId = await db.collection('Users').findOneAndUpdate({ _id: insertResult.insertedId }, objectIdString);
 
         if (result) {
 
@@ -99,7 +102,7 @@ app.post('/api/createaccount', async (req, res, next) => {
                 firstName: result.FirstName,
                 lastName: result.LastName,
                 userName: result.Username,
-                _id: objectId,
+                _id: objectIdString,
                 message: "Account Created"
             };
             return res.status(200).json(ret);
@@ -120,7 +123,8 @@ app.post('/api/editinfo', async (req, res, next) => {
     const { age, gender, height, weight, email, _id } = req.body;
     const newInfo = { Age: age, Gender: gender, Height: height, Weight: weight, Email: email };
     var error = '';
-    console.log(_id);
+    // console.log(_id);
+    console.log(req.body._id)
 
 
     // Validate input
@@ -128,10 +132,11 @@ app.post('/api/editinfo', async (req, res, next) => {
         return res.status(400).json({ error: "Missing required fields" });
     }
 
+
     try {
         const db = client.db("LPN");
         const result = await db.collection('Users').findOneAndUpdate(
-            { _id: _id },
+            { _id: req.body._id },
             { $set: newInfo },
             { returnDocument: 'after' }
         );
