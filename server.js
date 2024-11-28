@@ -116,7 +116,7 @@ app.post('/api/editinfo', async (req, res, next) => {
     const { age, gender, height, weight, email, _id } = req.body;
     const newInfo = { Age: age, Gender: gender, Height: height, Weight: weight, Email: email };
     var error = '';
-    const objectId = new ObjectId(_id);
+    // const objectId = new ObjectId(_id);
 
     // Generate a new ObjectId
 
