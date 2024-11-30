@@ -92,7 +92,7 @@ function Login() {
         };
         localStorage.setItem("user_data", JSON.stringify(user));
         setCreateAccountMessage("Account Created");
-        window.location.href = "/editprofile";
+        window.location.href = "/completeprofile";
       } else {
         setCreateAccountMessage(res.message);
       }

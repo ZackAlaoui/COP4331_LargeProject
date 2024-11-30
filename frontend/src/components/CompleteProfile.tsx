@@ -3,7 +3,7 @@ import App from "../App.tsx";
 import axios from "axios";
 // import { useHistory } from "react-router-dom";
 
-function EditProfile() {
+function CompleteProfile() {
   const [age, setAge] = React.useState("");
   const [weight, setWeight] = React.useState("");
   const [height, setHeight] = React.useState("");
@@ -164,4 +164,4 @@ function EditProfile() {
   );
 }
 
-export default EditProfile;
+export default CompleteProfile;

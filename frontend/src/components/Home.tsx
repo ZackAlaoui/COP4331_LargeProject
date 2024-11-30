@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import "./Home.css";
 
 function WellnessPro() {
-  const [currentWeight, setCurrentWeight] = useState<number>(70); 
-  const goalWeight: number = 65; 
+  const [currentWeight, setCurrentWeight] = useState<number>(70);
+  const goalWeight: number = 65;
 
   // Set current weight equal to the adjusted weight
   const handleWeightChange = (change: number): void => {
@@ -24,8 +24,8 @@ function WellnessPro() {
     <div id="homeContainer">
       {/* Navigation Bar */}
       <div id="topNav">
-      <button id="profileButton">Profile</button>
-      <button id="logoutButton">Logout</button>
+        <button id="profileButton">Profile</button>
+        <button id="logoutButton">Logout</button>
       </div>
 
       {/* Wellness Pro Title */}
@@ -44,11 +44,15 @@ function WellnessPro() {
       {/* Current Weight and Goal Weight Section */}
       <div className="weightInfo">
         <div>
-          <p><strong>Current Weight:</strong></p>
+          <p>
+            <strong>Current Weight:</strong>
+          </p>
           <p>{currentWeight} lb</p>
         </div>
         <div>
-          <p><strong>Goal Weight:</strong></p>
+          <p>
+            <strong>Goal Weight:</strong>
+          </p>
           <p>{goalWeight} lb</p>
         </div>
       </div>
@@ -58,8 +62,12 @@ function WellnessPro() {
         {/* Calorie Tracker Section */}
         <div className="calorieTracker">
           <div className="calorieGoalRow">
-            <p>Calorie Goal: <strong>2000</strong></p>
-            <p>Calorie Remaining: <strong>800</strong></p>
+            <p>
+              Calorie Goal: <strong>2000</strong>
+            </p>
+            <p>
+              Calorie Remaining: <strong>800</strong>
+            </p>
           </div>
 
           {/* Meal Inputs */}
@@ -98,9 +106,19 @@ function WellnessPro() {
         {/* Adjust Weight Section */}
         <div className="adjustWeight lowerSection">
           <p>
-            <button onClick={() => handleWeightChange(1)} className="circleButton">+</button>
+            <button
+              onClick={() => handleWeightChange(1)}
+              className="circleButton"
+            >
+              +
+            </button>
             {currentWeight} kg
-            <button onClick={() => handleWeightChange(-1)} className="circleButton">-</button>
+            <button
+              onClick={() => handleWeightChange(-1)}
+              className="circleButton"
+            >
+              -
+            </button>
           </p>
         </div>
       </div>

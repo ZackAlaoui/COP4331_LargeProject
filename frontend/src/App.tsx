@@ -4,7 +4,7 @@ import "./App.css";
 import CardPage from "./pages/CardPage.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
 import HomePage from "./pages/HomePage.tsx";
-import EditProfilePage from "./pages/EditProfilePage.tsx";
+import CompleteProfilePage from "./pages/CompleteProfilePage.tsx";
 
 function App() {
   return (
@@ -13,7 +13,7 @@ function App() {
         <Route path="/" element={<LoginPage />} />
         <Route path="cards" element={<CardPage />} />
         <Route path="homepage" element={<HomePage />}></Route>
-        <Route path="editprofile" element={<EditProfilePage />}></Route>
+        <Route path="completeprofile" element={<CompleteProfilePage />}></Route>
       </Routes>
     </Router>
   );

@@ -62,6 +62,7 @@ const isAuth = (req, res, next) => {
 app.post('/api/createaccount', async (req, res, next) => {
     // incoming: firstName, lastName, username, password
     // outgoing: error
+    //req.body
     const { firstName, lastName, userName, password } = req.body;
 
     // Validate input
@@ -115,8 +116,8 @@ app.post('/api/createaccount', async (req, res, next) => {
     }
 });
 
-// Edit info API
-app.post('/api/editinfo', async (req, res, next) => {
+// Complete profile info API
+app.post('/api/completeprofile', async (req, res, next) => {
     // incoming: userId, Age, Gender, Height, Weight, Email
     // outgoing: error
     const { Age, Gender, Height, Weight, Email, id } = req.body;
