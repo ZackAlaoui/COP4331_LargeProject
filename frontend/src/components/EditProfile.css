@@ -1,0 +1,22 @@
+
+.containerEditProfile{
+    display: flex;
+    flex-direction: column;    
+    /* border: 15px green;
+    padding: 50px;
+    margin: 20px;
+    width: 300px; */
+}
+
+input[type="text"]{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+
+}
+
+#editProfile{
+    display: flex;
+    justify-content: center;
+}
