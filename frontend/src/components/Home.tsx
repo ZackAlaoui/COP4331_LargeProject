@@ -29,7 +29,7 @@ function WellnessPro() {
       {/* Navigation Bar */}
       <div id="topNav">
         <button id="profileButton">Profile</button>
-        <button id="logoutButton" onClick={() => redirectPage}>
+        <button id="logoutButton" onClick={() => redirectPage()}>
           Logout
         </button>
       </div>
