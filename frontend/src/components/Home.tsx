@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import "./Home.css";
 
+function redirectPage() {
+  window.location.href = "/";
+}
+
 function WellnessPro() {
   const [currentWeight, setCurrentWeight] = useState<number>(70);
   const goalWeight: number = 65;
@@ -25,7 +29,9 @@ function WellnessPro() {
       {/* Navigation Bar */}
       <div id="topNav">
         <button id="profileButton">Profile</button>
-        <button id="logoutButton">Logout</button>
+        <button id="logoutButton" onClick={() => redirectPage}>
+          Logout
+        </button>
       </div>
 
       {/* Wellness Pro Title */}
