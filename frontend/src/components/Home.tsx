@@ -5,6 +5,11 @@ function redirectPage() {
   window.location.href = "/";
 }
 
+//When user clicks Profile it will redirect them to a page
+function editProfile() {
+  window.location.href = "/editprofile";
+}
+
 function WellnessPro() {
   const [currentWeight, setCurrentWeight] = useState<number>(70);
   const goalWeight: number = 65;
@@ -28,7 +33,9 @@ function WellnessPro() {
     <div id="homeContainer">
       {/* Navigation Bar */}
       <div id="topNav">
-        <button id="profileButton">Profile</button>
+        <button id="profileButton" onClick={() => editProfile()}>
+          Profile
+        </button>
         <button id="logoutButton" onClick={() => redirectPage()}>
           Logout
         </button>
