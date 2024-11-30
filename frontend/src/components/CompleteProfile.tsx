@@ -59,7 +59,7 @@ function CompleteProfile() {
     var js = JSON.stringify(obj);
     try {
       const response = await fetch(
-        "https://lp.largeprojectnutrition.fit/api/editinfo",
+        "https://lp.largeprojectnutrition.fit/api/completeprofile",
         {
           method: "POST",
           body: js,
