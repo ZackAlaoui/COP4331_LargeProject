@@ -1,16 +1,41 @@
 const express = require('express');
+const session = require('express-session');
 const bodyParser = require('body-parser');
+const bcrypt = require('bcryptjs');
 const cors = require('cors');
-
-const app = express();
-
+const MongoDBSession = require('connect-mongodb-session')(session);
 const MongoClient = require('mongodb').MongoClient;
+const axios = require('axios');
+const { ObjectId } = require('mongodb');
 const url = 'mongodb+srv://largeproject:largeproject@cluster0.go0gv.mongodb.net/LPN?retryWrites=true&w=majority&appName=Cluster0';
 const client = new MongoClient(url);
 client.connect();
 
+const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+
+const mongoURI = 'mongodb+srv://largeproject:largeproject@cluster0.go0gv.mongodb.net/LPN?retryWrites=true&w=majority&appName=Cluster0';
+
+const store = new MongoDBSession({
+    uri: mongoURI,
+    collection: 'mySessions'
+});
+
+// Middleware
+app.use(session({
+    secret: 'Key that will sign our cookie that is saved in our browser',
+    resave: false,
+    saveUninitialized: false,
+    store: store
+}));
+
+app.get("/", (req, res) => {
+    req.session.isAuth = true;
+    console.log(req.session);
+    console.log(req.session.id);
+    res.send("Hello Session");
+});
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -25,126 +50,292 @@ app.use((req, res, next) => {
     next();
 });
 
-// create account API
-app.post('/api/createaccount', async (req, res, next) => {
-    // incoming: firstName, lastName, email, username, password, age, weight, gender, height
-    // outgoing: error
-    const { firstName, lastName, username, password, email, age, gender, height, weight } = req.body;
-    
-    // Validate input
-    if (!firstName || !lastName || !phoneNumber || !email || !age || !gender || !height || !weight) {
-        return res.status(400).json({ error: "Missing required fields" });
+const isAuth = (req, res, next) => {
+    if (req.session.isAuth) {
+        next();
+    } else {
+        res.redirect('/api/login');
     }
-    
-    const User = { FirstName: firstName, LastName: lastName, Username: username, Password: password, Email: email, Age: age, Gender: gender, Height, height, Weight: weight};
+};
+
+// Create account API
+app.post('/api/createaccount', async (req, res, next) => {
+    // incoming: firstName, lastName, username, password
+    // outgoing: error
+    //req.body
+    const { firstName, lastName, userName, password } = req.body;
+
+    // Validate input
+    if (!firstName || !lastName || !userName || !password) {
+        return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    let existingUser = await client.db("LPN").collection("Users").findOne({ Username: userName });
+
+    if (existingUser) {
+        return res.status(400).json({ message: 'You already have an account' });
+    }
+
     var error = '';
     try {
         const db = client.db("LPN");
-        const result = db.collection('Users').insertOne(User);
-    }
-    catch (e) {
+
+        // Hash the password so that we store the hash password in our database
+        const hashedPsw = await bcrypt.hash(password, 12);
+
+        const newUser = { FirstName: firstName, LastName: lastName, Username: userName, Password: hashedPsw };
+
+        const insertResult = await db.collection('Users').insertOne(newUser);
+        const result = await db.collection('Users').findOne({ _id: insertResult.insertedId });
+
+        const _id = insertResult.insertedId;
+        const objectId = new ObjectId(_id);
+        const objectIdString = objectId.toString();
+        console.log(objectIdString);
+        const addId = await db.collection('Users').findOneAndUpdate({ _id: insertResult.insertedId }, { $set: { id: objectIdString } }, { returnDocument: 'after' });
+
+        if (result) {
+
+            // const addId = await db.collection('Users').findOneAndUpdate({ Username: username }, { $set: { id: objectId } });
+            console.log("This is the id :" + addId.id);
+            const ret = {
+                firstName: result.FirstName,
+                lastName: result.LastName,
+                userName: result.Username,
+                id: addId.id,
+                message: "Account Created"
+            };
+            return res.status(200).json(ret);
+        } else {
+            return res.status(500).json({ message: 'Server Error', error: 'No document found' });
+        }
+    } catch (e) {
         error = e.toString();
+        console.error(e);
+        return res.status(500).json({ message: 'Server Error', error: error });
     }
-
-    var complete = 'user added'
-
-    var ret = { complete: complete, error: error };
-    res.status(200).json(ret);
 });
 
 app.post('/api/editinfo', async (req, res, next) => {
-    // incoming: userId, updateField(Age, Gender, Height, Weight), newValue
+    // incoming: userId, updatedFields
     // outgoing: success, error
-    const { _id, updateFIeld, newVal } = req.body;
+    const { FirstName, LastName, UserName, Password, Email, Age, Gender, Height, Weight, id } = req.body;
     var error = '';
+
+    // Validate input
+    if (!FirstName || !LastName || !UserName || !Password || !Age || !Gender || !Height || !Weight || !Email) {
+        return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    if (!validator.isEmail(Email)) {
+        return res.status(400).json({ error: "Invalid email format" });
+    }
+
+    // Hash password if it's being updated
+    const hashedPassword = await bcrypt.hash(Password, 10);
+
     try {
         const db = client.db("LPN");
-        const user = await db.collection('Users').findOne({ "id": userId });
+        const user = await db.collection('Users').findOne({ "id": id });
 
+        // Make sure user exists
         if (!user) {
-            error = 'User not found';
-            return res.status(404).json({ success: false, error });
+            return res.status(404).json({ success: false, error: 'User not found' });
         }
 
         // Update the document in the database
         const updateResult = await db.collection('Users').updateOne(
-            { "_id": userId },
-            { "Age": Age },
-            { "Gender": Gender },
-            { "Height": Height },
-            { "Weight": Weight }
-        );
+            { "id": id }, // Find the user by id
+            { 
+                $set: {
+                    FirstName,
+                    LastName,
+                    UserName,
+                    Password: hashedPassword,
+                    Email,
+                    Age,
+                    Gender,
+                    Height,
+                    Weight
+                } 
+            }
+        )
 
-        if (updateResult.modifiedCount === 0) {
-            error = 'No changes made';
-            return res.status(400).json({ success: false, error });
-        }
-    }
-    catch (e) {
-        error = e.toString();
-    }
+        // Return updated user data
+        const updatedUser = await db.collection('Users').findOne({ "id": id });
+        const ret = {
+            FirstName: updatedUser.FirstName,
+            LastName: updatedUser.LastName,
+            UserName: updatedUser.UserName,
+            Password: updatedUser.Password, // Remember to never send the password in the response
+            Age: updatedUser.Age,
+            Gender: updatedUser.Gender,
+            Height: updatedUser.Height,
+            Weight: updatedUser.Weight,
+            Email: updatedUser.Email,
+            id: updatedUser.id,
+            message: "Profile Updated"
+        };
 
-    var ret = { complete: complete, error: error };
-    res.status(200).json(ret);
+        return res.status(200).json(ret);
+    } catch (e) {
+    console.error("Error during update:", e);
+    return res.status(500).json({ success: false, error: "Internal Server Error" });
+}
 });
 
-app.post('/api/addcard', async (req, res, next) => {
-    // incoming: userId, color
+// Complete profile info API
+app.post('/api/completeprofile', async (req, res, next) => {
+    // incoming: userId, Age, Gender, Height, Weight, Email
     // outgoing: error
-    const { userId, card } = req.body;
-    const newCard = { Card: card, UserId: userId };
+    const { Age, Gender, Height, Weight, Email, id } = req.body;
+    const newInfo = { Age: Age, Gender: Gender, Height: Height, Weight: Weight, Email: Email };
     var error = '';
+    // console.log(id);
+    console.log("This is the id " + req.body.id);
+
+
+    // Validate input
+    if (!Age || !Gender || !Height || !Weight || !Email) {
+        return res.status(400).json({ error: "Missing required fields" });
+    }
+
+
     try {
         const db = client.db("LPN");
-        const result = db.collection('Cards').insertOne(newCard);
-    }
-    catch (e) {
+        const result = await db.collection('Users').updateOne(
+            { id: req.body.id },
+            { $set: newInfo },
+        );
+
+        console.log("This is the result object : " + result);
+
+        if (result) {
+            const ret = {
+                Age: result.Age,
+                Gender: result.Gender,
+                Height: result.Height,
+                Weight: result.Weight,
+                Email: result.Email,
+                id: result.id,
+                message: "Profile Updated"
+            };
+            return res.status(200).json(ret);
+        } else {
+            return res.status(500).json({ message: 'Server Error', error: 'No document found' });
+        }
+    } catch (e) {
         error = e.toString();
+        console.error(e);
+        return res.status(500).json({ message: 'Server Error', error: error });
     }
-    cardList.push(card);
-    var ret = { error: error };
-    res.status(200).json(ret);
 });
 
+// Login API
 app.post('/api/login', async (req, res, next) => {
     // incoming: login, password
     // outgoing: id, firstName, lastName, error
     var error = '';
 
-    const { login, password } = req.body;
-    const db = client.db("LPN");
+    const { userName, password } = req.body;
 
-    const results = await
-        db.collection('Users').find({ Login: login, Password: password }).toArray();
-
-    var id = -1;
-    var fn = '';
-    var ln = '';
-
-    if (results.length > 0) {
-        id = results[0].UserId;
-        fn = results[0].FirstName;
-        ln = results[0].LastName;
+    if (!userName || !password) {
+        return res.status(400).json({ message: "Username and password are required" });
     }
 
-    var ret = { id: id, firstName: fn, lastName: ln, error: '' };
-    res.status(200).json(ret);
+    try {
+        const db = client.db("LPN");
+
+        // Get the user credentials from the database
+        const getDocument = await db.collection('Users').findOne({ Username: userName });
+
+        if (!getDocument) {
+            return res.status(400).json({ message: "Username and password is incorrect" });
+        }
+
+        // Get password from database
+        const hashedPassword = getDocument.Password;
+
+        // Check if password matches the hash password in our database
+        const isMatch = await bcrypt.compare(password, hashedPassword);
+
+        var id = -1;
+        var fn = '';
+        var ln = '';
+
+        // If no match return
+        if (!isMatch) {
+            return res.status(400).json({ message: "Username or password is incorrect." });
+        }
+
+        const ret = {
+            id: getDocument._id,
+            firstName: getDocument.FirstName,
+            lastName: getDocument.LastName,
+            message: "Login Successful",
+            error: ''
+        };
+        return res.status(200).json(ret);
+    } catch (e) {
+        error = e.toString();
+        console.error(e);
+        return res.status(500).json({ message: "Server error occurred.", error: e.toString() });
+    }
 });
 
-app.post('/api/searchcards', async (req, res, next) => {
-    // incoming: userId, search
+// API for the USDA database
+app.post('/v1/foods/search', async (req, res) => {
+    // incoming: query
     // outgoing: results[], error
-    var error = '';
-    const { userId, search } = req.body;
-    var _search = search.trim();
-    const db = client.db("LPN");
-    const results = await db.collection('Users').find({ "_id": { $regex: _search + '.*' } }).toArray();
-    var _ret = [];
-    for (var i = 0; i < results.length; i++) {
-        _ret.push(results[i].Card);
+    const { query } = req.body;
+
+    let error = '';
+    let results = [];
+
+    if (!query || query.trim() === '') {
+        res.status(400).json({ results, error: 'Search cannot be empty.' });
+        return;
     }
-    var ret = { results: _ret, error: error };
-    res.status(200).json(ret);
+
+    try {
+        // Make a request to the USDA API
+        const usdaResponse = await axios.post(
+            'https://api.nal.usda.gov/fdc/v1/foods/search?api_key=NWgR0wlBc7YQOa8FcrSXGb3bPdXp9D0mE582U7SH',
+            { query: query.trim() }
+        );
+
+        const usdaResults = usdaResponse.data.foods;
+
+        const enrichedResults = [];
+
+        // Iterate over USDA results to fetch additional data
+        for (const food of usdaResults) {
+            // Example: Fetch additional data from another API
+            const additionalDataResponse = await axios.get(
+                `https://api.nal.usda.gov/fdc/v1/food/2038064?api_key=NWgR0wlBc7YQOa8FcrSXGb3bPdXp9D0mE582U7SH`,
+                { query: query.trim() }
+            );
+
+            const additionalData = additionalDataResponse.data;
+
+            // Extract food descriptions and FDC IDs from the response
+            const results = {
+                description: food.description,
+                brandName: food.brandName || null,
+                calories: food.foodNutrients.find(n => n.nutrientName === 'Energy').value,
+                protein: food.foodNutrients.find(n => n.nutrientName === 'Protein').value
+            };
+            enrichedResults.push(results);
+        }
+
+        // Return results
+        res.status(200).json({ results: enrichedResults, error: '' });
+    } catch (err) {
+        // Handle errors
+        error = 'No results found';
+        console.error(err);
+        res.status(500).json({ results, error });
+    }
 });
 
-app.listen(5000); // start Node + Express server on port 5000
+app.listen(5000); // Start Node + Express server on port 5000
