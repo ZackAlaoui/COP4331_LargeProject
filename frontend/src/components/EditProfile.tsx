@@ -59,7 +59,7 @@ function EditProfile() {
 
         if (res.message === "Found") {
           setFirstName(res.FirstName);
-          setLastName(res.Lastname);
+          setLastName(res.LastName);
           setUserName(res.UserName);
           setGender(res.Gender);
           setAge(res.Age);
