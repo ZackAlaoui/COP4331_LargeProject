@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import App from "../App.tsx";
 import "./EditProfile.css";
+import { json } from "react-router-dom";
 
 function EditProfile() {
   const [firstName, setFirstName] = React.useState("");
@@ -14,14 +15,69 @@ function EditProfile() {
   const [email, setEmail] = React.useState("");
   const [message, setMessage] = React.useState("");
 
-  function updateUserInfo() {}
+  async function updateUserInfo(event: any): Promise<void> {
+    var storedData = localStorage.getItem("user_data");
+
+    if (!storedData) {
+      return;
+    }
+
+    var parsedData;
+    try {
+      parsedData = JSON.parse(storedData);
+
+      if (!parsedData.id) {
+        throw new Error("ID not found in parsed data");
+      }
+
+      var obj = {
+        id: parsedData.id,
+        FirstName: firstName,
+        LastName: lastName,
+        UserName: userName,
+        // Password : password,
+        Gender: gender,
+        Age: age,
+        Height: height,
+        Weight: weight,
+        Email: email,
+      };
+
+      //Converting our object to a string before sending to our API
+      var js = JSON.stringify(obj);
+
+      const response = await fetch(
+        "https://lp.largeprojectnutrition.fit/api/updateUserInfo",
+        {
+          method: "POST",
+          body: js,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const res = JSON.parse(await response.text());
+
+      if (res.message === "Updated User") {
+        localStorage.setItem("user_data", res.id);
+        setMessage("Updated!");
+        return;
+      } else {
+        setMessage("Failed to Update!");
+        return;
+      }
+    } catch (error: any) {
+      alert(error.toString());
+      return;
+    }
+  }
 
   useEffect(() => {
     async function loadUserInfo() {
       var storedData = localStorage.getItem("user_data");
 
       if (!storedData) {
-        console.error("No data found in local storage");
         return;
       }
 
@@ -35,7 +91,6 @@ function EditProfile() {
           throw new Error("ID not found in parsed data");
         }
 
-        console.log("Id was found", parsedData.id);
         var obj = {
           id: parsedData.id,
         };
@@ -44,7 +99,7 @@ function EditProfile() {
         var js = JSON.stringify(obj);
 
         const response = await fetch(
-          "https://lp.largeprojectnutrition.fit/api/updateUserInfo",
+          "https://lp.largeprojectnutrition.fit/api/getUserInfo",
           {
             method: "POST",
             body: js,
@@ -66,8 +121,11 @@ function EditProfile() {
           setHeight(res.Height);
           setWeight(res.Weight);
           setEmail(res.Email);
+          localStorage.setItem("Users", JSON.stringify(res.id));
+          return;
         } else {
           setMessage(res.message);
+          return;
         }
       } catch (error: any) {
         alert(error.toString());
@@ -75,7 +133,6 @@ function EditProfile() {
       }
     }
 
-    console.log("About to call loadUser info");
     loadUserInfo();
   }, []); //This useEffect will run once when the component mounts
 

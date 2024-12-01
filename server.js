@@ -163,23 +163,74 @@ app.post('/api/completeprofile', async (req, res, next) => {
     }
 });
 
-
-
-//Update User Info API
+//Get User Info API
 app.post('/api/updateUserInfo', async (req, res, next) => {
     // incoming: id
     // outgoing: id
 
     var error = '';
 
+    const { id, FirstName, LastName, UserName, Gender, Age, Height, Weight, Email } = req.body;
+
+    if (!id || !FirstName || !LastName || UserName || !Gender || !Age || !Weight || !Email) {
+        return res.status(400).json({ message: "One of the fields weren't found" });
+    }
+
+    try {
+        const db = client.db("LPN");
+
+        // Get the user credentials from the database
+        const getDocument = await db.collection('Users').findOneAndUpdate({ id: req.body.id },
+            {
+                $set: {
+                    FirstName: req.body.FirstName, LastName: req.body.LastName,
+                    Username: req.body.UserName, Gender: req.body.Gender, Age: req.body.Age, Weight: req.body.Weight, Email: req.body.Email
+                }
+            },
+            { returnDocument: 'after' });
+
+        if (!getDocument) {
+            return res.status(400).json({ message: "No document was found" });
+        }
+        else {
+            ret = {
+                id: getDocument.id,
+                FirstName: getDocument.FirstName,
+                LastName: getDocument.LastName,
+                UserName: getDocument.Username,
+                Age: getDocument.Age,
+                Email: getDocument.Email,
+                Gender: getDocument.Gender,
+                Height: getDocument.Height,
+                Weight: getDocument.Weight,
+                message: "Updated User"
+            }
+
+            return res.status(200).json(ret);
+        }
+
+    } catch (e) {
+        error = e.toString();
+        console.error(e);
+        console.log("error");
+        return res.status(500).json({ message: "Server error occurred.", error: e.toString() });
+    }
+});
+
+
+
+//Get User Info API
+app.post('/api/getUserInfo', async (req, res, next) => {
+    // incoming: id
+    // outgoing: id
+
+    var error = '';
+
     const { id } = req.body;
-    console.log("We are in the backend");
 
     if (!id) {
         return res.status(400).json({ message: "id not found" });
     }
-
-    console.log("our id was found");
 
     try {
         const db = client.db("LPN");
@@ -203,7 +254,7 @@ app.post('/api/updateUserInfo', async (req, res, next) => {
                 Weight: getDocument.Weight,
                 message: "Found"
             }
-            console.log("We are about to send our message back to the front end")
+
             return res.status(200).json(ret);
         }
 
