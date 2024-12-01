@@ -86,7 +86,7 @@ function EditProfile() {
         FIRST NAME
         <input
           type="text"
-          value={firstName}
+          value={firstName || ""}
           onChange={(e) => setFirstName(e.target.value)}
         />
       </div>
@@ -95,7 +95,7 @@ function EditProfile() {
         LAST NAME
         <input
           type="text"
-          value={lastName}
+          value={lastName || ""}
           onChange={(e) => setLastName(e.target.value)}
         />
       </div>
@@ -104,7 +104,7 @@ function EditProfile() {
         USERNAME
         <input
           type="text"
-          value={userName}
+          value={userName || ""}
           onChange={(e) => setUserName(e.target.value)}
         />
       </div>
@@ -113,7 +113,7 @@ function EditProfile() {
         PASSWORD
         <input
           type="text"
-          value={password}
+          value={password || ""}
           onChange={(e) => setPassword(e.target.value)}
         />
       </div>
@@ -122,7 +122,7 @@ function EditProfile() {
         GENDER
         <input
           type="text"
-          value={gender}
+          value={gender || ""}
           onChange={(e) => setGender(e.target.value)}
         />
       </div>
@@ -132,7 +132,7 @@ function EditProfile() {
         AGE
         <input
           type="text"
-          value={age}
+          value={age || ""}
           onChange={(e) => setAge(e.target.value)}
         />
       </div>
@@ -141,7 +141,7 @@ function EditProfile() {
         HEIGHT
         <input
           type="text"
-          value={height}
+          value={height || ""}
           onChange={(e) => setHeight(e.target.value)}
         />
       </div>
@@ -150,7 +150,7 @@ function EditProfile() {
         WEIGHT
         <input
           type="text"
-          value={weight}
+          value={weight || ""}
           onChange={(e) => setWeight(e.target.value)}
         />
       </div>
@@ -159,7 +159,7 @@ function EditProfile() {
         EMAIL
         <input
           type="text"
-          value={email}
+          value={email || ""}
           onChange={(e) => setEmail(e.target.value)}
         />
       </div>
