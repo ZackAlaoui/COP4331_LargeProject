@@ -12,7 +12,7 @@ function editProfile() {
 
 function WellnessPro() {
   const [currentWeight, setCurrentWeight] = useState<number>(70);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = React.useState("");
 
   const goalWeight: number = 65;
 
@@ -189,7 +189,7 @@ function WellnessPro() {
           </p>
           <p>
             <span className="updateResultWeight">{message}</span>
-            <button onClick={() => modifyWeight}>Update</button>
+            <button onClick={modifyWeight}>Update</button>
           </p>
         </div>
       </div>
