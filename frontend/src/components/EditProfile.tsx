@@ -32,6 +32,8 @@ function EditProfile() {
       </div>
       <br />
       <div className="Inputs">
+        {" "}
+        AGE
         <input type="text" placeholder="AGE" />
       </div>
       <br />
