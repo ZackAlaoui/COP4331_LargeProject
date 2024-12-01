@@ -83,12 +83,6 @@ function Login() {
           lastName: res.lastName,
           userName: res.userName,
           id: res.id,
-          // Gender: res.gender,
-          // Age: res.age,
-          // Height: res.height,
-          // Weight: res.weight,
-          // Email: res.email,
-          // UserId: res.id,
         };
         localStorage.setItem("user_data", JSON.stringify(user));
         setCreateAccountMessage("Account Created");

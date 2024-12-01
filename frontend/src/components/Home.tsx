@@ -12,7 +12,61 @@ function editProfile() {
 
 function WellnessPro() {
   const [currentWeight, setCurrentWeight] = useState<number>(70);
+  const [message, setMessage] = React.useState("");
+
   const goalWeight: number = 65;
+
+  async function modifyWeight(event: any): Promise<void> {
+    event.preventDefault();
+    //Get user_data from local storage
+    var storedData = localStorage.getItem("user_data");
+
+    if (storedData) {
+      var parsedData = JSON.parse(storedData);
+      console.log(parsedData);
+    } else {
+      console.log("No data was found in local storage using user_data as key");
+    }
+
+    var obj = {
+      CurrentWeight: currentWeight,
+      id: parsedData.id,
+    };
+
+    //Convert Javascript object to a JSON string
+    var js = JSON.stringify(obj);
+
+    try {
+      const response = await fetch(
+        "https://lp.largeprojectnutrition.fit/api/editWeight",
+        {
+          method: "POST",
+          body: js,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      var res = JSON.parse(await response.text());
+      console.log("Entire Response ", res);
+
+      if (res.message === "Updated Weight") {
+        console.log("Response ", res.message);
+
+        var user = {
+          id: res.id,
+        };
+
+        localStorage.setItem("user_data", JSON.stringify(user));
+        setMessage("Updated Weight");
+      } else {
+        setMessage(res.message);
+      }
+    } catch (error: any) {
+      alert(error.toString());
+      return;
+    }
+  }
 
   // Set current weight equal to the adjusted weight
   const handleWeightChange = (change: number): void => {
@@ -132,6 +186,10 @@ function WellnessPro() {
             >
               -
             </button>
+          </p>
+          <p>
+            <span className="updateResultWeight">{message}</span>
+            <button onClick={modifyWeight}>Update</button>
           </p>
         </div>
       </div>

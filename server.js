@@ -231,6 +231,53 @@ app.post('/api/completeprofile', async (req, res, next) => {
     }
 });
 
+
+// Edit weight API
+app.post('/api/editWeight', async (req, res, next) => {
+    // incoming: currentWeight, id
+    // outgoing: id
+
+    var error = '';
+
+    const { CurrentWeight, id } = req.body;
+
+    if (!CurrentWeight || !id) {
+        return res.status(400).json({ message: "Current weight or id not found" });
+    }
+
+    try {
+        const db = client.db("LPN");
+
+        // Get the user credentials from the database
+        const getDocument = await db.collection('Users').findOne({ id: req.body.id });
+
+        if (!getDocument) {
+            return res.status(400).json({ message: "Id was not found in database" });
+        }
+
+        //Update the user's weight in the database
+        const updateUserWeight = await db.collection('Users').
+            findOneAndUpdate({ id: req.body.id }, { $set: { Weight: req.body.CurrentWeight } }, { returnDocument: 'after' });
+
+        //Check if the User was updated
+        if (updateUserWeight) {
+            const ret = {
+                id: getDocument.id,
+                message: "Updated Weight",
+                error: ''
+            };
+            return res.status(200).json(ret);
+        }
+    } catch (e) {
+        error = e.toString();
+        console.error(e);
+        return res.status(500).json({ message: "Server error occurred.", error: e.toString() });
+    }
+});
+
+
+
+
 // Login API
 app.post('/api/login', async (req, res, next) => {
     // incoming: login, password
