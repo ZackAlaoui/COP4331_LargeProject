@@ -59,7 +59,7 @@ app.post('/api/editinfo', async (req, res, next) => {
     var error = '';
     try {
         const db = client.db("LPN");
-        const user = await db.collection('Users').findOne({ "_id": userId });
+        const user = await db.collection('Users').findOne({ "id": userId });
 
         if (!user) {
             error = 'User not found';
