@@ -53,23 +53,40 @@ app.post('/api/createaccount', async (req, res, next) => {
 });
 
 app.post('/api/editinfo', async (req, res, next) => {
-    // incoming: userId, Age, Gender, Height, Weight
-    // outgoing: error
-    const { userId, Age, Gender, Height, Weight } = req.body;
-    const newInfo = { UserId: userId, Age: Age, Gender: Gender, Height: Height, Weight: Weight };
+    // incoming: userId, updateField(Age, Gender, Height, Weight), newValue
+    // outgoing: success, error
+    const { _id, updateFIeld, newVal } = req.body;
     var error = '';
     try {
         const db = client.db("LPN");
-        const result = db.collection('Info').insertOne(newInfo);
+        const user = await db.collection('Users').findOne({ "_id": userId });
+
+        if (!user) {
+            error = 'User not found';
+            return res.status(404).json({ success: false, error });
+        }
+
+        // Update the document in the database
+        const updateResult = await db.collection('Users').updateOne(
+            { "_id": userId },
+            { "Age": Age },
+            { "Gender": Gender },
+            { "Height": Height },
+            { "Weight": Weight }
+        );
+
+        if (updateResult.modifiedCount === 0) {
+            error = 'No changes made';
+            return res.status(400).json({ success: false, error });
+        }
     }
     catch (e) {
         error = e.toString();
     }
-    infoList.push(info);
+
     var ret = { complete: complete, error: error };
     res.status(200).json(ret);
 });
-
 
 app.post('/api/addcard', async (req, res, next) => {
     // incoming: userId, color
@@ -121,7 +138,7 @@ app.post('/api/searchcards', async (req, res, next) => {
     const { userId, search } = req.body;
     var _search = search.trim();
     const db = client.db("LPN");
-    const results = await db.collection('Cards').find({ "Card": { $regex: _search + '.*' } }).toArray();
+    const results = await db.collection('Users').find({ "_id": { $regex: _search + '.*' } }).toArray();
     var _ret = [];
     for (var i = 0; i < results.length; i++) {
         _ret.push(results[i].Card);
