@@ -116,6 +116,74 @@ app.post('/api/createaccount', async (req, res, next) => {
     }
 });
 
+app.post('/api/editinfo', async (req, res, next) => {
+    // incoming: userId, Fields
+    // outgoing: success, error
+    const { FirstName, LastName, UserName, Password, Email, Age, Gender, Height, Weight, id } = req.body;
+    var error = '';
+
+    // Validate input
+    if (!FirstName || !LastName || !UserName || !Password || !Age || !Gender || !Height || !Weight || !Email) {
+        return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    if (!validator.isEmail(Email)) {
+        return res.status(400).json({ error: "Invalid email format" });
+    }
+
+    // Hash password if it's being updated
+    const hashedPassword = await bcrypt.hash(Password, 10);
+
+    try {
+        const db = client.db("LPN");
+        const user = await db.collection('Users').findOne({ "id": id });
+
+        // Make sure user exists
+        if (!user) {
+            return res.status(404).json({ success: false, error: 'User not found' });
+        }
+
+        // Update the document in the database
+        const updateResult = await db.collection('Users').updateOne(
+            { "id": id }, // Find the user by id
+            { 
+                $set: {
+                    FirstName,
+                    LastName,
+                    UserName,
+                    Password: hashedPassword,
+                    Email,
+                    Age,
+                    Gender,
+                    Height,
+                    Weight
+                } 
+            }
+        )
+
+        // Return updated user data
+        const updatedUser = await db.collection('Users').findOne({ "id": id });
+        const ret = {
+            FirstName: updatedUser.FirstName,
+            LastName: updatedUser.LastName,
+            UserName: updatedUser.UserName,
+            Password: updatedUser.Password, // Remember to never send the password in the response
+            Age: updatedUser.Age,
+            Gender: updatedUser.Gender,
+            Height: updatedUser.Height,
+            Weight: updatedUser.Weight,
+            Email: updatedUser.Email,
+            id: updatedUser.id,
+            message: "Profile Updated"
+        };
+
+        return res.status(200).json(ret);
+    } catch (e) {
+    console.error("Error during update:", e);
+    return res.status(500).json({ success: false, error: "Internal Server Error" });
+}
+});
+
 // Complete profile info API
 app.post('/api/completeprofile', async (req, res, next) => {
     // incoming: userId, Age, Gender, Height, Weight, Email
@@ -163,112 +231,8 @@ app.post('/api/completeprofile', async (req, res, next) => {
     }
 });
 
-//Get User Info API
-app.post('/api/updateUserInfo', async (req, res, next) => {
-    // incoming: id
-    // outgoing: id
 
-    var error = '';
-
-    const { id, FirstName, LastName, UserName, Gender, Age, Height, Weight, Email } = req.body;
-
-    if (!id || !FirstName || !LastName || UserName || !Gender || !Age || !Weight || !Email) {
-        return res.status(400).json({ message: "One of the fields weren't found" });
-    }
-
-    try {
-        const db = client.db("LPN");
-
-        // Get the user credentials from the database
-        const getDocument = await db.collection('Users').findOneAndUpdate({ id: req.body.id },
-            {
-                $set: {
-                    FirstName: req.body.FirstName, LastName: req.body.LastName,
-                    Username: req.body.UserName, Gender: req.body.Gender, Age: req.body.Age, Weight: req.body.Weight, Email: req.body.Email
-                }
-            },
-            { returnDocument: 'after' });
-
-        if (!getDocument) {
-            return res.status(400).json({ message: "No document was found" });
-        }
-        else {
-            ret = {
-                id: getDocument.id,
-                FirstName: getDocument.FirstName,
-                LastName: getDocument.LastName,
-                UserName: getDocument.Username,
-                Age: getDocument.Age,
-                Email: getDocument.Email,
-                Gender: getDocument.Gender,
-                Height: getDocument.Height,
-                Weight: getDocument.Weight,
-                message: "Updated User"
-            }
-
-            return res.status(200).json(ret);
-        }
-
-    } catch (e) {
-        error = e.toString();
-        console.error(e);
-        console.log("error");
-        return res.status(500).json({ message: "Server error occurred.", error: e.toString() });
-    }
-});
-
-
-
-//Get User Info API
-app.post('/api/getUserInfo', async (req, res, next) => {
-    // incoming: id
-    // outgoing: id
-
-    var error = '';
-
-    const { id } = req.body;
-
-    if (!id) {
-        return res.status(400).json({ message: "id not found" });
-    }
-
-    try {
-        const db = client.db("LPN");
-
-        // Get the user credentials from the database
-        const getDocument = await db.collection('Users').findOne({ id: req.body.id });
-
-        if (!getDocument) {
-            return res.status(400).json({ message: "Id was not found in database" });
-        }
-        else {
-            ret = {
-                id: getDocument.id,
-                FirstName: getDocument.FirstName,
-                LastName: getDocument.LastName,
-                UserName: getDocument.Username,
-                Age: getDocument.Age,
-                Email: getDocument.Email,
-                Gender: getDocument.Gender,
-                Height: getDocument.Height,
-                Weight: getDocument.Weight,
-                message: "Found"
-            }
-
-            return res.status(200).json(ret);
-        }
-
-    } catch (e) {
-        error = e.toString();
-        console.error(e);
-        console.log("error");
-        return res.status(500).json({ message: "Server error occurred.", error: e.toString() });
-    }
-});
-
-
-
-//Edit weight API
+// Edit weight API
 app.post('/api/editWeight', async (req, res, next) => {
     // incoming: currentWeight, id
     // outgoing: id
@@ -418,6 +382,61 @@ app.post('/v1/foods/search', async (req, res) => {
         error = 'No results found';
         console.error(err);
         res.status(500).json({ results, error });
+    }
+});
+
+// API to add a selected food item to the user's profile
+app.post('/v1/foods/add', async (req, res) => {
+    const { id, foodId } = req.body;  // userId and foodId to identify the user and food item
+    let error = '';
+
+    if (!id || !foodId) {
+        return res.status(400).json({ error: 'User ID and Food ID are required' });
+    }
+
+    try {
+        // Get the selected food item details from the USDA API using foodId
+        const foodResponse = await axios.get(
+            `https://api.nal.usda.gov/fdc/v1/food/${foodId}?api_key=NWgR0wlBc7YQOa8FcrSXGb3bPdXp9D0mE582U7SH`
+        );
+
+        const foodItem = foodResponse.data;
+
+        // Extract relevant food information
+        const foodData = {
+            description: foodItem.description,
+            brandName: foodItem.brandName || null,
+            calories: foodItem.foodNutrients.find(n => n.nutrientName === 'Energy')?.value || 0,
+            protein: foodItem.foodNutrients.find(n => n.nutrientName === 'Protein')?.value || 0,
+            foodId: foodItem.foodId, // Store the food's unique fdcId
+        };
+
+        // Update the user's profile with the new food item
+        const db = client.db("LPN");
+        const User = await db.collection('Users').findOne({ id: ObjectId(id) });
+
+        // Check if the user exists
+        if (!User) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Add the selected food item to the user's foodItems array (if it doesn't already exist)
+        const foodExists = User.foodItems.some(item => item.foodId === foodData.foodId);
+        if (foodExists) {
+            return res.status(400).json({ error: 'Food item already added to your profile' });
+        }
+
+        // Add the food item to the user's foodItems array
+        await db.collection('Users').updateOne(
+            { id: ObjectId(id) },
+            { $push: { foodItems: foodData } }  // Add the food item to the user's foodItems array
+        );
+
+        // Return success response
+        res.status(200).json({ message: 'Food item added successfully', foodItem: foodData });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Failed to add food item', details: err.message });
     }
 });
 
