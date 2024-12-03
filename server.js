@@ -370,7 +370,8 @@ app.post('/v1/foods/search', async (req, res) => {
                 description: food.description,
                 brandName: food.brandName || null,
                 calories: food.foodNutrients.find(n => n.nutrientName === 'Energy').value,
-                protein: food.foodNutrients.find(n => n.nutrientName === 'Protein').value
+                protein: food.foodNutrients.find(n => n.nutrientName === 'Protein').value,
+                foodId: foodItem.foodId,
             };
             enrichedResults.push(results);
         }
