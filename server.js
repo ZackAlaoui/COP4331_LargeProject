@@ -452,7 +452,11 @@ app.post('/v1/foods/add', async (req, res) => {
         // Check if the user exists
         if (!User) {
             return res.status(404).json({ error: 'User not found' });
+
         }
+
+         // Initialize foodItems if it doesn't exist
+         const foodItems = User.foodItems || [];
 
         // Add the selected food item to the user's foodItems array (if it doesn't already exist)
         const foodExists = User.foodItems.some(item => item.foodId === foodData.foodId);
