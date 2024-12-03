@@ -440,4 +440,42 @@ app.post('/v1/foods/add', async (req, res) => {
     }
 });
 
+// API for deleting a food
+app.post('/v1/foods/delete', async (req, res) => {
+    const { id, foodId } = req.body; // userId and foodId to identify the user and food item
+    let error = '';
+
+    if (!id || !foodId) {
+        return res.status(400).json({ error: 'User ID and Food ID are required' });
+    }
+
+    try {
+        const db = client.db("LPN");
+        const User = await db.collection('Users').findOne({ id: ObjectId(id) });
+
+        // Check if the user exists
+        if (!User) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Check if the food item exists in the user's foodItems array
+        const foodExists = User.foodItems.some(item => item.foodId === foodId);
+        if (!foodExists) {
+            return res.status(400).json({ error: 'Food item not found in user profile' });
+        }
+
+        // Remove the food item from the user's foodItems array
+        await db.collection('Users').updateOne(
+            { id: ObjectId(id) },
+            { $pull: { foodItems: { foodId: foodId } } } // Remove the food item by foodId
+        );
+
+        // Return success response
+        res.status(200).json({ message: 'Food item deleted successfully' });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Failed to delete food item', details: err.message });
+    }
+});
+
 app.listen(5000); // Start Node + Express server on port 5000
