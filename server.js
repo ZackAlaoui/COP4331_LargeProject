@@ -447,7 +447,7 @@ app.post('/v1/foods/add', async (req, res) => {
 
         // Update the user's profile with the new food item
         const db = client.db("LPN");
-        const User = await db.collection('Users').findOne({ _id: new ObjectId(id) });
+        const User = await db.collection('Users').find({ _id: ObjectId(id)});
 
         // Check if the user exists
         if (!User) {
