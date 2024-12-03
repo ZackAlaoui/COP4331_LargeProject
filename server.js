@@ -440,14 +440,14 @@ app.post('/v1/foods/add', async (req, res) => {
         const foodData = {
             description: foodItem.description,
             brandName: foodItem.brandName || null,
-            calories: foodItem.foodNutrients.find(n => n.nutrientName === 'Energy')?.value || 0,
-            protein: foodItem.foodNutrients.find(n => n.nutrientName === 'Protein')?.value || 0,
+            calories: foodItem.foodNutrients?.find(n => n.nutrientName === 'Energy')?.value || 0,
+            protein: foodItem.foodNutrients?.find(n => n.nutrientName === 'Protein')?.value || 0,
             foodId: foodItem.foodId, // Store the food's unique fdcId
         };
 
         // Update the user's profile with the new food item
         const db = client.db("LPN");
-        const User = await db.collection('Users').find({ _id: new ObjectId(id)});
+        const User = await db.collection('Users').find({ id: new ObjectId(id)});
 
         // Check if the user exists
         if (!User) {
@@ -460,7 +460,7 @@ app.post('/v1/foods/add', async (req, res) => {
 
         // Add the food item to the user's foodItems array
         await db.collection('Users').updateOne(
-            { id: ObjectId(id) },
+            { id: new ObjectId(id) },
             { $push: { foodItems: foodData } }  // Add the food item to the user's foodItems array
         );
 
