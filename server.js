@@ -351,7 +351,9 @@ app.post('/v1/foods/search', async (req, res) => {
         // Make a request to the USDA API
         const usdaResponse = await axios.post(
             'https://api.nal.usda.gov/fdc/v1/foods/search?api_key=NWgR0wlBc7YQOa8FcrSXGb3bPdXp9D0mE582U7SH',
-            { query: query.trim() }
+            { query: query.trim(),
+                pageSize: 10
+             }
         );
 
         // Extract the foods array from the response
