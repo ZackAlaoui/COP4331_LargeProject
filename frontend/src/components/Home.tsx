@@ -159,7 +159,7 @@ function WellnessPro() {
             </div>
           </div>
 
-          {/* Exercise Input */}
+          {/* Exercise Input 
           <div className="exerciseInput">
             <p>Exercise</p>
             <input
@@ -168,7 +168,7 @@ function WellnessPro() {
               className="exerciseSearch"
             />
           </div>
-        </div>
+        </div> */}
 
         {/* Adjust Weight Section */}
         <div className="adjustWeight lowerSection">
