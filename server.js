@@ -421,10 +421,10 @@ app.post('/v1/foods/search', async (req, res) => {
 
 // API to add a selected food item to the user's profile
 app.post('/v1/foods/add', async (req, res) => {
-    const { id, fdcId } = req.body;  // userId and foodId to identify the user and food item
+    const { id, foodId } = req.body;  // userId and foodId to identify the user and food item
     let error = '';
 
-    if (!id || !fdcId) {
+    if (!id || !foodId) {
         return res.status(400).json({ error: 'User ID and Food ID are required' });
     }
 
@@ -442,12 +442,12 @@ app.post('/v1/foods/add', async (req, res) => {
             brandName: foodItem.brandName || null,
             calories: foodItem.foodNutrients.find(n => n.nutrientName === 'Energy')?.value || 0,
             protein: foodItem.foodNutrients.find(n => n.nutrientName === 'Protein')?.value || 0,
-            fdcId: foodItem.fdcId, // Store the food's unique fdcId
+            foodId: foodItem.foodId, // Store the food's unique fdcId
         };
 
         // Update the user's profile with the new food item
         const db = client.db("LPN");
-        const User = await db.collection('Users').findOne({ _id: ObjectId(id) });
+        const User = await db.collection('Users').findOne({ id: ObjectId(id) });
 
         // Check if the user exists
         if (!User) {
@@ -462,7 +462,7 @@ app.post('/v1/foods/add', async (req, res) => {
 
         // Add the food item to the user's foodItems array
         await db.collection('Users').updateOne(
-            { _id: ObjectId(id) },
+            { id: ObjectId(id) },
             { $push: { foodItems: foodData } }  // Add the food item to the user's foodItems array
         );
 
