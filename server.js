@@ -146,7 +146,7 @@ app.post('/api/editinfo', async (req, res, next) => {
         // Update the document in the database
         const updateResult = await db.collection('Users').updateOne(
             { "id": id }, // Find the user by id
-            {
+            { 
                 $set: {
                     FirstName,
                     LastName,
@@ -157,7 +157,7 @@ app.post('/api/editinfo', async (req, res, next) => {
                     Gender,
                     Height,
                     Weight
-                }
+                } 
             }
         )
 
@@ -179,9 +179,9 @@ app.post('/api/editinfo', async (req, res, next) => {
 
         return res.status(200).json(ret);
     } catch (e) {
-        console.error("Error during update:", e);
-        return res.status(500).json({ success: false, error: "Internal Server Error" });
-    }
+    console.error("Error during update:", e);
+    return res.status(500).json({ success: false, error: "Internal Server Error" });
+}
 });
 
 // Complete profile info API
@@ -231,117 +231,8 @@ app.post('/api/completeprofile', async (req, res, next) => {
     }
 });
 
-//Get User Info API
-app.post('/api/updateUserInfo', async (req, res, next) => {
-    // incoming: id
-    // outgoing: id
 
-    var error = '';
-
-    const { id, FirstName, LastName, UserName, Gender, Age, Height, Weight, Email } = req.body;
-
-    console.log(id + ", " + FirstName + ", " + LastName + ", " + UserName
-        + ", " + Gender + ", " + Age + ", " + Height + ", " + Weight + "," + Email);
-
-    if (!id || !FirstName || !LastName || UserName || !Gender || !Age || !Weight || !Email) {
-        console.log("One of the fields werent found");
-        return res.status(400).json({ message: "One of the fields weren't found" });
-    }
-
-    try {
-        const db = client.db("LPN");
-
-        // Get the user credentials from the database
-        const getDocument = await db.collection('Users').findOneAndUpdate({ id: req.body.id },
-            {
-                $set: {
-                    FirstName: req.body.FirstName, LastName: req.body.LastName,
-                    Username: req.body.UserName, Gender: req.body.Gender, Age: req.body.Age, Weight: req.body.Weight, Email: req.body.Email
-                }
-            },
-            { returnDocument: 'after' });
-
-        if (!getDocument) {
-            return res.status(400).json({ message: "No document was found" });
-        }
-        else {
-            console.log("Document was updated")
-            ret = {
-                id: getDocument.id,
-                FirstName: getDocument.FirstName,
-                LastName: getDocument.LastName,
-                UserName: getDocument.Username,
-                Age: getDocument.Age,
-                Email: getDocument.Email,
-                Gender: getDocument.Gender,
-                Height: getDocument.Height,
-                Weight: getDocument.Weight,
-                message: "Updated User"
-            }
-
-            return res.status(200).json(ret);
-        }
-
-    } catch (e) {
-        error = e.toString();
-        console.error(e);
-        console.log("error");
-        return res.status(500).json({ message: "Server error occurred.", error: e.toString() });
-    }
-});
-
-
-
-//Get User Info API
-app.post('/api/getUserInfo', async (req, res, next) => {
-    // incoming: id
-    // outgoing: id
-
-    var error = '';
-
-    const { id } = req.body;
-
-    if (!id) {
-        return res.status(400).json({ message: "id not found" });
-    }
-
-    try {
-        const db = client.db("LPN");
-
-        // Get the user credentials from the database
-        const getDocument = await db.collection('Users').findOne({ id: req.body.id });
-
-        if (!getDocument) {
-            return res.status(400).json({ message: "Id was not found in database" });
-        }
-        else {
-            ret = {
-                id: getDocument.id,
-                FirstName: getDocument.FirstName,
-                LastName: getDocument.LastName,
-                UserName: getDocument.Username,
-                Age: getDocument.Age,
-                Email: getDocument.Email,
-                Gender: getDocument.Gender,
-                Height: getDocument.Height,
-                Weight: getDocument.Weight,
-                message: "Found"
-            }
-
-            return res.status(200).json(ret);
-        }
-
-    } catch (e) {
-        error = e.toString();
-        console.error(e);
-        console.log("error");
-        return res.status(500).json({ message: "Server error occurred.", error: e.toString() });
-    }
-});
-
-
-
-//Edit weight API
+// Edit weight API
 app.post('/api/editWeight', async (req, res, next) => {
     // incoming: currentWeight, id
     // outgoing: id
@@ -457,10 +348,9 @@ app.post('/v1/foods/search', async (req, res) => {
         // Make a request to the USDA API
         const usdaResponse = await axios.post(
             'https://api.nal.usda.gov/fdc/v1/foods/search?api_key=NWgR0wlBc7YQOa8FcrSXGb3bPdXp9D0mE582U7SH',
-            {
-                query: query.trim(),
+            { query: query.trim(),
                 pageSize: numOfResults
-            }
+             }
         );
 
         // Extract the foods array from the response
@@ -512,7 +402,7 @@ app.post('/v1/foods/add', async (req, res) => {
             brandName: foodItem.brandName || null,
             calories: foodItem.foodNutrients.find(n => n.nutrientName === 'Energy')?.value || 0,
             protein: foodItem.foodNutrients.find(n => n.nutrientName === 'Protein')?.value || 0,
-            foodId: foodItem.foodId, // Store the food's unique fdcId
+            foodId: foodItem.fdcId, // Store the food's unique fdcId
         };
 
         // Update the user's profile with the new food item
