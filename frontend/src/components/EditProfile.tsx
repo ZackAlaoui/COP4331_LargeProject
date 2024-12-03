@@ -124,7 +124,8 @@ function EditProfile() {
           setHeight(res.Height);
           setWeight(res.Weight);
           setEmail(res.Email);
-          localStorage.setItem("Users", JSON.stringify(res.id));
+
+          localStorage.setItem("user_data", JSON.stringify(res.id));
           return;
         } else {
           setMessage(res.message);
