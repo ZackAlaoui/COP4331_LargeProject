@@ -231,8 +231,116 @@ app.post('/api/completeprofile', async (req, res, next) => {
     }
 });
 
+//Get User Info API
+app.post('/api/updateUserInfo', async (req, res, next) => {
+    // incoming: id
+    // outgoing: id
 
-// Edit weight API
+    var error = '';
+
+    const { id, FirstName, LastName, UserName, Gender, Age, Height, Weight, Email } = req.body;
+
+    console.log(id + ", " + FirstName + ", " + LastName + ", " + UserName
+        + ", " + Gender + ", " + Age + ", " + Height + ", " + Weight + "," + Email);
+
+    //Check if all fields have a value
+    if (!id || !FirstName || !LastName || !UserName || !Gender || !Age || !Weight || !Email || !Height) {
+        return res.status(400).json({ message: "One of the fields weren't found" });
+    }
+
+    try {
+        const db = client.db("LPN");
+
+        // Get the user credentials from the database
+        const getDocument = await db.collection('Users').findOneAndUpdate({ id: req.body.id },
+            {
+                $set: {
+                    FirstName: req.body.FirstName, LastName: req.body.LastName,
+                    Username: req.body.UserName, Gender: req.body.Gender, Age: req.body.Age, Weight: req.body.Weight, Email: req.body.Email
+                }
+            },
+            { returnDocument: 'after' });
+
+        if (!getDocument) {
+            return res.status(400).json({ message: "No document was found" });
+        }
+        else {
+            ret = {
+                id: getDocument.id,
+                FirstName: getDocument.FirstName,
+                LastName: getDocument.LastName,
+                UserName: getDocument.Username,
+                Age: getDocument.Age,
+                Email: getDocument.Email,
+                Gender: getDocument.Gender,
+                Height: getDocument.Height,
+                Weight: getDocument.Weight,
+                message: "Updated User"
+            }
+
+            return res.status(200).json(ret);
+        }
+
+    } catch (e) {
+        error = e.toString();
+        console.error(e);
+        console.log("error");
+        return res.status(500).json({ message: "Server error occurred.", error: e.toString() });
+    }
+});
+
+
+
+//Get User Info API
+app.post('/api/getUserInfo', async (req, res, next) => {
+    // incoming: id
+    // outgoing: id
+
+    var error = '';
+
+    const { id } = req.body;
+
+    if (!id) {
+        return res.status(400).json({ message: "id not found" });
+    }
+
+    try {
+        const db = client.db("LPN");
+
+        // Get the user credentials from the database
+        const getDocument = await db.collection('Users').findOne({ id: req.body.id });
+
+        if (!getDocument) {
+            return res.status(400).json({ message: "Id was not found in database" });
+        }
+        else {
+            ret = {
+                id: getDocument.id,
+                FirstName: getDocument.FirstName,
+                LastName: getDocument.LastName,
+                UserName: getDocument.Username,
+                Age: getDocument.Age,
+                Email: getDocument.Email,
+                Gender: getDocument.Gender,
+                Height: getDocument.Height,
+                Weight: getDocument.Weight,
+                message: "Found"
+            }
+
+            return res.status(200).json(ret);
+        }
+
+    } catch (e) {
+        error = e.toString();
+        console.error(e);
+        console.log("error");
+        return res.status(500).json({ message: "Server error occurred.", error: e.toString() });
+    }
+});
+
+
+
+//Edit weight API
 app.post('/api/editWeight', async (req, res, next) => {
     // incoming: currentWeight, id
     // outgoing: id
@@ -332,55 +440,49 @@ app.post('/api/login', async (req, res, next) => {
 
 // API for the USDA database
 app.post('/v1/foods/search', async (req, res) => {
-    // incoming: query
-    // outgoing: results[], error
-    const { query } = req.body;
+    // Incoming: query, pageSize
+    // Outgoing: results[], error
+    const { query, pageSize } = req.body;
 
+    const numOfResults = 10;
     let error = '';
     let results = [];
 
     if (!query || query.trim() === '') {
-        res.status(400).json({ results, error: 'Search cannot be empty.' });
-        return;
+        return res.status(400).json({ results, error: 'Search cannot be empty.' });
     }
 
     try {
         // Make a request to the USDA API
         const usdaResponse = await axios.post(
             'https://api.nal.usda.gov/fdc/v1/foods/search?api_key=NWgR0wlBc7YQOa8FcrSXGb3bPdXp9D0mE582U7SH',
-            { query: query.trim() }
+            {
+                query: query.trim(),
+                pageSize: numOfResults
+            }
         );
 
+        // Extract the foods array from the response
         const usdaResults = usdaResponse.data.foods;
 
-        const enrichedResults = [];
+        // Process results to include desired fields
+        const enrichedResults = usdaResults.map(food => ({
+            description: food.description,
+            brandName: food.brandName || null,
+            calories: food.foodNutrients?.find(n => n.nutrientName === 'Energy')?.value || 0,
+            protein: food.foodNutrients?.find(n => n.nutrientName === 'Protein')?.value || 0,
+            foodId: food.fdcId, // Correctly reference the food ID as fdcId
+        }));
 
-        // Iterate over USDA results to fetch additional data
-        for (const food of usdaResults) {
-            // Example: Fetch additional data from another API
-            const additionalDataResponse = await axios.get(
-                `https://api.nal.usda.gov/fdc/v1/food/2038064?api_key=NWgR0wlBc7YQOa8FcrSXGb3bPdXp9D0mE582U7SH`,
-                { query: query.trim() }
-            );
-
-            const additionalData = additionalDataResponse.data;
-
-            // Extract food descriptions and FDC IDs from the response
-            const results = {
-                description: food.description,
-                brandName: food.brandName || null,
-                calories: food.foodNutrients.find(n => n.nutrientName === 'Energy').value,
-                protein: food.foodNutrients.find(n => n.nutrientName === 'Protein').value
-            };
-            enrichedResults.push(results);
-        }
+        // Limit results to the specified page size
+        const limitedResults = enrichedResults.slice(0, numOfResults);
 
         // Return results
-        res.status(200).json({ results: enrichedResults, error: '' });
+        res.status(200).json({ results: limitedResults, error: '' });
     } catch (err) {
         // Handle errors
-        error = 'No results found';
         console.error(err);
+        error = 'Failed to retrieve food data';
         res.status(500).json({ results, error });
     }
 });
@@ -413,11 +515,16 @@ app.post('/v1/foods/add', async (req, res) => {
 
         // Update the user's profile with the new food item
         const db = client.db("LPN");
+<<<<<<< HEAD
         const User = await db.collection('Users').findOne({ id: ObjectId(id) });
+=======
+        const User = await db.collection('Users').find({ _id: new ObjectId(id)});
+>>>>>>> f3078d521529d7e917c9523f1d8e926d5fd453af
 
         // Check if the user exists
         if (!User) {
             return res.status(404).json({ error: 'User not found' });
+<<<<<<< HEAD
         }
 
         // Add the selected food item to the user's foodItems array (if it doesn't already exist)
@@ -425,6 +532,13 @@ app.post('/v1/foods/add', async (req, res) => {
         if (foodExists) {
             return res.status(400).json({ error: 'Food item already added to your profile' });
         }
+=======
+
+        }
+
+        // Initialize foodItems if it doesn't exist
+        const foodItems = User.foodItems || [];
+>>>>>>> f3078d521529d7e917c9523f1d8e926d5fd453af
 
         // Add the food item to the user's foodItems array
         await db.collection('Users').updateOne(
@@ -440,4 +554,45 @@ app.post('/v1/foods/add', async (req, res) => {
     }
 });
 
+<<<<<<< HEAD
+=======
+// API for deleting a food
+app.post('/v1/foods/delete', async (req, res) => {
+    const { id, foodId } = req.body; // userId and foodId to identify the user and food item
+    let error = '';
+
+    if (!id || !foodId) {
+        return res.status(400).json({ error: 'User ID and Food ID are required' });
+    }
+
+    try {
+        const db = client.db("LPN");
+        const User = await db.collection('Users').findOne({ _id: ObjectId(id) });
+
+        // Check if the user exists
+        if (!User) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Check if the food item exists in the user's foodItems array
+        const foodExists = User.foodItems.some(item => item.foodId === foodId);
+        if (!foodExists) {
+            return res.status(400).json({ error: 'Food item not found in user profile' });
+        }
+
+        // Remove the food item from the user's foodItems array
+        await db.collection('Users').updateOne(
+            { _id: ObjectId(id) },
+            { $pull: { foodItems: { foodId: foodId } } } // Remove the food item by foodId
+        );
+
+        // Return success response
+        res.status(200).json({ message: 'Food item deleted successfully' });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Failed to delete food item', details: err.message });
+    }
+});
+
+>>>>>>> f3078d521529d7e917c9523f1d8e926d5fd453af
 app.listen(5000); // Start Node + Express server on port 5000
