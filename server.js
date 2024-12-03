@@ -336,6 +336,7 @@ app.post('/v1/foods/search', async (req, res) => {
     // Outgoing: results[], error
     const { query, pageSize } = req.body;
 
+    const numOfResults = 10;
     let error = '';
     let results = [];
 
@@ -352,7 +353,7 @@ app.post('/v1/foods/search', async (req, res) => {
         const usdaResponse = await axios.post(
             'https://api.nal.usda.gov/fdc/v1/foods/search?api_key=NWgR0wlBc7YQOa8FcrSXGb3bPdXp9D0mE582U7SH',
             { query: query.trim(),
-                pageSize: 10
+                pageSize: numOfResults
              }
         );
 
