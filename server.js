@@ -485,7 +485,7 @@ app.post('/v1/foods/delete', async (req, res) => {
 
     try {
         const db = client.db("LPN");
-        const User = await db.collection('Users').findOne({ _id: ObjectId(id) });
+        const User = await db.collection('Users').findOne({ _id: new ObjectId(id) });
 
         // Check if the user exists
         if (!User) {
@@ -500,7 +500,7 @@ app.post('/v1/foods/delete', async (req, res) => {
 
         // Remove the food item from the user's foodItems array
         await db.collection('Users').updateOne(
-            { _id: ObjectId(id) },
+            { _id: new ObjectId(id) },
             { $pull: { foodItems: { foodId: foodId } } } // Remove the food item by foodId
         );
 
