@@ -143,73 +143,81 @@ function EditProfile() {
     <div className="containerEditProfile">
       <h2 id="editProfile">Edit Profile</h2>
       <div className="Inputs">
-        FIRST NAME
+        <label htmlFor="firstName">FIRST NAME</label>
         <input
           type="text"
+          id="firstName"
           value={firstName || ""}
           onChange={(e) => setFirstName(e.target.value)}
         />
       </div>
       <br />
       <div className="Inputs">
-        LAST NAME
+        <label htmlFor="Lastname">LASTNAME </label>
         <input
           type="text"
+          id="Lastnamr"
           value={lastName || ""}
           onChange={(e) => setLastName(e.target.value)}
         />
       </div>
       <br />
       <div className="Inputs">
-        USERNAME
+        <label htmlFor="Username">USERNAME </label>
+
         <input
           type="text"
+          id="Username"
           value={userName || ""}
           onChange={(e) => setUserName(e.target.value)}
         />
       </div>
       <br />
       <div className="Inputs">
-        GENDER
+        <label htmlFor="Gender">GENDER </label>
         <input
           type="text"
+          id="Gender"
           value={gender || ""}
           onChange={(e) => setGender(e.target.value)}
         />
       </div>
       <br />
       <div className="Inputs">
-        {" "}
-        AGE
+        <label htmlFor="Age">AGE </label>
         <input
           type="text"
+          id="Age"
           value={age || ""}
           onChange={(e) => setAge(e.target.value)}
         />
       </div>
       <br />
       <div className="Inputs">
-        HEIGHT
+        <label htmlFor="Height">HEIGHT </label>
         <input
           type="text"
+          id="Height"
           value={height || ""}
           onChange={(e) => setHeight(e.target.value)}
         />
       </div>
       <br />
       <div className="Inputs">
-        WEIGHT
+        <label htmlFor="Weight">WEIGHT </label>
         <input
           type="text"
+          id="Weight"
           value={weight || ""}
           onChange={(e) => setWeight(e.target.value)}
         />
       </div>
       <br />
       <div className="Inputs">
-        EMAIL
+        <label htmlFor="Email">EMAIL </label>
         <input
           type="text"
+          id="Email"
           value={email || ""}
           onChange={(e) => setEmail(e.target.value)}
         />
