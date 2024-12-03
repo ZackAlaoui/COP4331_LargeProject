@@ -1,5 +1,15 @@
-
-.containerEditProfile {
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f8fa;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .containerEditProfile {
     background-color: #ffffff;
     border: 2px solid #2486a5;
     border-radius: 10px;
@@ -8,16 +18,74 @@
     max-width: 500px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
-
-/* input[type="text"]{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-
-
-} */
-
-/* #editProfile{
-    display: flex;
-    justify-content: center;
-} */
+  
+  #editProfile {
+    color: #2486a5;
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+  }
+  
+  label {
+    display: block;
+    font-size: 1em;
+    font-weight: bold;
+    color: #2486a5;
+    margin-bottom: 5px;
+  }
+  
+  input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #61e1db;
+    border-radius: 5px;
+    font-size: 1em;
+    outline: none;
+    transition: all 0.3s;
+  }
+  
+  input:focus {
+    border-color: #2486a5;
+    box-shadow: 0 0 5px rgba(36, 134, 165, 0.5);
+  }
+  
+  button {
+    width: 100%;
+    padding: 10px;
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #2486a5;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  button:hover {
+    background-color: #61e1db;
+  }
+  
+  .UpdateInfoSuccess {
+    display: block;
+    text-align: center;
+    margin-bottom: 15px;
+    font-size: 1em;
+    color: #2486a5;
+  }
+  
+  @media (max-width: 600px) {
+    .containerEditProfile {
+      padding: 20px;
+    }
+  
+    #editProfile {
+      font-size: 1.5em;
+    }
+  
+    input, button {
+      font-size: 1em;
+    }
+  }
+  
