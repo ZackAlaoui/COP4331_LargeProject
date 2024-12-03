@@ -142,22 +142,27 @@ function WellnessPro() {
             <div className="mealInput">
               <p>Breakfast</p>
               <button className="addFoodButton">+ Add Food</button>
+              <button className="deleteFoodButton">- Delete Food</button>
             </div>
             <div className="mealInput">
               <p>Lunch</p>
               <button className="addFoodButton">+ Add Food</button>
+              <button className="deleteFoodButton">- Delete Food</button>
             </div>
           </div>
           <div className="mealInputs">
             <div className="mealInput">
               <p>Dinner</p>
               <button className="addFoodButton">+ Add Food</button>
+              <button className="deleteFoodButton">- Delete Food</button>
             </div>
             <div className="mealInput">
               <p>Snacks</p>
               <button className="addFoodButton">+ Add Food</button>
+              <button className="deleteFoodButton">- Delete Food</button>
             </div>
           </div>
+
 
           {/* Exercise Input 
           <div className="exerciseInput">
