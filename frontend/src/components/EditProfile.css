@@ -1,12 +1,13 @@
 
-.containerEditProfile{
-    display: flex;
-    flex-direction: column;    
-    /* border: 15px green;
-    padding: 50px;
-    margin: 20px;
-    width: 300px; */
-}
+.containerEditProfile {
+    background-color: #ffffff;
+    border: 2px solid #2486a5;
+    border-radius: 10px;
+    padding: 30px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
 
 /* input[type="text"]{
     display: flex;
