@@ -455,14 +455,8 @@ app.post('/v1/foods/add', async (req, res) => {
 
         }
 
-         // Initialize foodItems if it doesn't exist
-         const foodItems = User.foodItems || [];
-
-        // Add the selected food item to the user's foodItems array (if it doesn't already exist)
-        const foodExists = User.foodItems.some(item => item.foodId === foodData.foodId);
-        if (foodExists) {
-            return res.status(400).json({ error: 'Food item already added to your profile' });
-        }
+        // Initialize foodItems if it doesn't exist
+        const foodItems = User.foodItems || [];
 
         // Add the food item to the user's foodItems array
         await db.collection('Users').updateOne(
