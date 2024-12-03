@@ -453,10 +453,6 @@ app.post('/v1/foods/search', async (req, res) => {
         return res.status(400).json({ results, error: 'Search cannot be empty.' });
     }
 
-    if (!pageSize || typeof pageSize !== 'number' || pageSize <= 0) {
-        return res.status(400).json({ results, error: 'Invalid page size.' });
-    }
-
     try {
         // Make a request to the USDA API
         const usdaResponse = await axios.post(
@@ -480,7 +476,7 @@ app.post('/v1/foods/search', async (req, res) => {
         }));
 
         // Limit results to the specified page size
-        const limitedResults = enrichedResults.slice(0, pageSize);
+        const limitedResults = enrichedResults.slice(0, numOfResults);
 
         // Return results
         res.status(200).json({ results: limitedResults, error: '' });
