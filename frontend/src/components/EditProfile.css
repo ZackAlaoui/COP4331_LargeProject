@@ -1,91 +1,100 @@
+/* General Styles */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f8fa;
+    background-color: #f4f4f4;
     margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+    font-family: "Times New Roman", Times, serif;
   }
   
   .containerEditProfile {
-    background-color: #ffffff;
-    border: 2px solid #2486a5;
-    border-radius: 10px;
-    padding: 30px;
     width: 90%;
-    max-width: 500px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 600px;
+    margin: auto;
+    padding: 40px;
+    border-radius: 15px;
+    background-image: linear-gradient(to top right, #61e1db, #2486a5);
+    color: #fff;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    margin-top: 150px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-sizing: border-box;
   }
   
+  /* Header */
   #editProfile {
-    color: #2486a5;
+    font-size: 32px;
+    font-weight: bold;
     text-align: center;
     margin-bottom: 20px;
-    font-size: 1.8em;
+    color: #fff;
   }
   
+  /* Labels and Inputs */
   label {
-    display: block;
-    font-size: 1em;
+    font-size: 16px;
     font-weight: bold;
-    color: #2486a5;
+    color: #fff;
     margin-bottom: 5px;
   }
   
   input {
     width: 100%;
     padding: 10px;
-    margin-bottom: 15px;
+    font-size: 14px;
     border: 1px solid #61e1db;
     border-radius: 5px;
-    font-size: 1em;
-    outline: none;
-    transition: all 0.3s;
+    box-sizing: border-box;
+    margin-bottom: 15px;
   }
   
   input:focus {
     border-color: #2486a5;
+    outline: none;
     box-shadow: 0 0 5px rgba(36, 134, 165, 0.5);
   }
   
+  /* Button */
   button {
     width: 100%;
-    padding: 10px;
-    font-size: 1.1em;
+    padding: 12px;
+    font-size: 16px;
     font-weight: bold;
-    color: #ffffff;
-    background-color: #2486a5;
+    color: #2486a5;
+    background-color: #fff;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: all 0.3s;
   }
   
   button:hover {
-    background-color: #61e1db;
+    background-color: #ddd;
   }
   
+  /* Message */
   .UpdateInfoSuccess {
-    display: block;
+    font-size: 16px;
+    font-weight: bold;
     text-align: center;
-    margin-bottom: 15px;
-    font-size: 1em;
-    color: #2486a5;
+    color: #61e1db;
+    margin-top: 10px;
   }
   
+  /* Responsive Design */
   @media (max-width: 600px) {
     .containerEditProfile {
       padding: 20px;
     }
   
     #editProfile {
-      font-size: 1.5em;
+      font-size: 28px;
     }
   
-    input, button {
-      font-size: 1em;
+    label,
+    input,
+    button {
+      font-size: 14px;
     }
   }
   
