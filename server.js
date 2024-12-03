@@ -442,7 +442,7 @@ app.post('/v1/foods/add', async (req, res) => {
             brandName: foodItem.brandName || null,
             calories: foodItem.foodNutrients.find(n => n.nutrientName === 'Energy')?.value || 0,
             protein: foodItem.foodNutrients.find(n => n.nutrientName === 'Protein')?.value || 0,
-            foodId: foodItem.fdcId, // Store the food's unique fdcId
+            fdcId: foodItem.fdcId, // Store the food's unique fdcId
         };
 
         // Update the user's profile with the new food item
