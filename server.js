@@ -387,7 +387,9 @@ app.post('/v1/foods/search', async (req, res) => {
         // Make a request to the USDA API
         const usdaResponse = await axios.post(
             'https://api.nal.usda.gov/fdc/v1/foods/search?api_key=NWgR0wlBc7YQOa8FcrSXGb3bPdXp9D0mE582U7SH',
-            { query: query.trim() }
+            { query: query.trim(),
+                pageSize: numOfResults
+             }
         );
 
         // Extract the foods array from the response
@@ -414,7 +416,6 @@ app.post('/v1/foods/search', async (req, res) => {
         res.status(500).json({ results, error });
     }
 });
-
 
 // API to add a selected food item to the user's profile
 app.post('/v1/foods/add', async (req, res) => {
