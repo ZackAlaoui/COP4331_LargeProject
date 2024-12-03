@@ -431,8 +431,10 @@ app.post('/v1/foods/add', async (req, res) => {
     try {
         // Get the selected food item details from the USDA API using foodId
         const foodResponse = await axios.get(
-            `https://api.nal.usda.gov/fdc/v1/food/${foodId}?api_key=NWgR0wlBc7YQOa8FcrSXGb3bPdXp9D0mE582U7SH`
+            `https://api.nal.usda.gov/fdc/v1/food/${foodId}?nutrients=203&nutrients=208&api_key=NWgR0wlBc7YQOa8FcrSXGb3bPdXp9D0mE582U7SH`
         );
+
+        console.log(foodResponse.data); 
 
         const foodItem = foodResponse.data;
 
@@ -440,9 +442,9 @@ app.post('/v1/foods/add', async (req, res) => {
         const foodData = {
             description: foodItem.description,
             brandName: foodItem.brandName || null,
-            calories: foodItem.foodNutrients?.find(n => n.nutrientName === 'Energy')?.value || 0,
-            protein: foodItem.foodNutrients?.find(n => n.nutrientName === 'Protein')?.value || 0,
-            foodId: foodItem.foodId, // Store the food's unique fdcId
+            calories: foodItem.labelNutrients?.calories?.value || 0,  // Access calories directly
+            protein: foodItem.labelNutrients?.protein?.value || 0,   // Access protein directly
+            foodId: foodItem.fdcId, // Store the food's unique fdcId
         };
 
         // Update the user's profile with the new food item
