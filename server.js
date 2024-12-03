@@ -116,6 +116,74 @@ app.post('/api/createaccount', async (req, res, next) => {
     }
 });
 
+app.post('/api/editinfo', async (req, res, next) => {
+    // incoming: userId, Fields
+    // outgoing: success, error
+    const { FirstName, LastName, UserName, Password, Email, Age, Gender, Height, Weight, id } = req.body;
+    var error = '';
+
+    // Validate input
+    if (!FirstName || !LastName || !UserName || !Password || !Age || !Gender || !Height || !Weight || !Email) {
+        return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    if (!validator.isEmail(Email)) {
+        return res.status(400).json({ error: "Invalid email format" });
+    }
+
+    // Hash password if it's being updated
+    const hashedPassword = await bcrypt.hash(Password, 10);
+
+    try {
+        const db = client.db("LPN");
+        const user = await db.collection('Users').findOne({ "id": id });
+
+        // Make sure user exists
+        if (!user) {
+            return res.status(404).json({ success: false, error: 'User not found' });
+        }
+
+        // Update the document in the database
+        const updateResult = await db.collection('Users').updateOne(
+            { "id": id }, // Find the user by id
+            {
+                $set: {
+                    FirstName,
+                    LastName,
+                    UserName,
+                    Password: hashedPassword,
+                    Email,
+                    Age,
+                    Gender,
+                    Height,
+                    Weight
+                }
+            }
+        )
+
+        // Return updated user data
+        const updatedUser = await db.collection('Users').findOne({ "id": id });
+        const ret = {
+            FirstName: updatedUser.FirstName,
+            LastName: updatedUser.LastName,
+            UserName: updatedUser.UserName,
+            Password: updatedUser.Password, // Remember to never send the password in the response
+            Age: updatedUser.Age,
+            Gender: updatedUser.Gender,
+            Height: updatedUser.Height,
+            Weight: updatedUser.Weight,
+            Email: updatedUser.Email,
+            id: updatedUser.id,
+            message: "Profile Updated"
+        };
+
+        return res.status(200).json(ret);
+    } catch (e) {
+        console.error("Error during update:", e);
+        return res.status(500).json({ success: false, error: "Internal Server Error" });
+    }
+});
+
 // Complete profile info API
 app.post('/api/completeprofile', async (req, res, next) => {
     // incoming: userId, Age, Gender, Height, Weight, Email
@@ -373,56 +441,148 @@ app.post('/api/login', async (req, res, next) => {
 
 // API for the USDA database
 app.post('/v1/foods/search', async (req, res) => {
-    // incoming: query
-    // outgoing: results[], error
-    const { query } = req.body;
+    // Incoming: query, pageSize
+    // Outgoing: results[], error
+    const { query, pageSize } = req.body;
 
+    const numOfResults = 10;
     let error = '';
     let results = [];
 
     if (!query || query.trim() === '') {
-        res.status(400).json({ results, error: 'Search cannot be empty.' });
-        return;
+        return res.status(400).json({ results, error: 'Search cannot be empty.' });
+    }
+
+    if (!pageSize || typeof pageSize !== 'number' || pageSize <= 0) {
+        return res.status(400).json({ results, error: 'Invalid page size.' });
     }
 
     try {
         // Make a request to the USDA API
         const usdaResponse = await axios.post(
             'https://api.nal.usda.gov/fdc/v1/foods/search?api_key=NWgR0wlBc7YQOa8FcrSXGb3bPdXp9D0mE582U7SH',
-            { query: query.trim() }
+            {
+                query: query.trim(),
+                pageSize: numOfResults
+            }
         );
 
+        // Extract the foods array from the response
         const usdaResults = usdaResponse.data.foods;
 
-        const enrichedResults = [];
+        // Process results to include desired fields
+        const enrichedResults = usdaResults.map(food => ({
+            description: food.description,
+            brandName: food.brandName || null,
+            calories: food.foodNutrients?.find(n => n.nutrientName === 'Energy')?.value || 0,
+            protein: food.foodNutrients?.find(n => n.nutrientName === 'Protein')?.value || 0,
+            foodId: food.fdcId, // Correctly reference the food ID as fdcId
+        }));
 
-        // Iterate over USDA results to fetch additional data
-        for (const food of usdaResults) {
-            // Example: Fetch additional data from another API
-            const additionalDataResponse = await axios.get(
-                `https://api.nal.usda.gov/fdc/v1/food/2038064?api_key=NWgR0wlBc7YQOa8FcrSXGb3bPdXp9D0mE582U7SH`,
-                { query: query.trim() }
-            );
-
-            const additionalData = additionalDataResponse.data;
-
-            // Extract food descriptions and FDC IDs from the response
-            const results = {
-                description: food.description,
-                brandName: food.brandName || null,
-                calories: food.foodNutrients.find(n => n.nutrientName === 'Energy').value,
-                protein: food.foodNutrients.find(n => n.nutrientName === 'Protein').value
-            };
-            enrichedResults.push(results);
-        }
+        // Limit results to the specified page size
+        const limitedResults = enrichedResults.slice(0, pageSize);
 
         // Return results
-        res.status(200).json({ results: enrichedResults, error: '' });
+        res.status(200).json({ results: limitedResults, error: '' });
     } catch (err) {
         // Handle errors
-        error = 'No results found';
         console.error(err);
+        error = 'Failed to retrieve food data';
         res.status(500).json({ results, error });
+    }
+});
+
+
+// API to add a selected food item to the user's profile
+app.post('/v1/foods/add', async (req, res) => {
+    const { id, foodId } = req.body;  // userId and foodId to identify the user and food item
+    let error = '';
+
+    if (!id || !foodId) {
+        return res.status(400).json({ error: 'User ID and Food ID are required' });
+    }
+
+    try {
+        // Get the selected food item details from the USDA API using foodId
+        const foodResponse = await axios.get(
+            `https://api.nal.usda.gov/fdc/v1/food/${foodId}?api_key=NWgR0wlBc7YQOa8FcrSXGb3bPdXp9D0mE582U7SH`
+        );
+
+        const foodItem = foodResponse.data;
+
+        // Extract relevant food information
+        const foodData = {
+            description: foodItem.description,
+            brandName: foodItem.brandName || null,
+            calories: foodItem.foodNutrients.find(n => n.nutrientName === 'Energy')?.value || 0,
+            protein: foodItem.foodNutrients.find(n => n.nutrientName === 'Protein')?.value || 0,
+            foodId: foodItem.foodId, // Store the food's unique fdcId
+        };
+
+        // Update the user's profile with the new food item
+        const db = client.db("LPN");
+        const User = await db.collection('Users').findOne({ id: ObjectId(id) });
+
+        // Check if the user exists
+        if (!User) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Add the selected food item to the user's foodItems array (if it doesn't already exist)
+        const foodExists = User.foodItems.some(item => item.foodId === foodData.foodId);
+        if (foodExists) {
+            return res.status(400).json({ error: 'Food item already added to your profile' });
+        }
+
+        // Add the food item to the user's foodItems array
+        await db.collection('Users').updateOne(
+            { id: ObjectId(id) },
+            { $push: { foodItems: foodData } }  // Add the food item to the user's foodItems array
+        );
+
+        // Return success response
+        res.status(200).json({ message: 'Food item added successfully', foodItem: foodData });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Failed to add food item', details: err.message });
+    }
+});
+
+// API for deleting a food
+app.post('/v1/foods/delete', async (req, res) => {
+    const { id, foodId } = req.body; // userId and foodId to identify the user and food item
+    let error = '';
+
+    if (!id || !foodId) {
+        return res.status(400).json({ error: 'User ID and Food ID are required' });
+    }
+
+    try {
+        const db = client.db("LPN");
+        const User = await db.collection('Users').findOne({ id: ObjectId(id) });
+
+        // Check if the user exists
+        if (!User) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Check if the food item exists in the user's foodItems array
+        const foodExists = User.foodItems.some(item => item.foodId === foodId);
+        if (!foodExists) {
+            return res.status(400).json({ error: 'Food item not found in user profile' });
+        }
+
+        // Remove the food item from the user's foodItems array
+        await db.collection('Users').updateOne(
+            { id: ObjectId(id) },
+            { $pull: { foodItems: { foodId: foodId } } } // Remove the food item by foodId
+        );
+
+        // Return success response
+        res.status(200).json({ message: 'Food item deleted successfully' });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Failed to delete food item', details: err.message });
     }
 });
 
