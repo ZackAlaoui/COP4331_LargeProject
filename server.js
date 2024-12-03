@@ -407,7 +407,7 @@ app.post('/v1/foods/add', async (req, res) => {
 
         // Update the user's profile with the new food item
         const db = client.db("LPN");
-        const User = await db.collection('Users').findOne({ id: ObjectId(id) });
+        const User = await db.collection('Users').findOne({ _id: ObjectId(id) });
 
         // Check if the user exists
         if (!User) {
@@ -445,7 +445,7 @@ app.post('/v1/foods/delete', async (req, res) => {
 
     try {
         const db = client.db("LPN");
-        const User = await db.collection('Users').findOne({ id: ObjectId(id) });
+        const User = await db.collection('Users').findOne({ _id: ObjectId(id) });
 
         // Check if the user exists
         if (!User) {
