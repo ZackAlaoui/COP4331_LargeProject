@@ -63,7 +63,11 @@ function EditProfile() {
       console.log(res);
 
       if (res.message === "Updated User") {
-        localStorage.setItem("user_data", res.id);
+        var userId = {
+          id: res.id,
+        };
+
+        localStorage.setItem("user_data", JSON.stringify(userId));
         setMessage("Updated!");
         return;
       } else {
@@ -125,7 +129,11 @@ function EditProfile() {
           setWeight(res.Weight);
           setEmail(res.Email);
 
-          localStorage.setItem("user_data", JSON.stringify(res.id));
+          var userId = {
+            id: res.id,
+          };
+
+          localStorage.setItem("user_data", JSON.stringify(userId));
           return;
         } else {
           setMessage(res.message);
@@ -143,91 +151,72 @@ function EditProfile() {
   return (
     <div className="containerEditProfile">
       <h2 id="editProfile">Edit Profile</h2>
-      <div className="Inputs">
-        <label htmlFor="firstName">FIRST NAME</label>
-        <input
-          type="text"
-          id="firstName"
-          value={firstName || ""}
-          onChange={(e) => setFirstName(e.target.value)}
-        />
-      </div>
+      <label htmlFor="firstName">FIRST NAME</label>
+      <input
+        type="text"
+        id="firstName"
+        value={firstName || ""}
+        onChange={(e) => setFirstName(e.target.value)}
+      />
       <br />
-      <div className="Inputs">
-        <label htmlFor="Lastname">LASTNAME </label>
-        <input
-          type="text"
-          id="Lastnamr"
-          value={lastName || ""}
-          onChange={(e) => setLastName(e.target.value)}
-        />
-      </div>
+      <label htmlFor="Lastname">LASTNAME </label>
+      <input
+        type="text"
+        id="Lastnamr"
+        value={lastName || ""}
+        onChange={(e) => setLastName(e.target.value)}
+      />
       <br />
-      <div className="Inputs">
-        <label htmlFor="Username">USERNAME </label>
-
-        <input
-          type="text"
-          id="Username"
-          value={userName || ""}
-          onChange={(e) => setUserName(e.target.value)}
-        />
-      </div>
+      <label htmlFor="Username">USERNAME </label>
+      <input
+        type="text"
+        id="Username"
+        value={userName || ""}
+        onChange={(e) => setUserName(e.target.value)}
+      />
       <br />
-      <div className="Inputs">
-        <label htmlFor="Gender">GENDER </label>
-        <input
-          type="text"
-          id="Gender"
-          value={gender || ""}
-          onChange={(e) => setGender(e.target.value)}
-        />
-      </div>
+      <label htmlFor="Gender">GENDER </label>
+      <input
+        type="text"
+        id="Gender"
+        value={gender || ""}
+        onChange={(e) => setGender(e.target.value)}
+      />
       <br />
-      <div className="Inputs">
-        <label htmlFor="Age">AGE </label>
-        <input
-          type="text"
-          id="Age"
-          value={age || ""}
-          onChange={(e) => setAge(e.target.value)}
-        />
-      </div>
+      <label htmlFor="Age">AGE </label>
+      <input
+        type="text"
+        id="Age"
+        value={age || ""}
+        onChange={(e) => setAge(e.target.value)}
+      />
       <br />
-      <div className="Inputs">
-        <label htmlFor="Height">HEIGHT </label>
-        <input
-          type="text"
-          id="Height"
-          value={height || ""}
-          onChange={(e) => setHeight(e.target.value)}
-        />
-      </div>
+      <label htmlFor="Height">HEIGHT </label>
+      <input
+        type="text"
+        id="Height"
+        value={height || ""}
+        onChange={(e) => setHeight(e.target.value)}
+      />
       <br />
-      <div className="Inputs">
-        <label htmlFor="Weight">WEIGHT </label>
-        <input
-          type="text"
-          id="Weight"
-          value={weight || ""}
-          onChange={(e) => setWeight(e.target.value)}
-        />
-      </div>
+      <label htmlFor="Weight">WEIGHT </label>
+      <input
+        type="text"
+        id="Weight"
+        value={weight || ""}
+        onChange={(e) => setWeight(e.target.value)}
+      />
       <br />
-      <div className="Inputs">
-        <label htmlFor="Email">EMAIL </label>
-        <input
-          type="text"
-          id="Email"
-          value={email || ""}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-      </div>
-      <div className="UpdateProfileInfo">
-        <br />
-        <span className="UpdateInfoSuccess">{message}</span>
-        <button onClick={updateUserInfo}>Update your Information</button>
-      </div>
+      <label htmlFor="Email">EMAIL </label>
+      <input
+        type="text"
+        id="Email"
+        value={email || ""}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+      <br />
+      <span className="UpdateInfoSuccess">{message}</span>
+      <button onClick={updateUserInfo}>Update your Information</button>
     </div>
   );
 }
