@@ -421,10 +421,10 @@ app.post('/v1/foods/search', async (req, res) => {
 
 // API to add a selected food item to the user's profile
 app.post('/v1/foods/add', async (req, res) => {
-    const { id, foodId } = req.body;  // userId and foodId to identify the user and food item
+    const { id, fdcId } = req.body;  // userId and foodId to identify the user and food item
     let error = '';
 
-    if (!id || !foodId) {
+    if (!id || !fdcId) {
         return res.status(400).json({ error: 'User ID and Food ID are required' });
     }
 
