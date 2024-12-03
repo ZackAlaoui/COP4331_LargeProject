@@ -462,7 +462,7 @@ app.post('/v1/foods/add', async (req, res) => {
 
         // Add the food item to the user's foodItems array
         await db.collection('Users').updateOne(
-            { id: ObjectId(id) },
+            { _id: ObjectId(id) },
             { $push: { foodItems: foodData } }  // Add the food item to the user's foodItems array
         );
 
@@ -500,7 +500,7 @@ app.post('/v1/foods/delete', async (req, res) => {
 
         // Remove the food item from the user's foodItems array
         await db.collection('Users').updateOne(
-            { id: ObjectId(id) },
+            { _id: ObjectId(id) },
             { $pull: { foodItems: { foodId: foodId } } } // Remove the food item by foodId
         );
 
