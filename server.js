@@ -172,7 +172,11 @@ app.post('/api/updateUserInfo', async (req, res, next) => {
 
     const { id, FirstName, LastName, UserName, Gender, Age, Height, Weight, Email } = req.body;
 
+    console.log(id + ", " + FirstName + ", " + LastName + ", " + UserName
+        + ", " + Gender + ", " + Age + ", " + Height + ", " + Weight + "," + Email);
+
     if (!id || !FirstName || !LastName || UserName || !Gender || !Age || !Weight || !Email) {
+        console.log("One of the fields werent found");
         return res.status(400).json({ message: "One of the fields weren't found" });
     }
 
@@ -193,6 +197,7 @@ app.post('/api/updateUserInfo', async (req, res, next) => {
             return res.status(400).json({ message: "No document was found" });
         }
         else {
+            console.log("Document was updated")
             ret = {
                 id: getDocument.id,
                 FirstName: getDocument.FirstName,

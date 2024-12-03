@@ -16,6 +16,7 @@ function EditProfile() {
   const [message, setMessage] = React.useState("");
 
   async function updateUserInfo(event: any): Promise<void> {
+    event.preventDefault();
     var storedData = localStorage.getItem("user_data");
 
     if (!storedData) {
@@ -35,13 +36,15 @@ function EditProfile() {
         FirstName: firstName,
         LastName: lastName,
         UserName: userName,
-        // Password : password,
+        Password: password,
         Gender: gender,
         Age: age,
         Height: height,
         Weight: weight,
         Email: email,
       };
+
+      console.log(obj);
 
       //Converting our object to a string before sending to our API
       var js = JSON.stringify(obj);
@@ -58,13 +61,14 @@ function EditProfile() {
       );
 
       const res = JSON.parse(await response.text());
+      console.log(res);
 
       if (res.message === "Updated User") {
         localStorage.setItem("user_data", res.id);
         setMessage("Updated!");
         return;
       } else {
-        setMessage("Failed to Update!");
+        setMessage(res.message);
         return;
       }
     } catch (error: any) {
@@ -73,6 +77,7 @@ function EditProfile() {
     }
   }
 
+  //This useEffect is used to display the users information on the edit profile page
   useEffect(() => {
     async function loadUserInfo() {
       var storedData = localStorage.getItem("user_data");
@@ -163,15 +168,6 @@ function EditProfile() {
           type="text"
           value={userName || ""}
           onChange={(e) => setUserName(e.target.value)}
-        />
-      </div>
-      <br />
-      <div className="Inputs">
-        PASSWORD
-        <input
-          type="text"
-          value={password || ""}
-          onChange={(e) => setPassword(e.target.value)}
         />
       </div>
       <br />
