@@ -73,7 +73,7 @@ app.post('/api/createaccount', async (req, res, next) => {
     let existingUser = await client.db("LPN").collection("Users").findOne({ Username: userName });
 
     if (existingUser) {
-        return res.status(400).json({ message: 'You already have an account' });
+        return res.status(400).json({ message: 'Username taken' });
     }
 
     var error = '';
