@@ -175,7 +175,8 @@ app.post('/api/updateUserInfo', async (req, res, next) => {
     console.log(id + ", " + FirstName + ", " + LastName + ", " + UserName
         + ", " + Gender + ", " + Age + ", " + Height + ", " + Weight + "," + Email);
 
-    if (!id || !FirstName || !LastName || UserName || !Gender || !Age || !Weight || !Email || !Height) {
+    //Check if all fields have a value
+    if (!id || !FirstName || !LastName || !UserName || !Gender || !Age || !Weight || !Email || !Height) {
         return res.status(400).json({ message: "One of the fields weren't found" });
     }
 
@@ -387,9 +388,10 @@ app.post('/v1/foods/search', async (req, res) => {
         // Make a request to the USDA API
         const usdaResponse = await axios.post(
             'https://api.nal.usda.gov/fdc/v1/foods/search?api_key=NWgR0wlBc7YQOa8FcrSXGb3bPdXp9D0mE582U7SH',
-            { query: query.trim(),
+            {
+                query: query.trim(),
                 pageSize: numOfResults
-             }
+            }
         );
 
         // Extract the foods array from the response
