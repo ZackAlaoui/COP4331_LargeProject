@@ -420,7 +420,7 @@ app.post('/v1/foods/search', async (req, res) => {
 });
 
 // API to add a selected food item to the user's profile
-app.post('/v1/foods/add', async (req, res) => {
+app.post('/api/add', async (req, res) => {
     const { id, foodId } = req.body;  // userId and foodId to identify the user and food item
     let error = '';
 
@@ -475,7 +475,7 @@ app.post('/v1/foods/add', async (req, res) => {
 });
 
 // API for deleting a food
-app.post('/v1/foods/delete', async (req, res) => {
+app.post('/api/delete', async (req, res) => {
     const { id, foodId } = req.body; // userId and foodId to identify the user and food item
     let error = '';
 
@@ -493,10 +493,10 @@ app.post('/v1/foods/delete', async (req, res) => {
         }
 
         // Check if the food item exists in the user's foodItems array
-        const foodExists = User.foodItems.some(item => item.foodId === foodId);
+        /*const foodExists = User.foodItems.some(item => item.foodId === foodId);
         if (!foodExists) {
             return res.status(400).json({ error: 'Food item not found in user profile' });
-        }
+        }*/
 
         // Remove the food item from the user's foodItems array
         await db.collection('Users').updateOne(
