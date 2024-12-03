@@ -172,7 +172,10 @@ app.post('/api/updateUserInfo', async (req, res, next) => {
 
     const { id, FirstName, LastName, UserName, Gender, Age, Height, Weight, Email } = req.body;
 
-    if (!id || !FirstName || !LastName || UserName || !Gender || !Age || !Weight || !Email) {
+    console.log(id + ", " + FirstName + ", " + LastName + ", " + UserName
+        + ", " + Gender + ", " + Age + ", " + Height + ", " + Weight + "," + Email);
+
+    if (!id || !FirstName || !LastName || UserName || !Gender || !Age || !Weight || !Email || !Height) {
         return res.status(400).json({ message: "One of the fields weren't found" });
     }
 
