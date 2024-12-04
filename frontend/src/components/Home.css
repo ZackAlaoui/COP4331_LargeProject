@@ -178,6 +178,12 @@ body {
   background-color: #56a7d5;
 }
 
+.foodList {
+  max-height: 300px; 
+  overflow-y: auto;  /* Adds a vertical scrollbar when the content overflows */
+  margin-top: 20px;
+}
+
 .addFoodButtonPlus {
   font-size: 14px;
   background-color: #6fd1f5;
