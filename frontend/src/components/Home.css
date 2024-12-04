@@ -168,6 +168,20 @@ body {
   background-color: #56a7d5;
 }
 
+.deleteFoodButton {
+  font-size: 14px; /* Same font size as add button */
+  background-color: #f56f6f; /* A soft red for delete */
+  border: none; /* No border for a clean look */
+  color: white; /* White text for contrast */
+  padding: 8px 12px; /* Same padding as add button for consistency */
+  border-radius: 5px; /* Same rounded corners */
+  cursor: pointer; /* Pointer cursor for interactivity */
+}
+
+.deleteFoodButton:hover {
+  background-color: #e05555;
+}
+
 /* Exercise Input */
 .exerciseInput {
   margin-top: 20px;
