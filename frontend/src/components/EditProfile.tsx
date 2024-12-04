@@ -158,7 +158,7 @@ function EditProfile() {
   }, []); //This useEffect will run once when the component mounts
 
   return (
-    <div className="buttonContainer">
+    <div className="containerEditProfile">
       <button
         className="editProfileButton"
         id="logout"
@@ -167,7 +167,7 @@ function EditProfile() {
         Logout
       </button>
       <button
-        className="buttonContainer"
+        className="editProfileButton"
         id="goToDashboard"
         onClick={() => redirectToDashboard()}
       >
@@ -264,7 +264,7 @@ function EditProfile() {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
-      <button className="updateButton" onClick={updateUserInfo}>
+      <button className="editProfileButton" onClick={updateUserInfo}>
         Update
       </button>
       {message && <div className="UpdateInfoSuccess">{message}</div>}
