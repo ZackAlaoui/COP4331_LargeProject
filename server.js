@@ -477,8 +477,8 @@ app.post('/api/add', async (req, res) => {
     const { id, foodId, day } = req.body;  // userId and foodId to identify the user and food item
     let error = '';
 
-    if (!id || !foodId || !day) {
-        return res.status(400).json({ error: 'User ID , Food ID , and day are required' });
+    if (!id || !foodId ) {
+        return res.status(400).json({ error: 'User ID , Food ID' });
     }
 
     try {
@@ -495,8 +495,8 @@ app.post('/api/add', async (req, res) => {
         const foodData = {
             description: foodItem.description,
             brandName: foodItem.brandName || null,
-            calories: foodItem.labelNutrients?.calories?.value || 0,  // Access calories directly
-            protein: foodItem.labelNutrients?.protein?.value || 0,   // Access protein directly
+            calories: foodItem.foodNutrients.find(n => n.nutrient.name === "Energy")?.amount || 0, // Access calories by nutrient name
+            protein: foodItem.foodNutrients.find(n => n.nutrient.name === "Protein")?.amount || 0, // Access protein by nutrient name
             foodId: foodItem.fdcId, // Store the food's unique fdcId
         };
 
