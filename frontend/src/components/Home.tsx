@@ -440,43 +440,15 @@ function WellnessPro() {
 
           <div className="mealInputs">
             <div className="mealInput">
-              <p>Breakfast</p>
+              <p>Food</p>
 
               <button className="addFoodButton" onClick={handleAddFoodClick}>
                 + Add Food
               </button>
-              <button className="deleteFoodButton" onClick={subtractCalories(food.foodId, day)}>
+              <button className="deleteFoodButton" onClick={subtractCalories(foodList.food.foodId, day)}>
                 - Delete Food
               </button>
             </div>
-            <div className="mealInput">
-              <p>Lunch</p>
-              <button className="addFoodButton" onClick={handleAddFoodClick}>
-                + Add Food
-              </button>
-              <button className="deleteFoodButton" onClick={subtractCalories(food.foodId, day)}>
-                - Delete Food
-              </button>
-            </div>
-          </div>
-          <div className="mealInputs">
-            <div className="mealInput">
-              <p>Dinner</p>
-
-              <button className="addFoodButton" onClick={handleAddFoodClick}>
-                + Add Food
-              </button>
-              <button className="deleteFoodButton" onClick={subtractCalories(food.foodId, day)}>
-                - Delete Food
-              </button>
-            </div>
-            <div className="mealInput">
-              <p>Snacks</p>
-              <button className="addFoodButton">+ Add Food</button>
-              <button className="deleteFoodButton">- Delete Food</button>
-            </div>
-          </div>
-        </div>
 
         {/* Adjust Weight Section */}
         <div className="adjustWeight lowerSection">
