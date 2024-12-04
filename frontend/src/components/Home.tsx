@@ -23,7 +23,7 @@ function WellnessPro() {
   const [foodList, setFoodList] = useState([]);
   const [currentDay, setCurrentDay] = React.useState("Wednesday");
 
-  const [caloriesRemaining, setCurrentCalories] = useState<number>(0);
+  const [caloriesRemaining, setCurrentCalories] = useState<number>(2000);
   const [calorieGoal, setCalorieGoal] = useState<number>(2000);
 
   useEffect(() => {
@@ -41,12 +41,13 @@ function WellnessPro() {
         if (!parsedData.id) {
           throw new Error("ID not found in parsed data");
         }
+        console.log(calorieGoal);
 
         var obj = {
           id: parsedData.id,
-          calorieGoal: 2000, //Send value 2000 for goal calories
+          CalorieGoal: calorieGoal, //Send value 2000 for goal calories
         };
-
+        console.log(calorieGoal);
         console.log(obj);
 
         //Converting our object to a string before sending to our API
@@ -69,8 +70,9 @@ function WellnessPro() {
         if (res.message === "Found") {
           setGoalWeight(res.GoalWeight);
           setCurrentWeight(Number(res.Weight));
-          setCalorieGoal(Number(res.calorieGoal));
+          setCalorieGoal(Number(res.CalorieGoal));
           console.log(typeof currentWeight);
+          console.log(res.calorieGoal);
           console.log(currentWeight);
           var userData = {
             id: res.id,
