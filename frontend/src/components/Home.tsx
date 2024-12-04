@@ -64,7 +64,7 @@ function WellnessPro() {
 
         if (res.message === "Found") {
           setGoalWeight(res.GoalWeight);
-          setCurrentWeight(res.Weight);
+          setCurrentWeight(Number(res.Weight));
           console.log(typeof currentWeight);
           var userId = {
             id: res.id,
@@ -214,7 +214,11 @@ function WellnessPro() {
       {/* Days of the Week with Hardcoded Calories */}
       <div className="daysOfWeek">
         {Object.entries(dailyCalories).map(([day, calories]) => (
-          <div key={day} className="dayBox" onClick={() => handleGrabDailyInfo(day)}>
+          <div
+            key={day}
+            className="dayBox"
+            onClick={() => handleGrabDailyInfo(day)}
+          >
             <p className="dayName">{day}</p>
             <p>{calories} kcal</p>
           </div>
@@ -331,7 +335,7 @@ function WellnessPro() {
               <button className="deleteFoodButton">- Delete Food</button>
             </div>
           </div>
-        p</div>
+        </div>
 
         {/* Adjust Weight Section */}
         <div className="adjustWeight lowerSection">
