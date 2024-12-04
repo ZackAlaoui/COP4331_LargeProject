@@ -528,7 +528,7 @@ app.post('/api/add', async (req, res) => {
 
         // Save the updated calories data
         await db.collection('Users').updateOne(
-            { id: new ObjectId(id) },
+            { id: req.body.id },
             { $set: { caloriesData: updatedCaloriesData } }
         );
 
@@ -556,7 +556,7 @@ app.post('/api/delete', async (req, res) => {
 
     try {
         const db = client.db("LPN");
-        const User = await db.collection('Users').findOne({ _id: new ObjectId(id) });
+        const User = await db.collection('Users').findOne({ id: req.body.id });
 
         // Check if the user exists
         if (!User) {
@@ -564,14 +564,14 @@ app.post('/api/delete', async (req, res) => {
         }
 
         // Check if the food item exists in the user's foodItems array
-        /*const foodExists = User.foodItems.some(item => item.foodId === foodId);
+        const foodExists = User.foodItems.some(item => item.foodId === foodId);
         if (!foodExists) {
             return res.status(400).json({ error: 'Food item not found in user profile' });
-        }*/
+        }
 
         // Remove the food item from the user's foodItems array
         await db.collection('Users').updateOne(
-            { _id: new ObjectId(id) },
+            {id: req.body.id},
             { $pull: { foodItems: { foodId: foodId } } }, // Remove the food item by foodId
         );
 
