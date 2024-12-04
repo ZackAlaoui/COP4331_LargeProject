@@ -159,7 +159,7 @@ function WellnessPro() {
       if (res.message === "Updated Weight") {
         console.log("Response ", res.message);
 
-        setCurrentWeight(res.Weight);
+        //setCurrentWeight(res.Weight);
 
         var user = {
           id: res.id,
