@@ -238,7 +238,7 @@ function EditProfile() {
         onChange={(e) => setWeight(e.target.value)}
       />
       <label className="editProfileLabel" htmlFor="GoalWeight">
-      GoalWeight
+      Goal Weight
       </label>
       <input
         className="editProfileInput"
