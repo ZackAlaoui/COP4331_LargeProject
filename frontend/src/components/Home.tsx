@@ -196,7 +196,7 @@ function WellnessPro() {
     setCurrentWeight((currentWeight) => Number(currentWeight) + change);
   };
 
-  async function modifyCalories(newfoodId: number): void {
+  async function addCalories(newfoodId: number, currentDay: string): Promise<void> {
     //Get user_data from local storage
     var storedData = localStorage.getItem("user_data");
 
@@ -210,13 +210,14 @@ function WellnessPro() {
     // Extract foodId from the event or input (depending on your form setup)
     //const { foodId } = event.target; // Assuming foodId and currentCalories are available in the event
 
-    if (!newfoodId) {
-        console.log("Food ID is required");
+    if (!newfoodId || !currentDay) {
+        console.log("Food ID and day is required");
         return; // Exit if foodId or currentCalories is missing
     }
 
     var obj = {
       foodId: newfoodId,
+      Day: currentDay,
       id: parsedData.id
     };
 
@@ -237,7 +238,7 @@ function WellnessPro() {
       var res = JSON.parse(await response.text());
       console.log("Entire Response ", res);
 
-      if (res.message === "Updated Calories") {
+      if (res.message === "added Calories") {
         console.log("Response ", res.message);
 
         var user = {
@@ -245,7 +246,7 @@ function WellnessPro() {
         };
 
         localStorage.setItem("user_data", JSON.stringify(user));
-        setMessage("Updated Calories");
+        setMessage("added Calories");
       } else {
         setMessage(res.message);
       }
@@ -255,7 +256,67 @@ function WellnessPro() {
     }
   }
 
-  async function handleGrabDailyInfo(day: string, event: any): Promise<void> {
+  async function subtractCalories(newfoodId: number, currentDay: string): Promise<void> {
+    //Get user_data from local storage
+    var storedData = localStorage.getItem("user_data");
+
+    if (storedData) {
+      var parsedData = JSON.parse(storedData);
+      console.log(parsedData);
+    } else {
+      console.log("No data was found in local storage using user_data as key");
+    }
+
+    // Extract foodId from the event or input (depending on your form setup)
+    //const { foodId } = event.target; // Assuming foodId and currentCalories are available in the event
+
+    if (!newfoodId || !currentDay) {
+        console.log("Food ID and day is required");
+        return; // Exit if foodId or currentCalories is missing
+    }
+
+    var obj = {
+      foodId: newfoodId,
+      Day: currentDay,
+      id: parsedData.id
+    };
+
+    //Convert Javascript object to a JSON string
+    var js = JSON.stringify(obj);
+
+    try {
+      const response = await fetch(
+        "https://lp.largeprojectnutrition.fit/api/delete",
+        {
+          method: "POST",
+          body: js,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      var res = JSON.parse(await response.text());
+      console.log("Entire Response ", res);
+
+      if (res.message === "subtracted Calories") {
+        console.log("Response ", res.message);
+
+        var user = {
+          id: res.id,
+        };
+
+        localStorage.setItem("user_data", JSON.stringify(user));
+        setMessage("subtracted Calories");
+      } else {
+        setMessage(res.message);
+      }
+    } catch (error: any) {
+      alert(error.toString());
+      return;
+    }
+  }
+
+  async function handleGrabDailyInfo(day: string): Promise<void> {
     setCurrentDay(day);
   }
 
@@ -363,7 +424,7 @@ function WellnessPro() {
                         <p>
                           <strong>Protein:</strong> {food.protein}(grams)
                         </p>
-                        <button id="AddButton" onClick={modifyCalories(food.foodId)}>
+                        <button id="AddButton" onClick={addCalories(food.foodId, day)}>
                           +
                         </button>
                       </li>
@@ -386,14 +447,18 @@ function WellnessPro() {
               <button className="addFoodButton" onClick={handleAddFoodClick}>
                 + Add Food
               </button>
-              <button className="deleteFoodButton">- Delete Food</button>
+              <button className="deleteFoodButton" onClick={subtractCalories(food.foodId, day)}>
+                - Delete Food
+              </button>
             </div>
             <div className="mealInput">
               <p>Lunch</p>
               <button className="addFoodButton" onClick={handleAddFoodClick}>
                 + Add Food
               </button>
-              <button className="deleteFoodButton">- Delete Food</button>
+              <button className="deleteFoodButton" onClick={subtractCalories(food.foodId, day)}>
+                - Delete Food
+              </button>
             </div>
           </div>
           <div className="mealInputs">
@@ -403,7 +468,9 @@ function WellnessPro() {
               <button className="addFoodButton" onClick={handleAddFoodClick}>
                 + Add Food
               </button>
-              <button className="deleteFoodButton">- Delete Food</button>
+              <button className="deleteFoodButton" onClick={subtractCalories(food.foodId, day)}>
+                - Delete Food
+              </button>
             </div>
             <div className="mealInput">
               <p>Snacks</p>

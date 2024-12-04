@@ -495,14 +495,14 @@ app.post('/api/add', async (req, res) => {
         const foodData = {
             description: foodItem.description,
             brandName: foodItem.brandName || null,
-            calories: foodItem.labelNutrients?.calories?.value || 0,  // Access calories directly
-            protein: foodItem.labelNutrients?.protein?.value || 0,   // Access protein directly
+            calories: foodItem.foodNutrients.find(n => n.nutrient.name === "Energy")?.amount || 0,  // Access calories directly
+            protein: foodItem.foodNutrients.find(n => n.nutrient.name === "Protein")?.amount || 0,   // Access protein directly
             foodId: foodItem.fdcId, // Store the food's unique fdcId
         };
 
         // Update the user's profile with the new food item
         const db = client.db("LPN");
-        const User = await db.collection('Users').find({ id: new ObjectId(id) });
+        const User = await db.collection('Users').find({ id: req.body.id });
 
         // Check if the user exists
         if (!User) {
@@ -515,7 +515,7 @@ app.post('/api/add', async (req, res) => {
 
         // Add the food item to the user's foodItems array
         await db.collection('Users').updateOne(
-            { id: new ObjectId(id) },
+            { id: req.body.id },
             { $push: { foodItems: foodData } }  // Add the food item to the user's foodItems array
         );
 
@@ -528,7 +528,7 @@ app.post('/api/add', async (req, res) => {
 
         // Save the updated calories data
         await db.collection('Users').updateOne(
-            { id: new ObjectId(id) },
+            { id: req.body.id },
             { $set: { caloriesData: updatedCaloriesData } }
         );
 
@@ -556,7 +556,7 @@ app.post('/api/delete', async (req, res) => {
 
     try {
         const db = client.db("LPN");
-        const User = await db.collection('Users').findOne({ _id: new ObjectId(id) });
+        const User = await db.collection('Users').findOne({ id: req.body.id });
 
         // Check if the user exists
         if (!User) {
@@ -571,12 +571,30 @@ app.post('/api/delete', async (req, res) => {
 
         // Remove the food item from the user's foodItems array
         await db.collection('Users').updateOne(
-            { _id: new ObjectId(id) },
+            { id: req.body.id },
             { $pull: { foodItems: { foodId: foodId } } }, // Remove the food item by foodId
         );
 
-        // Return success response
-        res.status(200).json({ message: 'Food item deleted successfully' });
+        // Update the user's calories for the specified day
+        let updatedCaloriesData = User.caloriesData || {};
+        const currentCalories = updatedCaloriesData[day] || 0;
+
+        // Add the food item's calories to the current calories for the day
+        updatedCaloriesData[day] = currentCalories + foodData.calories;
+
+        // Save the updated calories data
+        await db.collection('Users').updateOne(
+            { id: req.body.id },
+            { $set: { caloriesData: updatedCaloriesData } }
+        );
+
+        // Return success response with the updated food item and calories
+        res.status(200).json({
+            message: 'Food item deleted successfully and calories updated',
+            foodItem: foodData,
+            updatedCaloriesData: updatedCaloriesData,
+        });
+
     } catch (err) {
         console.error(err);
         return res.status(500).json({ error: 'Failed to delete food item', details: err.message });
