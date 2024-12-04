@@ -422,7 +422,7 @@ app.post('/api/login', async (req, res, next) => {
 });
 
 // API for the USDA database
-app.post('/v1/foods/search', async (req, res) => {
+app.post('/api/search', async (req, res) => {
     // Incoming: query, pageSize
     // Outgoing: results[], error
     const {query} = req.body;
@@ -432,7 +432,7 @@ app.post('/v1/foods/search', async (req, res) => {
     let error = '';
     let results = [];
 
-    if (!req.body.query || req.body.query.trim() === '') {
+    if (!query || query.trim() === '') {
         return res.status(400).json({ results, error: 'Search cannot be empty.' });
     }
 
