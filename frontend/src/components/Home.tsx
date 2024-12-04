@@ -239,8 +239,8 @@ function WellnessPro() {
       {/* Main Content Layout */}
       <div className="mainContent">
         {/* Calorie Tracker Section */}
-        <p>{currentDay}</p>
         <div className="calorieTracker">
+          <p>{currentDay}</p>
           <div className="calorieGoalRow">
             <p>
               Calorie Goal: <strong>2000</strong>
