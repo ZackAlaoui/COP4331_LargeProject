@@ -518,9 +518,9 @@ app.post('/api/add', async (req, res) => {
             { id: req.body.id },
             { $push: { foodItems: foodData } }  // Add the food item to the user's foodItems array
         );
-
+        
         // Update the user's calories for the specified day
-        let updatedCaloriesData = User.caloriesData[] || {};
+        let updatedCaloriesData = User.caloriesData || {};
         const currentCalories = updatedCaloriesData[day] || 0;
 
         // Add the food item's calories to the current calories for the day
