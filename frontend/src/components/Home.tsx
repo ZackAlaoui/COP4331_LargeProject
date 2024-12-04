@@ -90,7 +90,13 @@ function WellnessPro() {
   async function handleSearch() {
     var obj = {
       query: searchTerm,
+      pageSize: 10,
     };
+
+    if (!searchTerm.trim()) {
+      console.log("query is empty");
+      return;
+    }
 
     var js = JSON.stringify(obj);
 
@@ -106,7 +112,7 @@ function WellnessPro() {
         }
       );
 
-      var res = JSON.parse(await response.json());
+      var res = await response.json();
       if (res.error === "Search cannot be empty.") {
         console.log("query is empty");
       }
