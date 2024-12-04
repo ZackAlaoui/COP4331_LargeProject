@@ -30,7 +30,7 @@ body {
 }
 
 /* Labels */
-.label {
+label {
   font-size: 14px;
   font-weight: bold;
   color: #fff;
@@ -39,7 +39,7 @@ body {
 }
 
 /* Inputs */
-.input {
+input {
   width: 100%;
   padding: 10px;
   font-size: 14px;
@@ -58,7 +58,7 @@ body {
 }
 
 /* Update User Information Button */
-.button {
+button {
   width: 100%;
   padding: 12px;
   font-size: 16px;
