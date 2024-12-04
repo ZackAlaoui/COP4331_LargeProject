@@ -7,14 +7,13 @@ function EditProfile() {
   const [firstName, setFirstName] = React.useState("");
   const [lastName, setLastName] = React.useState("");
   const [userName, setUserName] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const [goalweight, setGoalWeight] = React.useState("");
   const [gender, setGender] = React.useState("");
   const [age, setAge] = React.useState("");
   const [height, setHeight] = React.useState("");
   const [weight, setWeight] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [message, setMessage] = React.useState("");
-  const [goalWeight, setGoalWeight] = React.useState("");
 
   function redirectToLogin() {
     window.location.href = "/";
@@ -45,7 +44,6 @@ function EditProfile() {
         LastName: lastName,
         UserName: userName,
         // Password : password,
-        GoalWeight: goalWeight,
         Gender: gender,
         Age: age,
         Height: height,
@@ -138,7 +136,6 @@ function EditProfile() {
           setHeight(res.Height);
           setWeight(res.Weight);
           setEmail(res.Email);
-          setGoalWeight(res.GoalWeight);
 
           var userId = {
             id: res.id,
@@ -198,16 +195,6 @@ function EditProfile() {
         value={userName}
         onChange={(e) => setUserName(e.target.value)}
       />
-      <label className="editProfileLabel" htmlFor="Password">
-        Password
-      </label>
-      <input
-        className="editProfileInput"
-        type="password"
-        id="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
       <label className="editProfileLabel" htmlFor="Gender">
         Gender
       </label>
@@ -247,6 +234,16 @@ function EditProfile() {
         id="Weight"
         value={weight}
         onChange={(e) => setWeight(e.target.value)}
+      />
+      <label className="editProfileLabel" htmlFor="GoalWeight">
+      GoalWeight
+      </label>
+      <input
+        className="editProfileInput"
+        type="goalweight"
+        id="GoalWeight"
+        value={goalweight}
+        onChange={(e) => setGoalWeight(e.target.value)}
       />
       <label className="editProfileLabel" htmlFor="Email">
         Email
