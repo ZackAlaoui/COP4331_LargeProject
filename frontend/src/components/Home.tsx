@@ -181,7 +181,7 @@ function WellnessPro() {
     setCurrentWeight(currentWeight + change);
   };
 
-  async function handleGrabDailyInfo(event: any, day: string): Promise<void> {
+  async function handleGrabDailyInfo(day: string, event: any): Promise<void> {
     setCurrentDay(day);
   }
 
