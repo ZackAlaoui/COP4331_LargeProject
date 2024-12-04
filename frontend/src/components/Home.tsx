@@ -64,6 +64,7 @@ function WellnessPro() {
         if (res.message === "Found") {
           setGoalWeight(res.GoalWeight);
           setCurrentWeight(res.Weight);
+          console.log(typeof currentWeight);
           var userId = {
             id: res.id,
           };
@@ -158,7 +159,7 @@ function WellnessPro() {
       if (res.message === "Updated Weight") {
         console.log("Response ", res.message);
 
-        setCurrentWeight(res.Weight);
+        setCurrentWeight(Number(res.Weight));
 
         var user = {
           id: res.id,
@@ -177,7 +178,7 @@ function WellnessPro() {
 
   // Set current weight equal to the adjusted weight
   const handleWeightChange = (change: number): void => {
-    setCurrentWeight(currentWeight + change);
+    setCurrentWeight((currentWeight) => Number(currentWeight) + change);
   };
 
   const dailyCalories = {
