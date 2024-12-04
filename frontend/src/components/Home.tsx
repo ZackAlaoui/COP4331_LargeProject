@@ -43,6 +43,7 @@ function WellnessPro() {
 
         var obj = {
           id: parsedData.id,
+          Kcal: 2000, //Send value 2000 for goal calories
         };
 
         console.log(obj);
@@ -67,13 +68,17 @@ function WellnessPro() {
         if (res.message === "Found") {
           setGoalWeight(res.GoalWeight);
           setCurrentWeight(Number(res.Weight));
+          setCurrentCalories(Number(res.Kcal));
           console.log(typeof currentWeight);
           console.log(currentWeight);
-          var userId = {
+          var userData = {
             id: res.id,
+            Kcal: res.Kcal,
+            Weight: res.Weight,
+            GoalWeight: res.GoalWeight,
           };
 
-          localStorage.setItem("user_data", JSON.stringify(userId));
+          localStorage.setItem("user_data", JSON.stringify(userData));
           return;
         } else {
           setMessage(res.message);
@@ -212,8 +217,8 @@ function WellnessPro() {
     const { foodId, currentCalories } = event.target; // Assuming foodId and currentCalories are available in the event
 
     if (!foodId || !currentCalories) {
-        console.log("Food ID and current calories are required");
-        return; // Exit if foodId or currentCalories is missing
+      console.log("Food ID and current calories are required");
+      return; // Exit if foodId or currentCalories is missing
     }
 
     var obj = {
