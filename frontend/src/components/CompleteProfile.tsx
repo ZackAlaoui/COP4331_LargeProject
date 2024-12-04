@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import App from "../App.tsx";
 import axios from "axios";
+import "./CompleteProfile.css";
 // import { useHistory } from "react-router-dom";
 
 function CompleteProfile() {
@@ -32,7 +33,7 @@ function CompleteProfile() {
     setGender(e.target.value);
   }
 
-  async function completeAccount(event: any): Promise<void> {
+  async function doCompleteProfile(event: any): Promise<void> {
     event.preventDefault();
     let retrievedUser = null;
     //Get username from the user that created the account
@@ -87,40 +88,70 @@ function CompleteProfile() {
   }
 
   return (
-    <div className="container">
+    <div className="cpMainContainer">
+      {/*Gradient Panel */}
+      <>
+        <div className="cpGradientPanel">
+          <>
+            <h2>Account created</h2>
+            <p>Complete your profile to continue</p>
+          </>
+        </div>
+      </>
+
+      {/* Right Panel */}
+      <>
+        <div className="cpRightPanel">
+          <div className="cpInputFields">
+            GENDER
+            <input
+              type="text"
+              placeholder="Enter your gender"
+              onChange={handleSetGender}
+            />
+          </div>
+          <div className="cpInputFields">
+            AGE
+            <input
+              type="text"
+              placeholder="Enter your age"
+              onChange={handleSetAge}
+            />
+          </div>
+          <div className="cpInputFields">
+            HEIGHT
+            <input
+              type="text"
+              placeholder="Enter your height (inches)"
+              onChange={handleSetHeight}
+            />
+          </div>
+          <div className="cpInputFields">
+            WEIGHT
+            <input
+              type="text"
+              placeholder="Enter your weight (lbs)"
+              onChange={handleSetWeight}
+            />
+          </div>
+          <div className="cpInputFields">
+            EMAIL
+            <input
+              type="text"
+              placeholder="Enter your email"
+              onChange={handleSetEmail}
+            />
+          </div>
+          <span className="completeProfileResult">{message}</span>
+          <button className="cpBtn" onClick={doCompleteProfile}>
+            Save Profile
+          </button>
+        </div>
+      </>
+    </div>
+
+    /*<div className="container">
       <h2 id="completeProfile">Complete Profile</h2>
-      {/* <div className="createAccountFields">
-        <input
-          type="text"
-          placeholder="Enter Firstname"
-          onChange={handleSetFirstname}
-        />
-      </div>
-      <br /> */}
-      {/* <div>
-        <input
-          type="text"
-          placeholder="Enter Lastname"
-          onChange={handleSetLastname}
-        />
-      </div>
-      <br /> */}
-      {/* <div>
-        <input
-          type="text"
-          placeholder="Enter Username"
-          onChange={handleSetUsername}
-        />
-      </div> */}
-      {/* <br /> */}
-      {/* <div>
-        <input
-          type="text"
-          placeholder="Enter Password"
-          onChange={handleSetPassword}
-        />
-      </div> */}
-      {/* <br /> */}
       <span className="createAccountResult">{message}</span>
       <button className="btnCreateAccount" onClick={completeAccount}>
         Save
@@ -144,7 +175,7 @@ function CompleteProfile() {
           onChange={handleSetHeight}
         />
       </div>{" "}
-      */
+      
       <div>
         <input
           type="text"
@@ -160,7 +191,7 @@ function CompleteProfile() {
           onChange={handleSetEmail}
         />
       </div>
-    </div>
+    </div>*/
   );
 }
 

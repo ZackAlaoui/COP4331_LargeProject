@@ -1,105 +1,85 @@
-
 body {
-    background-color: #f4f4f4;
-    margin: 0;
-    font-family: "Times New Roman", Times, serif;
-  }
-  
-  .containerEditProfile {
-    width: 90%;
-    max-width: 600px;
-    margin: auto;
-    padding: 40px;
-    border-radius: 15px;
-    background-image: linear-gradient(to top right, #61e1db, #2486a5);
-    color: #fff;
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-    margin-top: 150px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    box-sizing: border-box;
-  }
-  
-  /* Header */
-  .editProfile {
-    font-size: 28px;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 20px;
-    color: #fff;
-  }
-  
-  /* Labels */
-  .label {
-    font-size: 14px;
-    font-weight: bold;
-    color: #fff;
-    margin-bottom: 5px;
-    display: block;
-  }
-  
-  /* Inputs */
-  .input {
-    width: 100%;
-    padding: 10px;
-    font-size: 14px;
-    border: 1px solid #61e1db;
-    border-radius: 5px;
-    box-sizing: border-box;
-    margin-bottom: 15px;
-    background-color: #fff;
-    color: #2486a5;
-  }
-  
-  .input:focus {
-    border-color: #2486a5;
-    outline: none;
-    box-shadow: 0 0 5px rgba(36, 134, 165, 0.5);
-  }
-  
-  /* Button */
-  .button {
-    width: 100%;
-    padding: 12px;
-    font-size: 16px;
-    font-weight: bold;
-    color: #000;
-    background-color: #61e1db;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s;
-  }
-  
-  .button:hover {
-    background-color: #2486a5;
-  }
-  
-  /* Message */
-  .UpdateInfoSuccess {
-    font-size: 14px;
-    font-weight: bold;
-    text-align: center;
-    color: #61e1db;
-    margin-top: 10px;
-  }
-  /* Aid in adjusting design based on device size*/
-  /* Responsive Design
-  @media (max-width: 600px) {
-    .containerEditProfile {
-      padding: 20px;
-    }
-  
-    #editProfile {
-      font-size: 24px;
-    }
-  
-    label,
-    input,
-    button {
-      font-size: 14px;
-    }
-  }
-  */
-  
+  background-color: #f4f4f4;
+  margin: 0;
+  font-family: "Times New Roman", Times, serif;
+}
+
+.containerEditProfile {
+  width: 90%;
+  max-width: 400;
+  margin: auto;
+  padding: 20px;
+  border-radius: 15px;
+  background-image: linear-gradient(to top right, #61e1db, #2486a5);
+  color: #fff;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+  margin-top: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  box-sizing: border-box;
+}
+
+/* Header */
+.editProfile {
+  font-size: 28px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+/* Labels */
+.editProfileLabel {
+  font-size: 14px;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 5px;
+  display: block;
+}
+
+/* Inputs */
+.editProfileInput {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #61e1db;
+  border-radius: 5px;
+  box-sizing: border-box;
+  margin-bottom: 15px;
+  background-color: #fff;
+  color: #2486a5;
+}
+
+.editProfileInput:focus {
+  border-color: #2486a5;
+  outline: none;
+  box-shadow: 0 0 5px rgba(36, 134, 165, 0.5);
+}
+
+/* Update User Information Button */
+.editProfileButton {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #000;
+  background-color: #61e1db;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.editProfileButton:hover {
+  background-color: #2486a5;
+}
+
+/* Updated Message */
+.UpdateInfoSuccess {
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  color: #61e1db;
+  margin-top: 10px;
+}
