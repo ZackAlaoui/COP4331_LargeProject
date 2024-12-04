@@ -7,6 +7,7 @@ import "./CompleteProfile.css";
 function CompleteProfile() {
   const [age, setAge] = React.useState("");
   const [weight, setWeight] = React.useState("");
+  const [goalWeight, setGoalWeight] = React.useState("");
   const [height, setHeight] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [message, setMessage] = React.useState("");
@@ -23,6 +24,10 @@ function CompleteProfile() {
 
   function handleSetWeight(e: any): void {
     setWeight(e.target.value);
+  }
+
+  function handleSetGoalWeight(e: any): void {
+    setGoalWeight(e.target.value);
   }
 
   function handleSetEmail(e: any): void {
@@ -51,6 +56,7 @@ function CompleteProfile() {
       id: retrievedUser.id,
       Age: age,
       Weight: weight,
+      //GoalWeight: goalWeight;
       Height: height,
       Email: email,
       Gender: gender,
@@ -132,6 +138,14 @@ function CompleteProfile() {
               type="text"
               placeholder="Enter your weight (lbs)"
               onChange={handleSetWeight}
+            />
+          </div>
+          <div className="cpInputFields">
+            GOAL WEIGHT
+            <input
+              type="text"
+              placeholder="Enter your goal weight (lbs)"
+              onChange={handleSetGoalWeight}
             />
           </div>
           <div className="cpInputFields">
