@@ -423,7 +423,7 @@ app.post('/api/login', async (req, res, next) => {
 app.post('/v1/foods/search', async (req, res) => {
     // Incoming: query, pageSize
     // Outgoing: results[], error
-    const { query, pageSize } = req.body;
+    const {query} = req.body;
     console.log(query);
 
     const numOfResults = 10;
