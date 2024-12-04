@@ -233,17 +233,24 @@ app.post('/api/goalWeight', async (req, res, next) => {
 
     var error = '';
 
-    const { id } = req.body;
+    const { id, calorieGoal } = req.body;
+
 
     if (!id) {
         return res.status(400).json({ message: "id not found" });
     }
 
+
     try {
         const db = client.db("LPN");
 
+
         // Get the user credentials from the database
         const getDocument = await db.collection('Users').findOne({ id: req.body.id });
+
+        //Add calorie goal to the database
+        const addCalorieGoal = await db.collection('Users').findOneAndUpdate({ id: req.body.id },
+            { $set: { CalorieGoal: req.body.calorieGoal } }, { returnDocument: 'after' });
 
         if (!getDocument) {
             return res.status(400).json({ message: "Id was not found in database" });
@@ -254,6 +261,7 @@ app.post('/api/goalWeight', async (req, res, next) => {
                 FirstName: getDocument.FirstName,
                 LastName: getDocument.LastName,
                 UserName: getDocument.Username,
+                CalorieGoal: addCalorieGoal.CalorieGoal,
                 Age: getDocument.Age,
                 Email: getDocument.Email,
                 Gender: getDocument.Gender,
@@ -425,7 +433,7 @@ app.post('/api/login', async (req, res, next) => {
 app.post('/api/search', async (req, res) => {
     // Incoming: query, pageSize
     // Outgoing: results[], error
-    const {query} = req.body;
+    const { query } = req.body;
     console.log(query);
 
     const numOfResults = 10;
