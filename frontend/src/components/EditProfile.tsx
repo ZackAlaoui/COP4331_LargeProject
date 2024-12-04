@@ -249,7 +249,7 @@ function EditProfile() {
       </label>
       <input
         className="editProfileInput"
-        type="goalweight"
+        type="number"
         id="GoalWeight"
         value={goalweight}
         onChange={(e) => setGoalWeight(e.target.value)}

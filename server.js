@@ -424,12 +424,13 @@ app.post('/v1/foods/search', async (req, res) => {
     // Incoming: query, pageSize
     // Outgoing: results[], error
     const { query, pageSize } = req.body;
+    console.log(query);
 
     const numOfResults = 10;
     let error = '';
     let results = [];
 
-    if (!query || query.trim() === '') {
+    if (!req.body.query || req.body.query.trim() === '') {
         return res.status(400).json({ results, error: 'Search cannot be empty.' });
     }
 
@@ -457,6 +458,7 @@ app.post('/v1/foods/search', async (req, res) => {
 
         // Limit results to the specified page size
         const limitedResults = enrichedResults.slice(0, numOfResults);
+        console.log(limitedResults);
 
         // Return results
         res.status(200).json({ results: limitedResults, error: '' });

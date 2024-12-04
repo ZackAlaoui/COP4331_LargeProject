@@ -21,6 +21,7 @@ function WellnessPro() {
 
   //foodList will contain the array of foods
   const [foodList, setFoodList] = useState([]);
+  const [currentDay, setCurrentDay] = React.useState("Sunday");
 
   useEffect(() => {
     async function fetchGoalWeight() {
@@ -63,6 +64,9 @@ function WellnessPro() {
 
         if (res.message === "Found") {
           setGoalWeight(res.GoalWeight);
+          setCurrentWeight(Number(res.Weight));
+          console.log(typeof currentWeight);
+          console.log(currentWeight);
           var userId = {
             id: res.id,
           };
@@ -86,7 +90,15 @@ function WellnessPro() {
   async function handleSearch() {
     var obj = {
       query: searchTerm,
+      pageSize: 10,
     };
+
+    console.log(obj);
+
+    if (!searchTerm.trim()) {
+      console.log("query is empty");
+      return;
+    }
 
     var js = JSON.stringify(obj);
 
@@ -102,7 +114,10 @@ function WellnessPro() {
         }
       );
 
-      var res = JSON.parse(await response.json());
+      var res = await response.json();
+      if (res.error === "Search cannot be empty.") {
+        console.log("query is empty");
+      }
 
       setFoodList(res.results); //Update the state with the food data
     } catch (error) {
@@ -157,7 +172,7 @@ function WellnessPro() {
       if (res.message === "Updated Weight") {
         console.log("Response ", res.message);
 
-        setCurrentWeight(res.Weight);
+        // setCurrentWeight(Number(res.Weight));
 
         var user = {
           id: res.id,
@@ -176,8 +191,12 @@ function WellnessPro() {
 
   // Set current weight equal to the adjusted weight
   const handleWeightChange = (change: number): void => {
-    setCurrentWeight(currentWeight + change);
+    setCurrentWeight((currentWeight) => Number(currentWeight) + change);
   };
+
+  async function handleGrabDailyInfo(day: string, event: any): Promise<void> {
+    setCurrentDay(day);
+  }
 
   const dailyCalories = {
     Sunday: 2200,
@@ -207,7 +226,11 @@ function WellnessPro() {
       {/* Days of the Week with Hardcoded Calories */}
       <div className="daysOfWeek">
         {Object.entries(dailyCalories).map(([day, calories]) => (
-          <div key={day} className="dayBox">
+          <div
+            key={day}
+            className="dayBox"
+            onClick={() => handleGrabDailyInfo(day)}
+          >
             <p className="dayName">{day}</p>
             <p>{calories} kcal</p>
           </div>
@@ -234,6 +257,7 @@ function WellnessPro() {
       <div className="mainContent">
         {/* Calorie Tracker Section */}
         <div className="calorieTracker">
+          <p id="currentDayInBox">{currentDay}</p>
           <div className="calorieGoalRow">
             <p>
               Calorie Goal: <strong>2000</strong>
