@@ -116,74 +116,6 @@ app.post('/api/createaccount', async (req, res, next) => {
     }
 });
 
-app.post('/api/editinfo', async (req, res, next) => {
-    // incoming: userId, Fields
-    // outgoing: success, error
-    const { FirstName, LastName, UserName, Password, Email, Age, Gender, Height, Weight, id } = req.body;
-    var error = '';
-
-    // Validate input
-    if (!FirstName || !LastName || !UserName || !Password || !Age || !Gender || !Height || !Weight || !Email) {
-        return res.status(400).json({ error: "Missing required fields" });
-    }
-
-    if (!validator.isEmail(Email)) {
-        return res.status(400).json({ error: "Invalid email format" });
-    }
-
-    // Hash password if it's being updated
-    const hashedPassword = await bcrypt.hash(Password, 10);
-
-    try {
-        const db = client.db("LPN");
-        const user = await db.collection('Users').findOne({ "id": id });
-
-        // Make sure user exists
-        if (!user) {
-            return res.status(404).json({ success: false, error: 'User not found' });
-        }
-
-        // Update the document in the database
-        const updateResult = await db.collection('Users').updateOne(
-            { "id": id }, // Find the user by id
-            { 
-                $set: {
-                    FirstName,
-                    LastName,
-                    UserName,
-                    Password: hashedPassword,
-                    Email,
-                    Age,
-                    Gender,
-                    Height,
-                    Weight
-                } 
-            }
-        )
-
-        // Return updated user data
-        const updatedUser = await db.collection('Users').findOne({ "id": id });
-        const ret = {
-            FirstName: updatedUser.FirstName,
-            LastName: updatedUser.LastName,
-            UserName: updatedUser.UserName,
-            Password: updatedUser.Password, // Remember to never send the password in the response
-            Age: updatedUser.Age,
-            Gender: updatedUser.Gender,
-            Height: updatedUser.Height,
-            Weight: updatedUser.Weight,
-            Email: updatedUser.Email,
-            id: updatedUser.id,
-            message: "Profile Updated"
-        };
-
-        return res.status(200).json(ret);
-    } catch (e) {
-    console.error("Error during update:", e);
-    return res.status(500).json({ success: false, error: "Internal Server Error" });
-}
-});
-
 // Complete profile info API
 app.post('/api/completeprofile', async (req, res, next) => {
     // incoming: userId, Age, Gender, Height, Weight, Email
@@ -515,30 +447,16 @@ app.post('/v1/foods/add', async (req, res) => {
 
         // Update the user's profile with the new food item
         const db = client.db("LPN");
-<<<<<<< HEAD
-        const User = await db.collection('Users').findOne({ id: ObjectId(id) });
-=======
         const User = await db.collection('Users').find({ _id: new ObjectId(id)});
->>>>>>> f3078d521529d7e917c9523f1d8e926d5fd453af
 
         // Check if the user exists
         if (!User) {
             return res.status(404).json({ error: 'User not found' });
-<<<<<<< HEAD
-        }
-
-        // Add the selected food item to the user's foodItems array (if it doesn't already exist)
-        const foodExists = User.foodItems.some(item => item.foodId === foodData.foodId);
-        if (foodExists) {
-            return res.status(400).json({ error: 'Food item already added to your profile' });
-        }
-=======
 
         }
 
         // Initialize foodItems if it doesn't exist
         const foodItems = User.foodItems || [];
->>>>>>> f3078d521529d7e917c9523f1d8e926d5fd453af
 
         // Add the food item to the user's foodItems array
         await db.collection('Users').updateOne(
@@ -554,8 +472,6 @@ app.post('/v1/foods/add', async (req, res) => {
     }
 });
 
-<<<<<<< HEAD
-=======
 // API for deleting a food
 app.post('/v1/foods/delete', async (req, res) => {
     const { id, foodId } = req.body; // userId and foodId to identify the user and food item
@@ -594,5 +510,38 @@ app.post('/v1/foods/delete', async (req, res) => {
     }
 });
 
->>>>>>> f3078d521529d7e917c9523f1d8e926d5fd453af
+// API Endpoint to modify calories for a specific day
+app.post('/api/editCalories', async (req, res) => {
+    const { id, day, calories } = req.body;
+  
+    if (!id || !day || !calories) {
+      return res.status(400).json({ message: 'User ID, day, and calories are required' });
+    }
+  
+    try {
+      // Find the user by ID
+      const user = await User.findOne({ _id: ObjectId(id) });
+  
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      // Update the calories for the specified day
+      user.caloriesData.set(day, calories);  // Map set method to update the day
+  
+      // Save the user document with updated calories data
+      await user.save();
+  
+      // Return the updated data
+      res.status(200).json({
+        message: 'Updated Calories',
+        id: user.id,
+        updatedCaloriesData: user.caloriesData,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Error updating calories', error: err.message });
+    }
+  });
+
 app.listen(5000); // Start Node + Express server on port 5000

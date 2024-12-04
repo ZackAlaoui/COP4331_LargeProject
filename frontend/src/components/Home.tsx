@@ -73,6 +73,91 @@ function WellnessPro() {
     setCurrentWeight(currentWeight + change);
   };
 
+  // Modify calories for different days of the week
+async function modifyCalories(event: any): Promise<void> {
+  event.preventDefault();
+  
+  // Get user_data from local storage
+  var storedData = localStorage.getItem("user_data");
+
+  if (storedData) {
+    var parsedData = JSON.parse(storedData);
+    console.log(parsedData);
+  } else {
+    console.log("No data was found in local storage using user_data as key");
+    return;
+  }
+
+  // Get the day and new calorie count from the form or event
+  const { day, calories } = event.target; // Assuming day and calories are part of the form
+  if (!day || !calories) {
+    console.log("Day and calories are required");
+    return;
+  }
+
+  // Prepare the object with updated calories information
+  var obj = {
+    id: parsedData.id,
+    day: day,       // Example: 'Monday', 'Tuesday', etc.
+    calories: calories, // Updated calorie count
+  };
+
+  // Convert JavaScript object to a JSON string
+  var js = JSON.stringify(obj);
+
+  try {
+    // Send the updated calories data to the API
+    const response = await fetch("https://lp.largeprojectnutrition.fit/api/editCalories", {
+      method: "POST",
+      body: js,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    
+    var res = JSON.parse(await response.text());
+    console.log("Entire Response ", res);
+
+    // If the response indicates success, update the local storage
+    if (res.message === "Updated Calories") {
+      console.log("Response: ", res.message);
+
+      // Assuming you have the updated data, store it back in localStorage
+      var user = {
+        id: res.id,
+        caloriesData: res.updatedCaloriesData, // Assuming this is returned in the response
+      };
+
+      localStorage.setItem("user_data", JSON.stringify(user));
+      setMessage("Updated Calories");
+    } else {
+      setMessage(res.message); // Show any other message from the response
+    }
+  } catch (error: any) {
+    alert(error.toString());
+    return;
+  }
+}
+
+// This function can be used to modify calories for each day
+const handleCaloriesChange = (day: string, newCalories: number): void => {
+  // Get the current user data from localStorage
+  let storedData = localStorage.getItem("user_data");
+  if (storedData) {
+    let parsedData = JSON.parse(storedData);
+
+    // Modify the calories for the specified day
+    let updatedCaloriesData = parsedData.caloriesData || {};
+    updatedCaloriesData[day] = newCalories;
+
+    // Update localStorage with the new calories data
+    parsedData.caloriesData = updatedCaloriesData;
+    localStorage.setItem("user_data", JSON.stringify(parsedData));
+
+    console.log(`Updated calories for ${day}: ${newCalories}`);
+  }
+};
+
   const dailyCalories = {
     Sunday: 2200,
     Monday: 2000,
