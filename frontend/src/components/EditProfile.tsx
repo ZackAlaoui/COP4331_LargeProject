@@ -48,6 +48,7 @@ function EditProfile() {
         Age: age,
         Height: height,
         Weight: weight,
+        GoalWeight: goalweight,
         Email: email,
       };
 
@@ -135,6 +136,7 @@ function EditProfile() {
           setAge(res.Age);
           setHeight(res.Height);
           setWeight(res.Weight);
+          setGoalWeight(res.GoalWeight);
           setEmail(res.Email);
 
           var userId = {
