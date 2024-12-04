@@ -21,6 +21,7 @@ function WellnessPro() {
 
   //foodList will contain the array of foods
   const [foodList, setFoodList] = useState([]);
+  const [currentDay, setCurrentDay] = React.useState("Sunday");
 
   useEffect(() => {
     async function fetchGoalWeight() {
@@ -180,6 +181,10 @@ function WellnessPro() {
     setCurrentWeight(currentWeight + change);
   };
 
+  async function handleGrabDailyInfo(event: any, day: string): Promise<void> {
+    setCurrentDay(day);
+  }
+
   const dailyCalories = {
     Sunday: 2200,
     Monday: 2000,
@@ -208,7 +213,7 @@ function WellnessPro() {
       {/* Days of the Week with Hardcoded Calories */}
       <div className="daysOfWeek">
         {Object.entries(dailyCalories).map(([day, calories]) => (
-          <div key={day} className="dayBox">
+          <div key={day} className="dayBox" onClick={() => handleGrabDailyInfo(day)}>
             <p className="dayName">{day}</p>
             <p>{calories} kcal</p>
           </div>
@@ -234,6 +239,7 @@ function WellnessPro() {
       {/* Main Content Layout */}
       <div className="mainContent">
         {/* Calorie Tracker Section */}
+        <p>{currentDay}</p>
         <div className="calorieTracker">
           <div className="calorieGoalRow">
             <p>
@@ -324,7 +330,7 @@ function WellnessPro() {
               <button className="deleteFoodButton">- Delete Food</button>
             </div>
           </div>
-        </div>
+        p</div>
 
         {/* Adjust Weight Section */}
         <div className="adjustWeight lowerSection">
