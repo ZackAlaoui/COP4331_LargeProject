@@ -224,6 +224,58 @@ app.post('/api/updateUserInfo', async (req, res, next) => {
 });
 
 
+//Get goal weight for dashboard
+app.post('/api/goalWeight', async (req, res, next) => {
+    // incoming: id
+    // outgoing: id
+
+    var error = '';
+
+    const { id } = req.body;
+
+    if (!id) {
+        return res.status(400).json({ message: "id not found" });
+    }
+
+    try {
+        const db = client.db("LPN");
+
+        // Get the user credentials from the database
+        const getDocument = await db.collection('Users').findOne({ id: req.body.id });
+
+        if (!getDocument) {
+            return res.status(400).json({ message: "Id was not found in database" });
+        }
+        else {
+            ret = {
+                id: getDocument.id,
+                FirstName: getDocument.FirstName,
+                LastName: getDocument.LastName,
+                UserName: getDocument.Username,
+                Age: getDocument.Age,
+                Email: getDocument.Email,
+                Gender: getDocument.Gender,
+                Height: getDocument.Height,
+                Weight: getDocument.Weight,
+                GoalWeight: getDocument.GoalWeight,
+                message: "Found"
+            }
+
+            return res.status(200).json(ret);
+        }
+
+    } catch (e) {
+        error = e.toString();
+        console.error(e);
+        console.log("error");
+        return res.status(500).json({ message: "Server error occurred.", error: e.toString() });
+    }
+});
+
+
+
+
+
 
 //Get User Info API
 app.post('/api/getUserInfo', async (req, res, next) => {
@@ -273,8 +325,6 @@ app.post('/api/getUserInfo', async (req, res, next) => {
     }
 });
 
-
-
 //Edit weight API
 app.post('/api/editWeight', async (req, res, next) => {
     // incoming: currentWeight, id
@@ -306,6 +356,7 @@ app.post('/api/editWeight', async (req, res, next) => {
         if (updateUserWeight) {
             const ret = {
                 id: getDocument.id,
+                Weight: getDocument.Weight,
                 message: "Updated Weight",
                 error: ''
             };

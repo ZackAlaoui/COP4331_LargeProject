@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Home.css";
 
 function redirectPage() {
@@ -12,7 +12,7 @@ function editProfile() {
 
 function WellnessPro() {
   const [currentWeight, setCurrentWeight] = useState<number>(70);
-  const [goalWeight, setGoalWeight] = useState<number>();
+  const [goalWeight, setGoalWeight] = useState<number>(70);
   const [message, setMessage] = React.useState("");
   const [showAddFoodWindow, setShowAddFoodWindow] = useState(false);
 
@@ -21,6 +21,67 @@ function WellnessPro() {
 
   //foodList will contain the array of foods
   const [foodList, setFoodList] = useState([]);
+
+  useEffect(() => {
+    async function fetchGoalWeight() {
+      var storedData = localStorage.getItem("user_data");
+
+      if (!storedData) {
+        return;
+      }
+
+      var parsedData;
+      try {
+        parsedData = JSON.parse(storedData);
+
+        if (!parsedData.id) {
+          throw new Error("ID not found in parsed data");
+        }
+
+        var obj = {
+          id: parsedData.id,
+        };
+
+        console.log(obj);
+
+        //Converting our object to a string before sending to our API
+        var js = JSON.stringify(obj);
+
+        const response = await fetch(
+          "https://lp.largeprojectnutrition.fit/api/goalWeight",
+          {
+            method: "POST",
+            body: js,
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        const res = JSON.parse(await response.text());
+        console.log(res);
+
+        if (res.message === "Found") {
+          setGoalWeight(res.GoalWeight);
+          var userId = {
+            id: res.id,
+          };
+
+          localStorage.setItem("user_data", JSON.stringify(userId));
+          return;
+        } else {
+          setMessage(res.message);
+          return;
+        }
+      } catch (error: any) {
+        alert(error.toString());
+        return;
+      }
+    }
+
+    //call the function
+    fetchGoalWeight();
+  }, []);
 
   async function handleSearch() {
     var obj = {
@@ -96,6 +157,8 @@ function WellnessPro() {
       if (res.message === "Updated Weight") {
         console.log("Response ", res.message);
 
+        setCurrentWeight(res.Weight);
+
         var user = {
           id: res.id,
         };
@@ -114,6 +177,11 @@ function WellnessPro() {
   // Set current weight equal to the adjusted weight
   const handleWeightChange = (change: number): void => {
     setCurrentWeight(currentWeight + change);
+  };
+
+  // Set current weight equal to the adjusted weight
+  const handleGoalWeight = (change: number): void => {
+    setCurrentWeight(goalWeight + change); //
   };
 
   const dailyCalories = {

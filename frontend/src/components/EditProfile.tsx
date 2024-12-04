@@ -44,7 +44,6 @@ function EditProfile() {
         FirstName: firstName,
         LastName: lastName,
         UserName: userName,
-        // Password : password,
         GoalWeight: goalWeight,
         Gender: gender,
         Age: age,
