@@ -120,15 +120,15 @@ app.post('/api/createaccount', async (req, res, next) => {
 app.post('/api/completeprofile', async (req, res, next) => {
     // incoming: userId, Age, Gender, Height, Weight, Email
     // outgoing: error
-    const { Age, Gender, Height, Weight, Email, id } = req.body;
-    const newInfo = { Age: Age, Gender: Gender, Height: Height, Weight: Weight, Email: Email };
+    const { Age, Gender, Height, Weight, Email, id, GoalWeight } = req.body;
+    const newInfo = { Age: Age, Gender: Gender, Height: Height, Weight: Weight, Email: Email, GoalWeight: GoalWeight };
     var error = '';
     // console.log(id);
     console.log("This is the id " + req.body.id);
 
 
     // Validate input
-    if (!Age || !Gender || !Height || !Weight || !Email) {
+    if (!Age || !Gender || !Height || !Weight || !Email || GoalWeight) {
         return res.status(400).json({ error: "Missing required fields" });
     }
 
@@ -149,6 +149,7 @@ app.post('/api/completeprofile', async (req, res, next) => {
                 Height: result.Height,
                 Weight: result.Weight,
                 Email: result.Email,
+                GoalWeight: result.GoalWeight,
                 id: result.id,
                 message: "Profile Updated"
             };
@@ -256,6 +257,7 @@ app.post('/api/getUserInfo', async (req, res, next) => {
                 Gender: getDocument.Gender,
                 Height: getDocument.Height,
                 Weight: getDocument.Weight,
+                GoalWeight: getDocument.GoalWeight,
                 message: "Found"
             }
 
@@ -434,7 +436,7 @@ app.post('/api/add', async (req, res) => {
             `https://api.nal.usda.gov/fdc/v1/food/${foodId}?nutrients=203&nutrients=208&api_key=NWgR0wlBc7YQOa8FcrSXGb3bPdXp9D0mE582U7SH`
         );
 
-        console.log(foodResponse.data); 
+        console.log(foodResponse.data);
 
         const foodItem = foodResponse.data;
 
@@ -449,7 +451,7 @@ app.post('/api/add', async (req, res) => {
 
         // Update the user's profile with the new food item
         const db = client.db("LPN");
-        const User = await db.collection('Users').find({ id: new ObjectId(id)});
+        const User = await db.collection('Users').find({ id: new ObjectId(id) });
 
         // Check if the user exists
         if (!User) {
