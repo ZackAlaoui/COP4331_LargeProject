@@ -23,7 +23,8 @@ function WellnessPro() {
   const [foodList, setFoodList] = useState([]);
   const [currentDay, setCurrentDay] = React.useState("Wednesday");
 
-  const [currentCalories, setCurrentCalories] = useState<number>(0);
+  const [caloriesRemaining, setCurrentCalories] = useState<number>(0);
+  const [calorieGoal, setCalorieGoal] = useState<number>(2000);
 
   useEffect(() => {
     async function fetchGoalWeight() {
@@ -43,7 +44,7 @@ function WellnessPro() {
 
         var obj = {
           id: parsedData.id,
-          Kcal: 2000, //Send value 2000 for goal calories
+          calorieGoal: 2000, //Send value 2000 for goal calories
         };
 
         console.log(obj);
@@ -68,12 +69,12 @@ function WellnessPro() {
         if (res.message === "Found") {
           setGoalWeight(res.GoalWeight);
           setCurrentWeight(Number(res.Weight));
-          setCurrentCalories(Number(res.Kcal));
+          setCalorieGoal(Number(res.calorieGoal));
           console.log(typeof currentWeight);
           console.log(currentWeight);
           var userData = {
             id: res.id,
-            Kcal: res.Kcal,
+            CalorieGoal: res.CalorieGoal,
             Weight: res.Weight,
             GoalWeight: res.GoalWeight,
           };
@@ -328,10 +329,10 @@ function WellnessPro() {
           <p id="currentDayInBox">{currentDay}</p>
           <div className="calorieGoalRow">
             <p>
-              Calorie Goal: <strong>2000</strong>
+              Calorie Goal: <strong>{calorieGoal}</strong>
             </p>
             <p>
-              Calorie Remaining: <strong>2000</strong>
+              Calorie Remaining: <strong>{caloriesRemaining}</strong>
             </p>
           </div>
 
