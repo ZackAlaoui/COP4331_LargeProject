@@ -178,6 +178,20 @@ body {
   background-color: #56a7d5;
 }
 
+.addFoodButtonPlus {
+  font-size: 14px;
+  background-color: #6fd1f5;
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.addFoodButtonPlus:hover {
+  background-color: #56a7d5;
+}
+
 .deleteFoodButton {
   font-size: 14px; /* Same font size as add button */
   background-color: #f56f6f; /* A soft red for delete */

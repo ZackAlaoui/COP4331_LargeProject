@@ -23,6 +23,8 @@ function WellnessPro() {
   const [foodList, setFoodList] = useState([]);
   const [currentDay, setCurrentDay] = React.useState("Wednesday");
 
+  const [currentCalories, setCurrentCalories] = useState<number>(0);
+
   useEffect(() => {
     async function fetchGoalWeight() {
       var storedData = localStorage.getItem("user_data");
@@ -129,10 +131,6 @@ function WellnessPro() {
     setShowAddFoodWindow(true);
   };
 
-  const handleAddFood = () => {
-
-  }
-
   const handleClosePopUp = () => {
     setShowAddFoodWindow(false);
   };
@@ -197,6 +195,63 @@ function WellnessPro() {
   const handleWeightChange = (change: number): void => {
     setCurrentWeight((currentWeight) => Number(currentWeight) + change);
   };
+
+  async function modifyCalories(event: any): Promise<void> {
+    event.preventDefault();
+    //Get user_data from local storage
+    var storedData = localStorage.getItem("user_data");
+
+    if (storedData) {
+      var parsedData = JSON.parse(storedData);
+      console.log(parsedData);
+    } else {
+      console.log("No data was found in local storage using user_data as key");
+    }
+
+    var obj = {
+      CurrentCalories: currentCalories,
+      id: parsedData.id,
+    };
+
+    //Convert Javascript object to a JSON string
+    var js = JSON.stringify(obj);
+
+    try {
+      const response = await fetch(
+        "https://lp.largeprojectnutrition.fit/api/add",
+        {
+          method: "POST",
+          body: js,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      var res = JSON.parse(await response.text());
+      console.log("Entire Response ", res);
+
+      if (res.message === "Updated Calories") {
+        console.log("Response ", res.message);
+
+        var user = {
+          id: res.id,
+        };
+
+        localStorage.setItem("user_data", JSON.stringify(user));
+        setMessage("Updated Calories");
+      } else {
+        setMessage(res.message);
+      }
+    } catch (error: any) {
+      alert(error.toString());
+      return;
+    }
+  }
+
+  // Set current weight equal to the adjusted weight
+  const handleAddCalories = (change: number): void => {
+    setCurrentCalories((currentCalories) => Number(currentCalories) + change);
+  };  
 
   async function handleGrabDailyInfo(day: string, event: any): Promise<void> {
     setCurrentDay(day);
@@ -306,6 +361,9 @@ function WellnessPro() {
                         <p>
                           <strong>Protein:</strong> {food.protein}(grams)
                         </p>
+                        <button id="AddButton" onClick={handleAddCalories}>
+                          +
+                        </button>
                       </li>
                     ))}
                   </ul>
