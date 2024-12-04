@@ -160,10 +160,10 @@ function EditProfile() {
 
   return (
     <div className="containerEditProfile">
-      <button id="logout" onClick={() => redirectToLogin()}>
+      <button className="editProfileButton" id="logout" onClick={() => redirectToLogin()}>
         Logout
       </button>
-      <button id="goToDashboard" onClick={() => redirectToDashboard()}>
+      <button className="editProfileButton" id="goToDashboard" onClick={() => redirectToDashboard()}>
         Go to Dashboard
       </button>
       <h1 className="editProfile">Edit Profile</h1>
