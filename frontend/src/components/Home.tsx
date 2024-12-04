@@ -202,64 +202,52 @@ function WellnessPro() {
     setCurrentWeight((currentWeight) => Number(currentWeight) + change);
   };
 
-  async function modifyCalories(event: any): Promise<void> {
-    event.preventDefault();
-    //Get user_data from local storage
-    var storedData = localStorage.getItem("user_data");
-
-    if (storedData) {
-      var parsedData = JSON.parse(storedData);
-      console.log(parsedData);
-    } else {
-      console.log("No data was found in local storage using user_data as key");
+  async function modifyCalories(foodId: number): Promise<void> {
+    if (!foodId) {
+      console.error("Food ID is required.");
+      return;
     }
 
-    // Extract foodId from the event or input (depending on your form setup)
-    const { foodId, currentCalories } = event.target; // Assuming foodId and currentCalories are available in the event
-
-    if (!foodId || !currentCalories) {
-      console.log("Food ID and current calories are required");
-      return; // Exit if foodId or currentCalories is missing
+    // Get user data from local storage
+    const storedData = localStorage.getItem("user_data");
+    if (!storedData) {
+      console.error("User data not found in local storage.");
+      return;
     }
+    const parsedData = JSON.parse(storedData);
 
-    var obj = {
-      CurrentCalories: currentCalories,
-      foodId: foodId,
+    // Create the request payload
+    const requestData = {
       id: parsedData.id,
+      foodId: foodId,
+      //day: new Date().toISOString().split("T")[0], // Set the day as today's date
     };
 
-    //Convert Javascript object to a JSON string
-    var js = JSON.stringify(obj);
-
     try {
+      // Call the API
       const response = await fetch(
         "https://lp.largeprojectnutrition.fit/api/add",
         {
           method: "POST",
-          body: js,
           headers: {
             "Content-Type": "application/json",
           },
+          body: JSON.stringify(requestData),
         }
       );
-      var res = JSON.parse(await response.text());
-      console.log("Entire Response ", res);
 
-      if (res.message === "Updated Calories") {
-        console.log("Response ", res.message);
+      const result = await response.json();
 
-        var user = {
-          id: res.id,
-        };
-
-        localStorage.setItem("user_data", JSON.stringify(user));
-        setMessage("Updated Calories");
+      if (response.ok) {
+        console.log("Food item added successfully:", result);
       } else {
-        setMessage(res.message);
+        console.error(
+          "Error adding food item:",
+          result.error || result.message
+        );
       }
-    } catch (error: any) {
-      alert(error.toString());
-      return;
+    } catch (error) {
+      console.error("Error:", error);
     }
   }
 
@@ -371,7 +359,11 @@ function WellnessPro() {
                         <p>
                           <strong>Protein:</strong> {food.protein}(grams)
                         </p>
-                        <button id="AddButton" onClick={modifyCalories}>
+                        <button
+                          id="AddButton"
+                          onClick={() => modifyCalories(food.foodId)}
+                        >
+                          {" "}
                           +
                         </button>
                       </li>
