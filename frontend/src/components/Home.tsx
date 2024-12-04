@@ -63,6 +63,7 @@ function WellnessPro() {
 
         if (res.message === "Found") {
           setGoalWeight(res.GoalWeight);
+          setCurrentWeight(res.Weight);
           var userId = {
             id: res.id,
           };
