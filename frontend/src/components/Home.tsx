@@ -104,7 +104,7 @@ function WellnessPro() {
 
     try {
       const response = await fetch(
-        `https://lp.largeprojectnutrition/v1/foods/search`,
+        `https://lp.largeprojectnutrition.fit/v1/foods/search`,
         {
           method: "POST",
           body: js,
