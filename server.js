@@ -272,11 +272,6 @@ app.post('/api/goalWeight', async (req, res, next) => {
     }
 });
 
-
-
-
-
-
 //Get User Info API
 app.post('/api/getUserInfo', async (req, res, next) => {
     // incoming: id
