@@ -17,6 +17,8 @@ app.use(bodyParser.json());
 
 const mongoURI = 'mongodb+srv://largeproject:largeproject@cluster0.go0gv.mongodb.net/LPN?retryWrites=true&w=majority&appName=Cluster0';
 
+const PORT = process.env.PORT || 5000; // Use dynamic port or fallback to 5000 for local dev
+
 const store = new MongoDBSession({
     uri: mongoURI,
     collection: 'mySessions'
@@ -563,4 +565,6 @@ app.post('/api/delete', async (req, res) => {
     }
 });
 
-app.listen(5000); // Start Node + Express server on port 5000
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
