@@ -475,6 +475,7 @@ app.post('/api/search', async (req, res) => {
 // API to add a selected food item to the user's profile
 app.post('/api/add', async (req, res) => {
     const { id, foodId, day } = req.body;  // userId and foodId to identify the user and food item
+    const { id, foodId, day } = req.body;  // userId and foodId to identify the user and food item
     let error = '';
 
     if (!id || !foodId || !day) {
@@ -503,6 +504,7 @@ app.post('/api/add', async (req, res) => {
         // Update the user's profile with the new food item
         const db = client.db("LPN");
         const User = await db.collection('Users').find({ id: req.body.id });
+        const User = await db.collection('Users').find({ id: req.body.id });
 
         // Check if the user exists
         if (!User) {
@@ -515,6 +517,7 @@ app.post('/api/add', async (req, res) => {
 
         // Add the food item to the user's foodItems array
         await db.collection('Users').updateOne(
+            { id: req.body.id },
             { id: req.body.id },
             { $push: { foodItems: foodData } }  // Add the food item to the user's foodItems array
         );
@@ -601,4 +604,5 @@ app.post('/api/delete', async (req, res) => {
     }
 });
 
+app.listen(5000); // Start Node + Express server on port 5000
 app.listen(5000); // Start Node + Express server on port 5000

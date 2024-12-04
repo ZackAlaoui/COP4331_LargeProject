@@ -23,8 +23,6 @@ function WellnessPro() {
   const [foodList, setFoodList] = useState([]);
   const [currentDay, setCurrentDay] = React.useState("Wednesday");
 
-  const [currentCalories, setCurrentCalories] = useState<number>(0);
-
   useEffect(() => {
     async function fetchGoalWeight() {
       var storedData = localStorage.getItem("user_data");
@@ -217,7 +215,7 @@ function WellnessPro() {
 
     var obj = {
       foodId: newfoodId,
-      Day: currentDay,
+      day: currentDay,
       id: parsedData.id
     };
 
@@ -277,7 +275,7 @@ function WellnessPro() {
 
     var obj = {
       foodId: newfoodId,
-      Day: currentDay,
+      day: currentDay,
       id: parsedData.id
     };
 
