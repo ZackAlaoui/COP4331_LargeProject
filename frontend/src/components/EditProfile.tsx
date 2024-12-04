@@ -1,19 +1,17 @@
 import React, { useEffect, useState } from "react";
-import App from "../App.tsx";
 import "./EditProfile.css";
-import { json } from "react-router-dom";
 
 function EditProfile() {
-  const [firstName, setFirstName] = React.useState("");
-  const [lastName, setLastName] = React.useState("");
-  const [userName, setUserName] = React.useState("");
-  const [goalweight, setGoalWeight] = React.useState("");
-  const [gender, setGender] = React.useState("");
-  const [age, setAge] = React.useState("");
-  const [height, setHeight] = React.useState("");
-  const [weight, setWeight] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [message, setMessage] = React.useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [userName, setUserName] = useState("");
+  const [goalweight, setGoalWeight] = useState("");
+  const [gender, setGender] = useState("");
+  const [age, setAge] = useState("");
+  const [height, setHeight] = useState("");
+  const [weight, setWeight] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
 
   function redirectToLogin() {
     window.location.href = "/";
@@ -53,7 +51,6 @@ function EditProfile() {
 
       console.log(obj);
 
-      //Converting our object to a string before sending to our API
       var js = JSON.stringify(obj);
 
       const response = await fetch(
@@ -110,7 +107,6 @@ function EditProfile() {
           id: parsedData.id,
         };
 
-        //Converting our object to a string before sending to our API
         var js = JSON.stringify(obj);
 
         const response = await fetch(
@@ -155,24 +151,26 @@ function EditProfile() {
     }
 
     loadUserInfo();
-  }, []); //This useEffect will run once when the component mounts
+  }, []);
 
   return (
     <div className="containerEditProfile">
-      <button
-        className="editProfileButton"
-        id="logout"
-        onClick={() => redirectToLogin()}
-      >
-        Logout
-      </button>
-      <button
-        className="editProfileButton"
-        id="goToDashboard"
-        onClick={() => redirectToDashboard()}
-      >
-        Go to Dashboard
-      </button>
+      <div className="headerButtons">
+        <button
+          className="editProfileButton"
+          id="logout"
+          onClick={() => redirectToLogin()}
+        >
+          Logout
+        </button>
+        <button
+          className="editProfileButton"
+          id="goToDashboard"
+          onClick={() => redirectToDashboard()}
+        >
+          Go to Dashboard
+        </button>
+      </div>
       <h1 className="editProfile">Edit Profile</h1>
       <label className="editProfileLabel" htmlFor="FirstName">
         First Name
@@ -264,7 +262,10 @@ function EditProfile() {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
-      <button className="editProfileButton" onClick={updateUserInfo}>
+      <button
+        className="editProfileButton updateButton"
+        onClick={updateUserInfo}
+      >
         Update
       </button>
       {message && <div className="UpdateInfoSuccess">{message}</div>}
