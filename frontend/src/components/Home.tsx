@@ -64,7 +64,8 @@ function WellnessPro() {
 
         if (res.message === "Found") {
           setGoalWeight(res.GoalWeight);
-          setCurrentWeight(res.Weight);
+          setCurrentWeight(Number(res.Weight));
+          console.log(typeof currentWeight);
           var userId = {
             id: res.id,
           };
@@ -159,7 +160,7 @@ function WellnessPro() {
       if (res.message === "Updated Weight") {
         console.log("Response ", res.message);
 
-        setCurrentWeight(res.Weight);
+        setCurrentWeight(Number(res.Weight));
 
         var user = {
           id: res.id,
@@ -178,7 +179,7 @@ function WellnessPro() {
 
   // Set current weight equal to the adjusted weight
   const handleWeightChange = (change: number): void => {
-    setCurrentWeight(currentWeight + change);
+    setCurrentWeight((currentWeight) => Number(currentWeight) + change);
   };
 
   async function handleGrabDailyInfo(day: string, event: any): Promise<void> {
@@ -213,7 +214,11 @@ function WellnessPro() {
       {/* Days of the Week with Hardcoded Calories */}
       <div className="daysOfWeek">
         {Object.entries(dailyCalories).map(([day, calories]) => (
-          <div key={day} className="dayBox" onClick={() => handleGrabDailyInfo(day)}>
+          <div
+            key={day}
+            className="dayBox"
+            onClick={() => handleGrabDailyInfo(day)}
+          >
             <p className="dayName">{day}</p>
             <p>{calories} kcal</p>
           </div>
@@ -330,7 +335,7 @@ function WellnessPro() {
               <button className="deleteFoodButton">- Delete Food</button>
             </div>
           </div>
-        p</div>
+        </div>
 
         {/* Adjust Weight Section */}
         <div className="adjustWeight lowerSection">
