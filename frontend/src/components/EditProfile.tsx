@@ -223,7 +223,7 @@ function EditProfile() {
         type="number"
         id="Height"
         value={height}
-        onChange={(e) => setHeight(e.target.value)}
+        onChange={(e) => setHeight(e.target.value)} 
       />
       <label className="editProfileLabel" htmlFor="Weight">
         Weight
