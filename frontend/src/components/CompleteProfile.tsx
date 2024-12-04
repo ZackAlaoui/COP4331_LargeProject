@@ -64,6 +64,8 @@ function CompleteProfile() {
 
     console.log(retrievedUser.id);
     var js = JSON.stringify(obj);
+    console.log(obj);
+
     try {
       const response = await fetch(
         "https://lp.largeprojectnutrition.fit/api/completeprofile",

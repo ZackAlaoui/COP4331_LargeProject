@@ -122,6 +122,7 @@ app.post('/api/completeprofile', async (req, res, next) => {
     // outgoing: error
     const { Age, Gender, Height, Weight, Email, id, GoalWeight } = req.body;
     const newInfo = { Age: Age, Gender: Gender, Height: Height, Weight: Weight, Email: Email, GoalWeight: GoalWeight };
+    console.log(GoalWeight);
     var error = '';
     // console.log(id);
     console.log("This is the id " + req.body.id);
