@@ -474,11 +474,11 @@ app.post('/api/search', async (req, res) => {
 
 // API to add a selected food item to the user's profile
 app.post('/api/add', async (req, res) => {
-    const { id, foodId } = req.body;  // userId and foodId to identify the user and food item
+    const { id, foodId, day } = req.body;  // userId and foodId to identify the user and food item
     let error = '';
 
-    if (!id || !foodId) {
-        return res.status(400).json({ error: 'User ID and Food ID are required' });
+    if (!id || !foodId || !day) {
+        return res.status(400).json({ error: 'User ID , Food ID , and day are required' });
     }
 
     try {
@@ -519,8 +519,26 @@ app.post('/api/add', async (req, res) => {
             { $push: { foodItems: foodData } }  // Add the food item to the user's foodItems array
         );
 
-        // Return success response
-        res.status(200).json({ message: 'Food item added successfully', foodItem: foodData });
+        // Update the user's calories for the specified day
+        let updatedCaloriesData = User.caloriesData || {};
+        const currentCalories = updatedCaloriesData[day] || 0;
+
+        // Add the food item's calories to the current calories for the day
+        updatedCaloriesData[day] = currentCalories + foodData.calories;
+
+        // Save the updated calories data
+        await db.collection('Users').updateOne(
+            { id: new ObjectId(id) },
+            { $set: { caloriesData: updatedCaloriesData } }
+        );
+
+        // Return success response with the updated food item and calories
+        res.status(200).json({
+            message: 'Food item added successfully and calories updated',
+            foodItem: foodData,
+            updatedCaloriesData: updatedCaloriesData,
+        });
+
     } catch (err) {
         console.error(err);
         return res.status(500).json({ error: 'Failed to add food item', details: err.message });
@@ -554,7 +572,7 @@ app.post('/api/delete', async (req, res) => {
         // Remove the food item from the user's foodItems array
         await db.collection('Users').updateOne(
             { _id: new ObjectId(id) },
-            { $pull: { foodItems: { foodId: foodId } } } // Remove the food item by foodId
+            { $pull: { foodItems: { foodId: foodId } } }, // Remove the food item by foodId
         );
 
         // Return success response
@@ -565,6 +583,4 @@ app.post('/api/delete', async (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-  });
+app.listen(5000); // Start Node + Express server on port 5000
