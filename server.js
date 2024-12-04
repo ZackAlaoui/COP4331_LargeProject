@@ -129,7 +129,7 @@ app.post('/api/completeprofile', async (req, res, next) => {
 
 
     // Validate input
-    if (!Age || !Gender || !Height || !Weight || !Email || GoalWeight) {
+    if (!Age || !Gender || !Height || !Weight || !Email || !GoalWeight) {
         return res.status(400).json({ error: "Missing required fields" });
     }
 
