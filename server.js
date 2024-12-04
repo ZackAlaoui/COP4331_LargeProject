@@ -539,8 +539,6 @@ app.post('/api/add', async (req, res) => {
             updatedCaloriesData: updatedCaloriesData,
         });
 
-        // Return success response
-        res.status(200).json({ message: 'Food item added successfully', foodItem: foodData });
     } catch (err) {
         console.error(err);
         return res.status(500).json({ error: 'Failed to add food item', details: err.message });

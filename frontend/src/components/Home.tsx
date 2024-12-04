@@ -208,8 +208,17 @@ function WellnessPro() {
       console.log("No data was found in local storage using user_data as key");
     }
 
+    // Extract foodId from the event or input (depending on your form setup)
+    const { foodId, currentCalories } = event.target; // Assuming foodId and currentCalories are available in the event
+
+    if (!foodId || !currentCalories) {
+        console.log("Food ID and current calories are required");
+        return; // Exit if foodId or currentCalories is missing
+    }
+
     var obj = {
       CurrentCalories: currentCalories,
+      foodId: foodId,
       id: parsedData.id,
     };
 
@@ -247,11 +256,6 @@ function WellnessPro() {
       return;
     }
   }
-
-  // Set current weight equal to the adjusted weight
-  const handleAddCalories = (change: number): void => {
-    setCurrentCalories((currentCalories) => Number(currentCalories) + change);
-  };  
 
   async function handleGrabDailyInfo(day: string, event: any): Promise<void> {
     setCurrentDay(day);
@@ -361,7 +365,7 @@ function WellnessPro() {
                         <p>
                           <strong>Protein:</strong> {food.protein}(grams)
                         </p>
-                        <button id="AddButton" onClick={handleAddCalories}>
+                        <button id="AddButton" onClick={modifyCalories}>
                           +
                         </button>
                       </li>
