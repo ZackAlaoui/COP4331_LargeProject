@@ -93,6 +93,8 @@ function WellnessPro() {
       pageSize: 10,
     };
 
+    console.log(obj);
+
     if (!searchTerm.trim()) {
       console.log("query is empty");
       return;
