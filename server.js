@@ -475,7 +475,6 @@ app.post('/api/search', async (req, res) => {
 // API to add a selected food item to the user's profile
 app.post('/api/add', async (req, res) => {
     const { id, foodId, day } = req.body;  // userId and foodId to identify the user and food item
-    const { id, foodId, day } = req.body;  // userId and foodId to identify the user and food item
     let error = '';
 
     if (!id || !foodId || !day) {
@@ -503,7 +502,6 @@ app.post('/api/add', async (req, res) => {
 
         // Update the user's profile with the new food item
         const db = client.db("LPN");
-        const User = await db.collection('Users').find({ id: req.body.id });
         const User = await db.collection('Users').find({ id: req.body.id });
 
         // Check if the user exists
@@ -550,10 +548,10 @@ app.post('/api/add', async (req, res) => {
 
 // API for deleting a food
 app.post('/api/delete', async (req, res) => {
-    const { id, foodId } = req.body; // userId and foodId to identify the user and food item
+    const { id, foodId, day} = req.body; // userId and foodId to identify the user and food item
     let error = '';
 
-    if (!id || !foodId) {
+    if (!id || !foodId || !day) {
         return res.status(400).json({ error: 'User ID and Food ID are required' });
     }
 
@@ -582,8 +580,8 @@ app.post('/api/delete', async (req, res) => {
         let updatedCaloriesData = User.caloriesData || {};
         const currentCalories = updatedCaloriesData[day] || 0;
 
-        // Add the food item's calories to the current calories for the day
-        updatedCaloriesData[day] = currentCalories + foodData.calories;
+        // subtract the food item's calories to the current calories for the day
+        updatedCaloriesData[day] = currentCalories - foodData.calories;
 
         // Save the updated calories data
         await db.collection('Users').updateOne(
@@ -604,5 +602,4 @@ app.post('/api/delete', async (req, res) => {
     }
 });
 
-app.listen(5000); // Start Node + Express server on port 5000
 app.listen(5000); // Start Node + Express server on port 5000
