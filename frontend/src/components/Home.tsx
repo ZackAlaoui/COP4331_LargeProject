@@ -90,7 +90,7 @@ function WellnessPro() {
   async function handleSearch() {
     var obj = {
       query: searchTerm,
-      pageSize: 10,
+      //pageSize: 10,
     };
 
     console.log(obj);
