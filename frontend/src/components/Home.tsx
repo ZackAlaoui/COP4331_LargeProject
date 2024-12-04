@@ -12,6 +12,7 @@ function editProfile() {
 
 function WellnessPro() {
   const [currentWeight, setCurrentWeight] = useState<number>(70);
+  const [goalWeight, setGoalWeight] = useState<number>();
   const [message, setMessage] = React.useState("");
   const [showAddFoodWindow, setShowAddFoodWindow] = useState(false);
 
@@ -56,7 +57,7 @@ function WellnessPro() {
     setShowAddFoodWindow(false);
   };
 
-  const goalWeight: number = 65;
+  // const goalWeight: number = 65;
 
   async function modifyWeight(event: any): Promise<void> {
     event.preventDefault();

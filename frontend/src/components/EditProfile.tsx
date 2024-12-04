@@ -14,6 +14,7 @@ function EditProfile() {
   const [weight, setWeight] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [message, setMessage] = React.useState("");
+  const [goalWeight, setGoalWeight] = React.useState("");
 
   function redirectToLogin() {
     window.location.href = "/";
@@ -44,6 +45,7 @@ function EditProfile() {
         LastName: lastName,
         UserName: userName,
         // Password : password,
+        GoalWeight: goalWeight,
         Gender: gender,
         Age: age,
         Height: height,
@@ -136,6 +138,7 @@ function EditProfile() {
           setHeight(res.Height);
           setWeight(res.Weight);
           setEmail(res.Email);
+          setGoalWeight(res.GoalWeight);
 
           var userId = {
             id: res.id,

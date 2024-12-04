@@ -60,6 +60,7 @@ function CompleteProfile() {
       Height: height,
       Email: email,
       Gender: gender,
+      GoalWeight: goalWeight,
     };
 
     console.log(retrievedUser.id);
