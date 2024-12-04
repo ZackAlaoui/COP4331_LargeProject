@@ -56,7 +56,7 @@ function CompleteProfile() {
       id: retrievedUser.id,
       Age: age,
       Weight: weight,
-      //GoalWeight: goalWeight;
+      GoalWeight: goalWeight,
       Height: height,
       Email: email,
       Gender: gender,
