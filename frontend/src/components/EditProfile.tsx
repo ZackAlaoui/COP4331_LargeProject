@@ -15,6 +15,14 @@ function EditProfile() {
   const [email, setEmail] = React.useState("");
   const [message, setMessage] = React.useState("");
 
+  function redirectToLogin() {
+    window.location.href = "/";
+  }
+
+  function redirectToDashboard() {
+    window.location.href = "/homepage";
+  }
+
   async function updateUserInfo(event: any): Promise<void> {
     var storedData = localStorage.getItem("user_data");
 
@@ -150,6 +158,12 @@ function EditProfile() {
 
   return (
     <div className="containerEditProfile">
+      <button id="logout" onClick={() => redirectToLogin()}>
+        Logout
+      </button>
+      <button id="goToDashboard" onClick={() => redirectToDashboard()}>
+        Go to Dashboard
+      </button>
       <h1 className="editProfile">Edit Profile</h1>
       <label className="editProfileLabel" htmlFor="FirstName">
         First Name
