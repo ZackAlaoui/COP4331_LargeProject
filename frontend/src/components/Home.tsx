@@ -196,8 +196,7 @@ function WellnessPro() {
     setCurrentWeight((currentWeight) => Number(currentWeight) + change);
   };
 
-  async function modifyCalories(event: any): Promise<void> {
-    event.preventDefault();
+  async function modifyCalories(newfoodId: number): void {
     //Get user_data from local storage
     var storedData = localStorage.getItem("user_data");
 
@@ -209,17 +208,16 @@ function WellnessPro() {
     }
 
     // Extract foodId from the event or input (depending on your form setup)
-    const { foodId, currentCalories } = event.target; // Assuming foodId and currentCalories are available in the event
+    //const { foodId } = event.target; // Assuming foodId and currentCalories are available in the event
 
-    if (!foodId || !currentCalories) {
-        console.log("Food ID and current calories are required");
+    if (!newfoodId) {
+        console.log("Food ID is required");
         return; // Exit if foodId or currentCalories is missing
     }
 
     var obj = {
-      CurrentCalories: currentCalories,
-      foodId: foodId,
-      id: parsedData.id,
+      foodId: newfoodId,
+      id: parsedData.id
     };
 
     //Convert Javascript object to a JSON string
@@ -365,7 +363,7 @@ function WellnessPro() {
                         <p>
                           <strong>Protein:</strong> {food.protein}(grams)
                         </p>
-                        <button id="AddButton" onClick={modifyCalories}>
+                        <button id="AddButton" onClick={modifyCalories(food.foodId)}>
                           +
                         </button>
                       </li>
