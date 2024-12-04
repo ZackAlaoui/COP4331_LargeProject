@@ -599,7 +599,7 @@ app.post('/api/delete', async (req, res) => {
 
         // Remove the food item from the user's foodItems array
         await db.collection('Users').updateOne(
-            { id: req.body.id },
+            {id: req.body.id},
             { $pull: { foodItems: { foodId: foodId } } }, // Remove the food item by foodId
         );
 
