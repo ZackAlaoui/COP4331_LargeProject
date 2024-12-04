@@ -7,13 +7,21 @@ function EditProfile() {
   const [firstName, setFirstName] = React.useState("");
   const [lastName, setLastName] = React.useState("");
   const [userName, setUserName] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const [goalweight, setGoalWeight] = React.useState("");
   const [gender, setGender] = React.useState("");
   const [age, setAge] = React.useState("");
   const [height, setHeight] = React.useState("");
   const [weight, setWeight] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [message, setMessage] = React.useState("");
+
+  function redirectToLogin() {
+    window.location.href = "/";
+  }
+
+  function redirectToDashboard() {
+    window.location.href = "/homepage";
+  }
 
   async function updateUserInfo(event: any): Promise<void> {
     var storedData = localStorage.getItem("user_data");
@@ -35,11 +43,11 @@ function EditProfile() {
         FirstName: firstName,
         LastName: lastName,
         UserName: userName,
-        // Password : password,
         Gender: gender,
         Age: age,
         Height: height,
         Weight: weight,
+        GoalWeight: goalweight,
         Email: email,
       };
 
@@ -127,6 +135,7 @@ function EditProfile() {
           setAge(res.Age);
           setHeight(res.Height);
           setWeight(res.Weight);
+          setGoalWeight(res.GoalWeight);
           setEmail(res.Email);
 
           var userId = {
@@ -150,73 +159,115 @@ function EditProfile() {
 
   return (
     <div className="containerEditProfile">
-      <h2 id="editProfile">Edit Profile</h2>
-      <label htmlFor="firstName">FIRST NAME</label>
+      <button
+        className="editProfileButton"
+        id="logout"
+        onClick={() => redirectToLogin()}
+      >
+        Logout
+      </button>
+      <button
+        className="editProfileButton"
+        id="goToDashboard"
+        onClick={() => redirectToDashboard()}
+      >
+        Go to Dashboard
+      </button>
+      <h1 className="editProfile">Edit Profile</h1>
+      <label className="editProfileLabel" htmlFor="FirstName">
+        First Name
+      </label>
       <input
+        className="editProfileInput"
         type="text"
-        id="firstName"
-        value={firstName || ""}
+        id="FirstName"
+        value={firstName}
         onChange={(e) => setFirstName(e.target.value)}
       />
-      <br />
-      <label htmlFor="Lastname">LASTNAME </label>
+      <label className="editProfileLabel" htmlFor="LastName">
+        Last Name
+      </label>
       <input
+        className="editProfileInput"
         type="text"
-        id="Lastnamr"
-        value={lastName || ""}
+        id="LastName"
+        value={lastName}
         onChange={(e) => setLastName(e.target.value)}
       />
-      <br />
-      <label htmlFor="Username">USERNAME </label>
+      <label className="editProfileLabel" htmlFor="UserName">
+        Username
+      </label>
       <input
+        className="editProfileInput"
         type="text"
-        id="Username"
-        value={userName || ""}
+        id="UserName"
+        value={userName}
         onChange={(e) => setUserName(e.target.value)}
       />
-      <br />
-      <label htmlFor="Gender">GENDER </label>
+      <label className="editProfileLabel" htmlFor="Gender">
+        Gender
+      </label>
       <input
+        className="editProfileInput"
         type="text"
         id="Gender"
-        value={gender || ""}
+        value={gender}
         onChange={(e) => setGender(e.target.value)}
       />
-      <br />
-      <label htmlFor="Age">AGE </label>
+      <label className="editProfileLabel" htmlFor="Age">
+        Age
+      </label>
       <input
-        type="text"
+        className="editProfileInput"
+        type="number"
         id="Age"
-        value={age || ""}
+        value={age}
         onChange={(e) => setAge(e.target.value)}
       />
-      <br />
-      <label htmlFor="Height">HEIGHT </label>
+      <label className="editProfileLabel" htmlFor="Height">
+        Height
+      </label>
       <input
-        type="text"
+        className="editProfileInput"
+        type="number"
         id="Height"
-        value={height || ""}
+        value={height}
         onChange={(e) => setHeight(e.target.value)}
       />
-      <br />
-      <label htmlFor="Weight">WEIGHT </label>
+      <label className="editProfileLabel" htmlFor="Weight">
+        Weight
+      </label>
       <input
-        type="text"
+        className="editProfileInput"
+        type="number"
         id="Weight"
-        value={weight || ""}
+        value={weight}
         onChange={(e) => setWeight(e.target.value)}
       />
-      <br />
-      <label htmlFor="Email">EMAIL </label>
+      <label className="editProfileLabel" htmlFor="GoalWeight">
+        Goal Weight
+      </label>
       <input
-        type="text"
+        className="editProfileInput"
+        type="number"
+        id="GoalWeight"
+        value={goalweight}
+        onChange={(e) => setGoalWeight(e.target.value)}
+      />
+      <label className="editProfileLabel" htmlFor="Email">
+        Email
+      </label>
+      <input
+        className="editProfileInput"
+        type="email"
         id="Email"
-        value={email || ""}
+        value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
-      <br />
-      <span className="UpdateInfoSuccess">{message}</span>
-      <button onClick={updateUserInfo}>Update your Information</button>
+      <button className="editProfileButton" onClick={updateUserInfo}>
+        Update
+      </button>
+      {message && <div className="UpdateInfoSuccess">{message}</div>}
     </div>
   );
 }

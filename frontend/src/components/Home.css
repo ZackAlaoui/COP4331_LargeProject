@@ -87,12 +87,22 @@ body {
   font-size: 14px;
 }
 
+    .dayBox:hover {
+        cursor: pointer;
+        background-color: #e3e3e3;
+    }
+
+#currentDayInBox {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
 /* Current Weight and Goal Weight Section */
 .weightInfo {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 30px;
   font-size: 18px;
   color: white;
 }
@@ -168,6 +178,20 @@ body {
   background-color: #56a7d5;
 }
 
+.deleteFoodButton {
+  font-size: 14px; /* Same font size as add button */
+  background-color: #f56f6f; /* A soft red for delete */
+  border: none; /* No border for a clean look */
+  color: white; /* White text for contrast */
+  padding: 8px 12px; /* Same padding as add button for consistency */
+  border-radius: 5px; /* Same rounded corners */
+  cursor: pointer; /* Pointer cursor for interactivity */
+}
+
+.deleteFoodButton:hover {
+  background-color: #e05555;
+}
+
 /* Exercise Input */
 .exerciseInput {
   margin-top: 20px;
@@ -224,4 +248,57 @@ body {
   display: flex;
   align-items: center;
   gap: 15px;
+}
+
+.popupOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.popupWindow {
+  position: relative;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: 50%;
+  height: 50%;
+}
+
+.popupActions button {
+  margin: 10px;
+}
+
+
+#closeButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #555;
+}
+
+#titlePopUp{
+  font-size: 1000px;
+}
+
+/* Style for the input field */
+#searchBar {
+  width: 90%; /* Makes the input take the full width of its container */
+  padding: 10px; /* Adds space inside the input for a cleaner look */
+  font-size: 1rem; /* Adjusts the font size for readability */
+  border: 1px solid #ccc; /* Adds a subtle border */
+  border-radius: 5px; /* Rounds the corners */
+  margin-top: 10px; /* Adds spacing above the input */
+  box-sizing: border-box; /* Ensures padding doesn't affect the input size */
 }

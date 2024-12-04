@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Home.css";
 
 function redirectPage() {
@@ -12,9 +12,128 @@ function editProfile() {
 
 function WellnessPro() {
   const [currentWeight, setCurrentWeight] = useState<number>(70);
+  const [goalWeight, setGoalWeight] = useState<number>(70);
   const [message, setMessage] = React.useState("");
+  const [showAddFoodWindow, setShowAddFoodWindow] = useState(false);
 
-  const goalWeight: number = 65;
+  //This is a useState that will set searchTerm to the input we provide it
+  const [searchTerm, setSearchTerm] = useState("");
+
+  //foodList will contain the array of foods
+  const [foodList, setFoodList] = useState([]);
+  const [currentDay, setCurrentDay] = React.useState("Sunday");
+
+  useEffect(() => {
+    async function fetchGoalWeight() {
+      var storedData = localStorage.getItem("user_data");
+
+      if (!storedData) {
+        return;
+      }
+
+      var parsedData;
+      try {
+        parsedData = JSON.parse(storedData);
+
+        if (!parsedData.id) {
+          throw new Error("ID not found in parsed data");
+        }
+
+        var obj = {
+          id: parsedData.id,
+        };
+
+        console.log(obj);
+
+        //Converting our object to a string before sending to our API
+        var js = JSON.stringify(obj);
+
+        const response = await fetch(
+          "https://lp.largeprojectnutrition.fit/api/goalWeight",
+          {
+            method: "POST",
+            body: js,
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        const res = JSON.parse(await response.text());
+        console.log(res);
+
+        if (res.message === "Found") {
+          setGoalWeight(res.GoalWeight);
+          setCurrentWeight(Number(res.Weight));
+          console.log(typeof currentWeight);
+          console.log(currentWeight);
+          var userId = {
+            id: res.id,
+          };
+
+          localStorage.setItem("user_data", JSON.stringify(userId));
+          return;
+        } else {
+          setMessage(res.message);
+          return;
+        }
+      } catch (error: any) {
+        alert(error.toString());
+        return;
+      }
+    }
+
+    //call the function
+    fetchGoalWeight();
+  }, []);
+
+  async function handleSearch() {
+    var obj = {
+      query: searchTerm,
+      pageSize: 10,
+    };
+
+    console.log(obj);
+
+    if (!searchTerm.trim()) {
+      console.log("query is empty");
+      return;
+    }
+
+    var js = JSON.stringify(obj);
+
+    try {
+      const response = await fetch(
+        `https://lp.largeprojectnutrition.fit/api/search`,
+        {
+          method: "POST",
+          body: js,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      var res = await response.json();
+      if (res.error === "Search cannot be empty.") {
+        console.log("query is empty");
+      }
+
+      setFoodList(res.results); //Update the state with the food data
+    } catch (error) {
+      console.error("Error fetching food items:", error);
+    }
+  }
+
+  const handleAddFoodClick = () => {
+    setShowAddFoodWindow(true);
+  };
+
+  const handleClosePopUp = () => {
+    setShowAddFoodWindow(false);
+  };
+
+  // const goalWeight: number = 65;
 
   async function modifyWeight(event: any): Promise<void> {
     event.preventDefault();
@@ -53,6 +172,8 @@ function WellnessPro() {
       if (res.message === "Updated Weight") {
         console.log("Response ", res.message);
 
+        // setCurrentWeight(Number(res.Weight));
+
         var user = {
           id: res.id,
         };
@@ -70,8 +191,12 @@ function WellnessPro() {
 
   // Set current weight equal to the adjusted weight
   const handleWeightChange = (change: number): void => {
-    setCurrentWeight(currentWeight + change);
+    setCurrentWeight((currentWeight) => Number(currentWeight) + change);
   };
+
+  async function handleGrabDailyInfo(day: string, event: any): Promise<void> {
+    setCurrentDay(day);
+  }
 
   // Modify calories for different days of the week
 async function modifyCalories(event: any): Promise<void> {
@@ -186,7 +311,11 @@ const handleCaloriesChange = (day: string, newCalories: number): void => {
       {/* Days of the Week with Hardcoded Calories */}
       <div className="daysOfWeek">
         {Object.entries(dailyCalories).map(([day, calories]) => (
-          <div key={day} className="dayBox">
+          <div
+            key={day}
+            className="dayBox"
+            onClick={() => handleGrabDailyInfo(day)}
+          >
             <p className="dayName">{day}</p>
             <p>{calories} kcal</p>
           </div>
@@ -213,6 +342,7 @@ const handleCaloriesChange = (day: string, newCalories: number): void => {
       <div className="mainContent">
         {/* Calorie Tracker Section */}
         <div className="calorieTracker">
+          <p id="currentDayInBox">{currentDay}</p>
           <div className="calorieGoalRow">
             <p>
               Calorie Goal: <strong>2000</strong>
@@ -223,35 +353,84 @@ const handleCaloriesChange = (day: string, newCalories: number): void => {
           </div>
 
           {/* Meal Inputs */}
+
+          {showAddFoodWindow && (
+            <div className="popupOverlay">
+              <div className="popupWindow">
+                <h2 id="TitlePopUp">Add Food</h2>
+
+                {/*Search Bar */}
+                <div className="searchContainer">
+                  <input
+                    type="text"
+                    id="searchBar"
+                    placeholder="Search Food name"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                  <button id="searchButton" onClick={handleSearch}>
+                    Search Food
+                  </button>
+                </div>
+
+                {/*Display Food List */}
+                {foodList.length > 0 && (
+                  <ul className="foodList">
+                    {foodList.map((food, index) => (
+                      <li key={index} className="foodItem">
+                        <p>
+                          <strong>Brand:</strong> {food.brandName}
+                        </p>
+                        <p>
+                          <strong>Calories:</strong> {food.calories}(Kcal)
+                        </p>
+                        <p>
+                          <strong>Protein:</strong> {food.protein}(grams)
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <div className="popupActions">
+                  <button id="closeButton" onClick={handleClosePopUp}>
+                    &times;
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="mealInputs">
             <div className="mealInput">
               <p>Breakfast</p>
-              <button className="addFoodButton">+ Add Food</button>
+
+              <button className="addFoodButton" onClick={handleAddFoodClick}>
+                + Add Food
+              </button>
+              <button className="deleteFoodButton">- Delete Food</button>
             </div>
             <div className="mealInput">
               <p>Lunch</p>
-              <button className="addFoodButton">+ Add Food</button>
+              <button className="addFoodButton" onClick={handleAddFoodClick}>
+                + Add Food
+              </button>
+              <button className="deleteFoodButton">- Delete Food</button>
             </div>
           </div>
           <div className="mealInputs">
             <div className="mealInput">
               <p>Dinner</p>
-              <button className="addFoodButton">+ Add Food</button>
+
+              <button className="addFoodButton" onClick={handleAddFoodClick}>
+                + Add Food
+              </button>
+              <button className="deleteFoodButton">- Delete Food</button>
             </div>
             <div className="mealInput">
               <p>Snacks</p>
               <button className="addFoodButton">+ Add Food</button>
+              <button className="deleteFoodButton">- Delete Food</button>
             </div>
-          </div>
-
-          {/* Exercise Input */}
-          <div className="exerciseInput">
-            <p>Exercise</p>
-            <input
-              type="text"
-              placeholder="Search and add exercise"
-              className="exerciseSearch"
-            />
           </div>
         </div>
 

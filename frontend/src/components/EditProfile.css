@@ -1,22 +1,90 @@
-
-.containerEditProfile{
-    display: flex;
-    flex-direction: column;    
-    /* border: 15px green;
-    padding: 50px;
-    margin: 20px;
-    width: 300px; */
+body {
+  background-color: #f4f4f4;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
-/* input[type="text"]{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+.containerEditProfile {
+  width: 600px;
+  padding: 40px;
+  border-radius: 15px;
+  background-image: linear-gradient(135deg, #1F7EA1, #84ada9);
+  color: #fff;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  gap: 5px;
+  box-sizing: border-box;
+  max-height: 100vh; /* Ensure it fits within the viewport height */
+}
+/* Header */
+.editProfile {
+font-size: 32px;
+font-weight: bold;
+text-align: center;
+margin-bottom: 10px;
+color: #fff;
+}
 
+/* Labels */
+.editProfileLabel {
+font-size: 16px;
+font-weight: bold;
+color: #fff;
+margin-bottom: 5px;
+display: block;
+}
 
-} */
+/* Inputs */
+.editProfileInput {
+  width: 100%;
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid white;
+  border-radius: 5px;
+  box-sizing: border-box;
+  margin-bottom: 0px;
+  background-color: #fff;
+  color: #333;
+}
 
-/* #editProfile{
-    display: flex;
-    justify-content: center;
-} */
+.editProfileInput:focus {
+border-color: #2486a5;
+outline: none;
+box-shadow: 0 0 5px rgba(36, 134, 165, 0.5);
+}
+
+/* Update User Information Button */
+.editProfileButton {
+width: 100%;
+padding: 14px;
+font-size: 18px;
+font-weight: bold;
+color: #000;
+background-color: white;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+transition: all 0.3s;
+margin-top: 5px;
+}
+
+  .editProfileButton:hover {
+      background-color: #c7c7c7;
+  }
+
+/* Updated Message */
+.UpdateInfoSuccess {
+font-size: 16px;
+font-weight: bold;
+text-align: center;
+color: white;
+margin-top: 10px;
+}

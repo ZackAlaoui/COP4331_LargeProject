@@ -11,6 +11,7 @@ body {
 }
 
 .mainContainer {
+    font-family: Arial, sans-serif;
     display: flex;
     background: #fff;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);

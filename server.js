@@ -17,6 +17,8 @@ app.use(bodyParser.json());
 
 const mongoURI = 'mongodb+srv://largeproject:largeproject@cluster0.go0gv.mongodb.net/LPN?retryWrites=true&w=majority&appName=Cluster0';
 
+const PORT = 5000; // Use dynamic port or fallback to 5000 for local dev
+
 const store = new MongoDBSession({
     uri: mongoURI,
     collection: 'mySessions'
@@ -73,7 +75,7 @@ app.post('/api/createaccount', async (req, res, next) => {
     let existingUser = await client.db("LPN").collection("Users").findOne({ Username: userName });
 
     if (existingUser) {
-        return res.status(400).json({ message: 'You already have an account' });
+        return res.status(400).json({ message: 'Username taken' });
     }
 
     var error = '';
@@ -120,15 +122,16 @@ app.post('/api/createaccount', async (req, res, next) => {
 app.post('/api/completeprofile', async (req, res, next) => {
     // incoming: userId, Age, Gender, Height, Weight, Email
     // outgoing: error
-    const { Age, Gender, Height, Weight, Email, id } = req.body;
-    const newInfo = { Age: Age, Gender: Gender, Height: Height, Weight: Weight, Email: Email };
+    const { Age, Gender, Height, Weight, Email, id, GoalWeight } = req.body;
+    const newInfo = { Age: Age, Gender: Gender, Height: Height, Weight: Weight, Email: Email, GoalWeight: GoalWeight };
+    console.log(GoalWeight);
     var error = '';
     // console.log(id);
     console.log("This is the id " + req.body.id);
 
 
     // Validate input
-    if (!Age || !Gender || !Height || !Weight || !Email) {
+    if (!Age || !Gender || !Height || !Weight || !Email || !GoalWeight) {
         return res.status(400).json({ error: "Missing required fields" });
     }
 
@@ -149,6 +152,7 @@ app.post('/api/completeprofile', async (req, res, next) => {
                 Height: result.Height,
                 Weight: result.Weight,
                 Email: result.Email,
+                GoalWeight: result.GoalWeight,
                 id: result.id,
                 message: "Profile Updated"
             };
@@ -222,6 +226,53 @@ app.post('/api/updateUserInfo', async (req, res, next) => {
 });
 
 
+//Get goal weight for dashboard
+app.post('/api/goalWeight', async (req, res, next) => {
+    // incoming: id
+    // outgoing: id
+
+    var error = '';
+
+    const { id } = req.body;
+
+    if (!id) {
+        return res.status(400).json({ message: "id not found" });
+    }
+
+    try {
+        const db = client.db("LPN");
+
+        // Get the user credentials from the database
+        const getDocument = await db.collection('Users').findOne({ id: req.body.id });
+
+        if (!getDocument) {
+            return res.status(400).json({ message: "Id was not found in database" });
+        }
+        else {
+            ret = {
+                id: getDocument.id,
+                FirstName: getDocument.FirstName,
+                LastName: getDocument.LastName,
+                UserName: getDocument.Username,
+                Age: getDocument.Age,
+                Email: getDocument.Email,
+                Gender: getDocument.Gender,
+                Height: getDocument.Height,
+                Weight: getDocument.Weight,
+                GoalWeight: getDocument.GoalWeight,
+                message: "Found"
+            }
+
+            return res.status(200).json(ret);
+        }
+
+    } catch (e) {
+        error = e.toString();
+        console.error(e);
+        console.log("error");
+        return res.status(500).json({ message: "Server error occurred.", error: e.toString() });
+    }
+});
 
 //Get User Info API
 app.post('/api/getUserInfo', async (req, res, next) => {
@@ -256,6 +307,7 @@ app.post('/api/getUserInfo', async (req, res, next) => {
                 Gender: getDocument.Gender,
                 Height: getDocument.Height,
                 Weight: getDocument.Weight,
+                GoalWeight: getDocument.GoalWeight,
                 message: "Found"
             }
 
@@ -269,8 +321,6 @@ app.post('/api/getUserInfo', async (req, res, next) => {
         return res.status(500).json({ message: "Server error occurred.", error: e.toString() });
     }
 });
-
-
 
 //Edit weight API
 app.post('/api/editWeight', async (req, res, next) => {
@@ -303,6 +353,7 @@ app.post('/api/editWeight', async (req, res, next) => {
         if (updateUserWeight) {
             const ret = {
                 id: getDocument.id,
+                Weight: getDocument.Weight,
                 message: "Updated Weight",
                 error: ''
             };
@@ -371,10 +422,11 @@ app.post('/api/login', async (req, res, next) => {
 });
 
 // API for the USDA database
-app.post('/v1/foods/search', async (req, res) => {
+app.post('/api/search', async (req, res) => {
     // Incoming: query, pageSize
     // Outgoing: results[], error
-    const { query, pageSize } = req.body;
+    const {query} = req.body;
+    console.log(query);
 
     const numOfResults = 10;
     let error = '';
@@ -408,6 +460,7 @@ app.post('/v1/foods/search', async (req, res) => {
 
         // Limit results to the specified page size
         const limitedResults = enrichedResults.slice(0, numOfResults);
+        console.log(limitedResults);
 
         // Return results
         res.status(200).json({ results: limitedResults, error: '' });
@@ -420,7 +473,7 @@ app.post('/v1/foods/search', async (req, res) => {
 });
 
 // API to add a selected food item to the user's profile
-app.post('/v1/foods/add', async (req, res) => {
+app.post('/api/add', async (req, res) => {
     const { id, foodId } = req.body;  // userId and foodId to identify the user and food item
     let error = '';
 
@@ -431,8 +484,10 @@ app.post('/v1/foods/add', async (req, res) => {
     try {
         // Get the selected food item details from the USDA API using foodId
         const foodResponse = await axios.get(
-            `https://api.nal.usda.gov/fdc/v1/food/${foodId}?api_key=NWgR0wlBc7YQOa8FcrSXGb3bPdXp9D0mE582U7SH`
+            `https://api.nal.usda.gov/fdc/v1/food/${foodId}?nutrients=203&nutrients=208&api_key=NWgR0wlBc7YQOa8FcrSXGb3bPdXp9D0mE582U7SH`
         );
+
+        console.log(foodResponse.data);
 
         const foodItem = foodResponse.data;
 
@@ -440,14 +495,14 @@ app.post('/v1/foods/add', async (req, res) => {
         const foodData = {
             description: foodItem.description,
             brandName: foodItem.brandName || null,
-            calories: foodItem.foodNutrients.find(n => n.nutrientName === 'Energy')?.value || 0,
-            protein: foodItem.foodNutrients.find(n => n.nutrientName === 'Protein')?.value || 0,
-            foodId: foodItem.foodId, // Store the food's unique fdcId
+            calories: foodItem.labelNutrients?.calories?.value || 0,  // Access calories directly
+            protein: foodItem.labelNutrients?.protein?.value || 0,   // Access protein directly
+            foodId: foodItem.fdcId, // Store the food's unique fdcId
         };
 
         // Update the user's profile with the new food item
         const db = client.db("LPN");
-        const User = await db.collection('Users').find({ _id: new ObjectId(id)});
+        const User = await db.collection('Users').find({ id: new ObjectId(id) });
 
         // Check if the user exists
         if (!User) {
@@ -460,7 +515,7 @@ app.post('/v1/foods/add', async (req, res) => {
 
         // Add the food item to the user's foodItems array
         await db.collection('Users').updateOne(
-            { id: ObjectId(id) },
+            { id: new ObjectId(id) },
             { $push: { foodItems: foodData } }  // Add the food item to the user's foodItems array
         );
 
@@ -473,7 +528,7 @@ app.post('/v1/foods/add', async (req, res) => {
 });
 
 // API for deleting a food
-app.post('/v1/foods/delete', async (req, res) => {
+app.post('/api/delete', async (req, res) => {
     const { id, foodId } = req.body; // userId and foodId to identify the user and food item
     let error = '';
 
@@ -483,7 +538,7 @@ app.post('/v1/foods/delete', async (req, res) => {
 
     try {
         const db = client.db("LPN");
-        const User = await db.collection('Users').findOne({ _id: ObjectId(id) });
+        const User = await db.collection('Users').findOne({ _id: new ObjectId(id) });
 
         // Check if the user exists
         if (!User) {
@@ -491,14 +546,14 @@ app.post('/v1/foods/delete', async (req, res) => {
         }
 
         // Check if the food item exists in the user's foodItems array
-        const foodExists = User.foodItems.some(item => item.foodId === foodId);
+        /*const foodExists = User.foodItems.some(item => item.foodId === foodId);
         if (!foodExists) {
             return res.status(400).json({ error: 'Food item not found in user profile' });
-        }
+        }*/
 
         // Remove the food item from the user's foodItems array
         await db.collection('Users').updateOne(
-            { _id: ObjectId(id) },
+            { _id: new ObjectId(id) },
             { $pull: { foodItems: { foodId: foodId } } } // Remove the food item by foodId
         );
 
@@ -545,3 +600,6 @@ app.post('/api/editCalories', async (req, res) => {
   });
 
 app.listen(5000); // Start Node + Express server on port 5000
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });

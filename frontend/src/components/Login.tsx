@@ -112,11 +112,6 @@ function Login() {
     setIsSignUp(!isSignUp);
   }
 
-  function doSignUp() {
-    //window.location.href = "/createAccount";
-    setIsSignUp(!isSignUp);
-  }
-
   function handleSetUserName(e: any): void {
     setUserName(e.target.value);
   }
@@ -184,7 +179,7 @@ function Login() {
           <div className="otherInputFields">
             PASSWORD
             <input
-              type="text"
+              type="password"
               placeholder="Enter password"
               onChange={handleSetPassword}
             />
@@ -211,8 +206,8 @@ function Login() {
             <>
               <h2>Welcome, please login</h2>
               <p>Don't have an account?</p>
-              <button className="btnOther" onClick={doSignUp}>
-                Sign up
+              <button className="btnOther" onClick={toggleForm}>
+                Sign Up
               </button>
             </>
           )}
