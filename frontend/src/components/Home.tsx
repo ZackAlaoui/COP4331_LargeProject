@@ -179,11 +179,6 @@ function WellnessPro() {
     setCurrentWeight(currentWeight + change);
   };
 
-  // Set current weight equal to the adjusted weight
-  const handleGoalWeight = (change: number): void => {
-    setCurrentWeight(goalWeight + change); //
-  };
-
   const dailyCalories = {
     Sunday: 2200,
     Monday: 2000,

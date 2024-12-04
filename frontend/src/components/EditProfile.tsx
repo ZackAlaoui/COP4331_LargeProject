@@ -7,14 +7,13 @@ function EditProfile() {
   const [firstName, setFirstName] = React.useState("");
   const [lastName, setLastName] = React.useState("");
   const [userName, setUserName] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const [goalweight, setGoalWeight] = React.useState("");
   const [gender, setGender] = React.useState("");
   const [age, setAge] = React.useState("");
   const [height, setHeight] = React.useState("");
   const [weight, setWeight] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [message, setMessage] = React.useState("");
-  const [goalWeight, setGoalWeight] = React.useState("");
 
   function redirectToLogin() {
     window.location.href = "/";
@@ -44,11 +43,11 @@ function EditProfile() {
         FirstName: firstName,
         LastName: lastName,
         UserName: userName,
-        GoalWeight: goalWeight,
         Gender: gender,
         Age: age,
         Height: height,
         Weight: weight,
+        GoalWeight: goalweight,
         Email: email,
       };
 
@@ -136,8 +135,8 @@ function EditProfile() {
           setAge(res.Age);
           setHeight(res.Height);
           setWeight(res.Weight);
-          setEmail(res.Email);
           setGoalWeight(res.GoalWeight);
+          setEmail(res.Email);
 
           var userId = {
             id: res.id,
@@ -160,10 +159,18 @@ function EditProfile() {
 
   return (
     <div className="containerEditProfile">
-      <button id="logout" onClick={() => redirectToLogin()}>
+      <button
+        className="editProfileButton"
+        id="logout"
+        onClick={() => redirectToLogin()}
+      >
         Logout
       </button>
-      <button id="goToDashboard" onClick={() => redirectToDashboard()}>
+      <button
+        className="editProfileButton"
+        id="goToDashboard"
+        onClick={() => redirectToDashboard()}
+      >
         Go to Dashboard
       </button>
       <h1 className="editProfile">Edit Profile</h1>
@@ -196,16 +203,6 @@ function EditProfile() {
         id="UserName"
         value={userName}
         onChange={(e) => setUserName(e.target.value)}
-      />
-      <label className="editProfileLabel" htmlFor="Password">
-        Password
-      </label>
-      <input
-        className="editProfileInput"
-        type="password"
-        id="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
       />
       <label className="editProfileLabel" htmlFor="Gender">
         Gender
@@ -246,6 +243,16 @@ function EditProfile() {
         id="Weight"
         value={weight}
         onChange={(e) => setWeight(e.target.value)}
+      />
+      <label className="editProfileLabel" htmlFor="GoalWeight">
+        Goal Weight
+      </label>
+      <input
+        className="editProfileInput"
+        type="goalweight"
+        id="GoalWeight"
+        value={goalweight}
+        onChange={(e) => setGoalWeight(e.target.value)}
       />
       <label className="editProfileLabel" htmlFor="Email">
         Email
