@@ -554,7 +554,7 @@ app.post('/api/delete', async (req, res) => {
         // Remove the food item from the user's foodItems array
         await db.collection('Users').updateOne(
             { _id: new ObjectId(id) },
-            { $pull: { foodItems: { foodId: foodId } } } // Remove the food item by foodId
+            { $pull: { foodItems: { foodId: foodId } } }, // Remove the food item by foodId
         );
 
         // Return success response
@@ -565,41 +565,4 @@ app.post('/api/delete', async (req, res) => {
     }
 });
 
-// API Endpoint to modify calories for a specific day
-app.post('/api/editCalories', async (req, res) => {
-    const { id, day, calories } = req.body;
-  
-    if (!id || !day || !calories) {
-      return res.status(400).json({ message: 'User ID, day, and calories are required' });
-    }
-  
-    try {
-      // Find the user by ID
-      const user = await User.findOne({ _id: ObjectId(id) });
-  
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-  
-      // Update the calories for the specified day
-      user.caloriesData.set(day, calories);  // Map set method to update the day
-  
-      // Save the user document with updated calories data
-      await user.save();
-  
-      // Return the updated data
-      res.status(200).json({
-        message: 'Updated Calories',
-        id: user.id,
-        updatedCaloriesData: user.caloriesData,
-      });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ message: 'Error updating calories', error: err.message });
-    }
-  });
-
 app.listen(5000); // Start Node + Express server on port 5000
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-  });
