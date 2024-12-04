@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import App from "../App.tsx";
 import axios from "axios";
+import "./CompleteProfile.css"
 // import { useHistory } from "react-router-dom";
 
 function CompleteProfile() {
