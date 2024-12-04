@@ -15,7 +15,6 @@ body {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  margin-top: 200px;
   min-height: 95vh;
   box-sizing: border-box;
 }
@@ -87,15 +86,15 @@ body {
   font-size: 14px;
 }
 
-    .dayBox:hover {
-        cursor: pointer;
-        background-color: #e3e3e3;
-    }
+.dayBox:hover {
+  cursor: pointer;
+  background-color: #e3e3e3;
+}
 
 #currentDayInBox {
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 
 /* Current Weight and Goal Weight Section */
@@ -179,9 +178,18 @@ body {
 }
 
 .foodList {
-  max-height: 300px; 
-  overflow-y: auto;  /* Adds a vertical scrollbar when the content overflows */
+  max-height: 400px; /* Increase the max height to show more items before scrolling */
+  overflow-y: auto;
   margin-top: 20px;
+  padding: 20px; /* Add padding for a more spacious look */
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.9
+  ); /* Light background for the list */
+  border-radius: 10px;
+  border: 1px solid #2486a5;
 }
 
 .addFoodButtonPlus {
@@ -296,7 +304,6 @@ body {
   margin: 10px;
 }
 
-
 #closeButton {
   position: absolute;
   top: 10px;
@@ -308,7 +315,7 @@ body {
   color: #555;
 }
 
-#titlePopUp{
+#titlePopUp {
   font-size: 1000px;
 }
 
