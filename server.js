@@ -502,7 +502,7 @@ app.post('/api/add', async (req, res) => {
 
         // Update the user's profile with the new food item
         const db = client.db("LPN");
-        const User = await db.collection('Users').find({ id: new ObjectId(id) });
+        const User = await db.collection('Users').find({ id: req.body.id });
 
         // Check if the user exists
         if (!User) {
@@ -515,7 +515,7 @@ app.post('/api/add', async (req, res) => {
 
         // Add the food item to the user's foodItems array
         await db.collection('Users').updateOne(
-            { id: new ObjectId(id) },
+            { id: req.body.id },
             { $push: { foodItems: foodData } }  // Add the food item to the user's foodItems array
         );
 
