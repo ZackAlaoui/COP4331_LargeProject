@@ -434,7 +434,7 @@ app.post('/v1/foods/search', async (req, res) => {
     let error = '';
     let results = [];
 
-    if (!query || query.trim() === '') {
+    if (!req.body.query || req.body.query.trim() === '') {
         return res.status(400).json({ results, error: 'Search cannot be empty.' });
     }
 
