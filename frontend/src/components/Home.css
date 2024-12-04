@@ -87,9 +87,10 @@ body {
   font-size: 14px;
 }
 
-.dayBox:hover {
-    cursor: pointer;
-}
+    .dayBox:hover {
+        cursor: pointer;
+        background-color: #e3e3e3;
+    }
 
 /* Current Weight and Goal Weight Section */
 .weightInfo {
