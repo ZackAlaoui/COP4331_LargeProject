@@ -21,7 +21,7 @@ function WellnessPro() {
   //foodList will contain the array of foods
   const [foodList, setFoodList] = useState([]);
 
-  const handleSearch = async () => {
+  async function handleSearch() {
     var obj = {
       query: searchTerm,
     };
@@ -46,7 +46,7 @@ function WellnessPro() {
     } catch (error) {
       console.error("Error fetching food items:", error);
     }
-  };
+  }
 
   const handleAddFoodClick = () => {
     setShowAddFoodWindow(true);
