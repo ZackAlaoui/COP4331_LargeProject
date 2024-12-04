@@ -87,12 +87,22 @@ body {
   font-size: 14px;
 }
 
+    .dayBox:hover {
+        cursor: pointer;
+        background-color: #e3e3e3;
+    }
+
+#currentDayInBox {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
 /* Current Weight and Goal Weight Section */
 .weightInfo {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 30px;
   font-size: 18px;
   color: white;
 }
