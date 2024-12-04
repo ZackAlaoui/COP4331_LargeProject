@@ -13,6 +13,48 @@ function editProfile() {
 function WellnessPro() {
   const [currentWeight, setCurrentWeight] = useState<number>(70);
   const [message, setMessage] = React.useState("");
+  const [showAddFoodWindow, setShowAddFoodWindow] = useState(false);
+
+  //This is a useState that will set searchTerm to the input we provide it
+  const [searchTerm, setSearchTerm] = useState("");
+
+  //foodList will contain the array of foods
+  const [foodList, setFoodList] = useState([]);
+
+  const handleSearch = async () => {
+    var obj = {
+      query: searchTerm,
+    };
+
+    var js = JSON.stringify(obj);
+
+    try {
+      const response = await fetch(
+        `https://lp.largeprojectnutrition/v1/foods/search`,
+        {
+          method: "POST",
+          body: js,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      var res = JSON.parse(await response.json());
+
+      setFoodList(res.results); //Update the state with the food data
+    } catch (error) {
+      console.error("Error fetching food items:", error);
+    }
+  };
+
+  const handleAddFoodClick = () => {
+    setShowAddFoodWindow(true);
+  };
+
+  const handleClosePopUp = () => {
+    setShowAddFoodWindow(false);
+  };
 
   const goalWeight: number = 65;
 
@@ -138,20 +180,73 @@ function WellnessPro() {
           </div>
 
           {/* Meal Inputs */}
+
+          {showAddFoodWindow && (
+            <div className="popupOverlay">
+              <div className="popupWindow">
+                <h2 id="TitlePopUp">Add Food</h2>
+
+                {/*Search Bar */}
+                <div className="searchContainer">
+                  <input
+                    type="text"
+                    id="searchBar"
+                    placeholder="Search Food name"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                  <button id="searchButton" onClick={handleSearch}>
+                    Search Food
+                  </button>
+                </div>
+
+                {/*Display Food List */}
+                {foodList.length > 0 && (
+                  <ul className="foodList">
+                    {foodList.map((food, index) => (
+                      <li key={index} className="foodItem">
+                        <p>
+                          <strong>Brand:</strong> {food.brandName}
+                        </p>
+                        <p>
+                          <strong>Calories:</strong> {food.calories}(Kcal)
+                        </p>
+                        <p>
+                          <strong>Protein:</strong> {food.protein}(grams)
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <div className="popupActions">
+                  <button id="closeButton" onClick={handleClosePopUp}>
+                    &times;
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="mealInputs">
             <div className="mealInput">
               <p>Breakfast</p>
-              <button className="addFoodButton">+ Add Food</button>
+              <button className="addFoodButton" onClick={handleAddFoodClick}>
+                + Add Food
+              </button>
             </div>
             <div className="mealInput">
               <p>Lunch</p>
-              <button className="addFoodButton">+ Add Food</button>
+              <button className="addFoodButton" onClick={handleAddFoodClick}>
+                + Add Food
+              </button>
             </div>
           </div>
           <div className="mealInputs">
             <div className="mealInput">
               <p>Dinner</p>
-              <button className="addFoodButton">+ Add Food</button>
+              <button className="addFoodButton" onClick={handleAddFoodClick}>
+                + Add Food
+              </button>
             </div>
             <div className="mealInput">
               <p>Snacks</p>
