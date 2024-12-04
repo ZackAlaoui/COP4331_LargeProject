@@ -87,6 +87,10 @@ body {
   font-size: 14px;
 }
 
+.dayBox:hover {
+    cursor: pointer;
+}
+
 /* Current Weight and Goal Weight Section */
 .weightInfo {
   display: flex;
