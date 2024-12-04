@@ -358,7 +358,7 @@ function WellnessPro() {
             >
               +
             </button>
-            {currentWeight} kg
+            {currentWeight} lbs
             <button
               onClick={() => handleWeightChange(-1)}
               className="circleButton"
