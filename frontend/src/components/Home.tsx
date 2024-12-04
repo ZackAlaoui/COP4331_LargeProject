@@ -21,7 +21,9 @@ function WellnessPro() {
 
   //foodList will contain the array of foods
   const [foodList, setFoodList] = useState([]);
-  const [currentDay, setCurrentDay] = React.useState("Sunday");
+  const [currentDay, setCurrentDay] = React.useState("Wednesday");
+
+  const [currentCalories, setCurrentCalories] = useState<number>(0);
 
   useEffect(() => {
     async function fetchGoalWeight() {
@@ -194,18 +196,79 @@ function WellnessPro() {
     setCurrentWeight((currentWeight) => Number(currentWeight) + change);
   };
 
+  async function modifyCalories(event: any): Promise<void> {
+    event.preventDefault();
+    //Get user_data from local storage
+    var storedData = localStorage.getItem("user_data");
+
+    if (storedData) {
+      var parsedData = JSON.parse(storedData);
+      console.log(parsedData);
+    } else {
+      console.log("No data was found in local storage using user_data as key");
+    }
+
+    // Extract foodId from the event or input (depending on your form setup)
+    const { foodId, currentCalories } = event.target; // Assuming foodId and currentCalories are available in the event
+
+    if (!foodId || !currentCalories) {
+        console.log("Food ID and current calories are required");
+        return; // Exit if foodId or currentCalories is missing
+    }
+
+    var obj = {
+      CurrentCalories: currentCalories,
+      foodId: foodId,
+      id: parsedData.id,
+    };
+
+    //Convert Javascript object to a JSON string
+    var js = JSON.stringify(obj);
+
+    try {
+      const response = await fetch(
+        "https://lp.largeprojectnutrition.fit/api/add",
+        {
+          method: "POST",
+          body: js,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      var res = JSON.parse(await response.text());
+      console.log("Entire Response ", res);
+
+      if (res.message === "Updated Calories") {
+        console.log("Response ", res.message);
+
+        var user = {
+          id: res.id,
+        };
+
+        localStorage.setItem("user_data", JSON.stringify(user));
+        setMessage("Updated Calories");
+      } else {
+        setMessage(res.message);
+      }
+    } catch (error: any) {
+      alert(error.toString());
+      return;
+    }
+  }
+
   async function handleGrabDailyInfo(day: string, event: any): Promise<void> {
     setCurrentDay(day);
   }
 
   const dailyCalories = {
-    Sunday: 2200,
-    Monday: 2000,
-    Tuesday: 2100,
-    Wednesday: 1900,
-    Thursday: 2050,
-    Friday: 2200,
-    Saturday: 2300,
+    Sunday: 0,
+    Monday: 0,
+    Tuesday: 0,
+    Wednesday: 0,
+    Thursday: 0,
+    Friday: 0,
+    Saturday: 0,
   };
 
   return (
@@ -263,7 +326,7 @@ function WellnessPro() {
               Calorie Goal: <strong>2000</strong>
             </p>
             <p>
-              Calorie Remaining: <strong>800</strong>
+              Calorie Remaining: <strong>2000</strong>
             </p>
           </div>
 
@@ -302,6 +365,9 @@ function WellnessPro() {
                         <p>
                           <strong>Protein:</strong> {food.protein}(grams)
                         </p>
+                        <button id="AddButton" onClick={modifyCalories}>
+                          +
+                        </button>
                       </li>
                     ))}
                   </ul>
