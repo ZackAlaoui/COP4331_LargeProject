@@ -172,96 +172,126 @@ function EditProfile() {
         </button>
       </div>
       <h1 className="editProfile">Edit Profile</h1>
-      <label className="editProfileLabel" htmlFor="FirstName">
-        First Name
-      </label>
-      <input
-        className="editProfileInput"
-        type="text"
-        id="FirstName"
-        value={firstName}
-        onChange={(e) => setFirstName(e.target.value)}
-      />
-      <label className="editProfileLabel" htmlFor="LastName">
-        Last Name
-      </label>
-      <input
-        className="editProfileInput"
-        type="text"
-        id="LastName"
-        value={lastName}
-        onChange={(e) => setLastName(e.target.value)}
-      />
-      <label className="editProfileLabel" htmlFor="UserName">
-        Username
-      </label>
-      <input
-        className="editProfileInput"
-        type="text"
-        id="UserName"
-        value={userName}
-        onChange={(e) => setUserName(e.target.value)}
-      />
-      <label className="editProfileLabel" htmlFor="Gender">
-        Gender
-      </label>
-      <input
-        className="editProfileInput"
-        type="text"
-        id="Gender"
-        value={gender}
-        onChange={(e) => setGender(e.target.value)}
-      />
-      <label className="editProfileLabel" htmlFor="Age">
-        Age
-      </label>
-      <input
-        className="editProfileInput"
-        type="number"
-        id="Age"
-        value={age}
-        onChange={(e) => setAge(e.target.value)}
-      />
-      <label className="editProfileLabel" htmlFor="Height">
-        Height
-      </label>
-      <input
-        className="editProfileInput"
-        type="number"
-        id="Height"
-        value={height}
-        onChange={(e) => setHeight(e.target.value)}
-      />
-      <label className="editProfileLabel" htmlFor="Weight">
-        Weight
-      </label>
-      <input
-        className="editProfileInput"
-        type="number"
-        id="Weight"
-        value={weight}
-        onChange={(e) => setWeight(e.target.value)}
-      />
-      <label className="editProfileLabel" htmlFor="GoalWeight">
-        Goal Weight
-      </label>
-      <input
-        className="editProfileInput"
-        type="number"
-        id="GoalWeight"
-        value={goalweight}
-        onChange={(e) => setGoalWeight(e.target.value)}
-      />
-      <label className="editProfileLabel" htmlFor="Email">
-        Email
-      </label>
-      <input
-        className="editProfileInput"
-        type="email"
-        id="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+
+      <div className="inputGroup">
+        <div className="inputField">
+          <label className="editProfileLabel" htmlFor="FirstName">
+            First Name
+          </label>
+          <input
+            className="editProfileInput"
+            type="text"
+            id="FirstName"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+          />
+        </div>
+        <div className="inputField">
+          <label className="editProfileLabel" htmlFor="LastName">
+            Last Name
+          </label>
+          <input
+            className="editProfileInput"
+            type="text"
+            id="LastName"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+          />
+        </div>
+      </div>
+
+      <div className="inputGroup">
+        <div className="inputField">
+          <label className="editProfileLabel" htmlFor="UserName">
+            Username
+          </label>
+          <input
+            className="editProfileInput"
+            type="text"
+            id="UserName"
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
+          />
+        </div>
+        <div className="inputField">
+          <label className="editProfileLabel" htmlFor="Email">
+            Email
+          </label>
+          <input
+            className="editProfileInput"
+            type="email"
+            id="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+      </div>
+
+      <div className="inputField">
+        <label className="editProfileLabel" htmlFor="Gender">
+          Gender
+        </label>
+        <input
+          className="editProfileInput"
+          type="text"
+          id="Gender"
+          value={gender}
+          onChange={(e) => setGender(e.target.value)}
+        />
+      </div>
+
+      <div className="inputField">
+        <label className="editProfileLabel" htmlFor="Age">
+          Age
+        </label>
+        <input
+          className="editProfileInput"
+          type="number"
+          id="Age"
+          value={age}
+          onChange={(e) => setAge(e.target.value)}
+        />
+      </div>
+
+      <div className="inputField">
+        <label className="editProfileLabel" htmlFor="Height">
+          Height
+        </label>
+        <input
+          className="editProfileInput"
+          type="number"
+          id="Height"
+          value={height}
+          onChange={(e) => setHeight(e.target.value)}
+        />
+      </div>
+
+      <div className="inputField">
+        <label className="editProfileLabel" htmlFor="Weight">
+          Weight
+        </label>
+        <input
+          className="editProfileInput"
+          type="number"
+          id="Weight"
+          value={weight}
+          onChange={(e) => setWeight(e.target.value)}
+        />
+      </div>
+
+      <div className="inputField">
+        <label className="editProfileLabel" htmlFor="GoalWeight">
+          Goal Weight
+        </label>
+        <input
+          className="editProfileInput"
+          type="number"
+          id="GoalWeight"
+          value={goalweight}
+          onChange={(e) => setGoalWeight(e.target.value)}
+        />
+      </div>
+
       <button
         className="editProfileButton updateButton"
         onClick={updateUserInfo}
