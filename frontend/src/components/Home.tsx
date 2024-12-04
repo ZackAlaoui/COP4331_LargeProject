@@ -107,6 +107,9 @@ function WellnessPro() {
       );
 
       var res = JSON.parse(await response.json());
+      if (res.error === "Search cannot be empty.") {
+        console.log("query is empty");
+      }
 
       setFoodList(res.results); //Update the state with the food data
     } catch (error) {

@@ -462,6 +462,7 @@ app.post('/v1/foods/search', async (req, res) => {
 
         // Limit results to the specified page size
         const limitedResults = enrichedResults.slice(0, numOfResults);
+        console.log(limitedResults);
 
         // Return results
         res.status(200).json({ results: limitedResults, error: '' });
