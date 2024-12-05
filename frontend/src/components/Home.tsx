@@ -432,12 +432,6 @@ function WellnessPro() {
                         <p>
                           <strong>Protein:</strong> {food.protein}(grams)
                         </p>
-                        <button
-                          id="AddButton"
-                          onClick={() => modifyCalories(food.foodId)}
-                        >
-                          {" "}
-                          +
                         <button id="AddButton" onClick={addCalories(food.foodId, day)}>
                           +
                         </button>
