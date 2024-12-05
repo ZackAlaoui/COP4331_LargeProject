@@ -487,6 +487,7 @@ app.post('/api/add', async (req, res) => {
 
     if (!id || !foodId || !day) {
         return res.status(400).json({ error: 'User ID , Food ID , and day are required' });
+    }
     if (!id || !foodId) {
         return res.status(400).json({ error: 'User ID , Food ID' });
     }

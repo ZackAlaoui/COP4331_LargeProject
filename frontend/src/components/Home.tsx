@@ -204,16 +204,6 @@ function WellnessPro() {
     setCurrentWeight((currentWeight) => Number(currentWeight) + change);
   };
 
-  async function modifyCalories(foodId: number): Promise<void> {
-    if (!foodId) {
-      console.error("Food ID is required.");
-      return;
-    }
-
-    // Get user data from local storage
-    const storedData = localStorage.getItem("user_data");
-    if (!storedData) {
-      console.error("User data not found in local storage.");
   async function addCalories(newfoodId: number, currentDay: string): Promise<void> {
     //Get user_data from local storage
     var storedData = localStorage.getItem("user_data");
@@ -272,32 +262,6 @@ function WellnessPro() {
       alert(error.toString());
       return;
     }
-    const parsedData = JSON.parse(storedData);
-
-    // Create the request payload
-    const requestData = {
-      id: parsedData.id,
-      foodId: foodId,
-      //day: new Date().toISOString().split("T")[0], // Set the day as today's date
-    };
-
-    try {
-      // Call the API
-      const response = await fetch(
-        "https://lp.largeprojectnutrition.fit/api/add",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestData),
-        }
-      );
-
-      const result = await response.json();
-
-      if (response.ok) {
-        console.log("Food item added successfully:", result);
   }
 
   async function subtractCalories(newfoodId: number, currentDay: string): Promise<void> {
@@ -352,10 +316,6 @@ function WellnessPro() {
         localStorage.setItem("user_data", JSON.stringify(user));
         setMessage("subtracted Calories");
       } else {
-        console.error(
-          "Error adding food item:",
-          result.error || result.message
-        );
         setMessage(res.message);
       }
     } catch (error: any) {
@@ -363,8 +323,6 @@ function WellnessPro() {
       return;
     }
   }
-
-  async function handleGrabDailyInfo(day: string, event: any): Promise<void> {
 
   async function handleGrabDailyInfo(day: string): Promise<void> {
     setCurrentDay(day);
