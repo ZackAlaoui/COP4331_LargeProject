@@ -33,6 +33,7 @@ function WellnessPro() {
   const [listOfFoods, setListOfFoods] = useState<FoodItem[]>([]);
 
   const [currentDay, setCurrentDay] = React.useState("Wednesday");
+  const [currentDayNumber, setCurrentDayNumber] = useState<Number>(1);
 
   const [caloriesRemaining, setCurrentCalories] = useState<number>(2000);
   const [calorieGoal, setCalorieGoal] = useState<number>(2000);
@@ -276,7 +277,10 @@ function WellnessPro() {
     setCurrentWeight((currentWeight) => Number(currentWeight) + change);
   };
 
-  async function modifyCalories(foodId: number): Promise<void> {
+  async function modifyCalories(
+    foodId: number,
+    currentDayNumber: number
+  ): Promise<void> {
     if (!foodId) {
       console.error("Food ID is required.");
       return;
@@ -294,6 +298,7 @@ function WellnessPro() {
     const requestData = {
       id: parsedData.id,
       foodId: foodId,
+      day: currentDayNumber,
       //day: new Date().toISOString().split("T")[0], // Set the day as today's date
     };
 
@@ -328,6 +333,22 @@ function WellnessPro() {
 
   async function handleGrabDailyInfo(day: string, event: any): Promise<void> {
     setCurrentDay(day);
+
+    if (day === "Sunday") {
+      setCurrentDayNumber(1);
+    } else if (day === "Monday") {
+      setCurrentDayNumber(2);
+    } else if (day === "Tuesday") {
+      setCurrentDayNumber(3);
+    } else if (day === "Wednesday") {
+      setCurrentDayNumber(4);
+    } else if (day === "Thursday") {
+      setCurrentDayNumber(5);
+    } else if (day === "Friday") {
+      setCurrentDayNumber(6);
+    } else if (day === "Saturday") {
+      setCurrentDayNumber(7);
+    }
   }
 
   const dailyCalories = {
@@ -435,7 +456,9 @@ function WellnessPro() {
                         </p>
                         <button
                           id="AddButton"
-                          onClick={() => modifyCalories(food.foodId)}
+                          onClick={() =>
+                            modifyCalories(food.foodId, currentDayNumber)
+                          }
                         >
                           {" "}
                           +
@@ -457,7 +480,7 @@ function WellnessPro() {
             <div className="mealInput">
               <p>Food</p>
 
-              <button className="addFoodButton" onClick={handleAddFoodClick}>
+              <button className="addFoodButton" onClick={handleAddFoodClick()}>
                 + Add Food
               </button>
               <div className="list-foods">
