@@ -167,7 +167,10 @@ function WellnessPro() {
   };
 
   //Create a handler to remove a food from the listOfFoods array
-  async function handleDeleteFood(foodId: number): Promise<void> {
+  async function handleDeleteFood(
+    foodId: number,
+    currentDayNumber: Number
+  ): Promise<void> {
     // event.preventDefault();
     setListOfFoods((prevFoods) =>
       prevFoods.filter((food) => food.id !== foodId)
@@ -184,6 +187,7 @@ function WellnessPro() {
     var obj = {
       id: parsedData.id,
       foodId: foodId,
+      day: currentDayNumber,
     };
 
     console.log(obj);
@@ -202,20 +206,28 @@ function WellnessPro() {
           },
         }
       );
-      var res = JSON.parse(await response.text());
-      console.log("Entire Response ", res);
+      var result = JSON.parse(await response.text());
+      console.log("Entire Response ", result);
 
-      if (res.message === "Food item deleted successfully") {
-        console.log("Response ", res.message);
+      if (result.message === "Food item deleted successfully") {
+        console.log("Response ", result.message);
 
         var user = {
-          id: res.id,
+          id: result.id,
         };
+
+        setSundayValue(result.updatedCaloriesData[0]);
+        setMondayValue(result.updatedCaloriesData[1]);
+        setTuesdayValue(result.updatedCaloriesData[2]);
+        setWednesdayValue(result.updatedCaloriesData[3]);
+        setThursdayValue(result.updatedCaloriesData[4]);
+        setFridayValue(result.updatedCaloriesData[5]);
+        setSaturdayValue(result.updatedCaloriesData[6]);
 
         localStorage.setItem("user_data", JSON.stringify(user));
         setMessage("Updated listOfFoods array");
       } else {
-        setMessage(res.message);
+        setMessage(result.message);
       }
     } catch (error: any) {
       alert(error.toString());
@@ -511,7 +523,9 @@ function WellnessPro() {
                       {food.brandName} | Calories: {food.calories} | Protein:{" "}
                       {food.protein}g
                       <button
-                        onClick={() => handleDeleteFood(food.id)}
+                        onClick={() =>
+                          handleDeleteFood(food.id, currentDayNumber)
+                        }
                         style={{
                           marginLeft: "10px",
                           padding: "5px 10px",
