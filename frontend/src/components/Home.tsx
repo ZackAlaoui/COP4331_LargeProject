@@ -448,7 +448,7 @@ function WellnessPro() {
               Calorie Goal: <strong>{calorieGoal}</strong>
             </p>
             <p>
-              Calorie Remaining: <strong>{caloriesRemaining}</strong>
+              {/* Calorie Remaining: <strong>{caloriesRemaining}</strong> */}
             </p>
           </div>
 
