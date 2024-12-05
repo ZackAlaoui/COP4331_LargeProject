@@ -331,7 +331,7 @@ function WellnessPro() {
     }
   }
 
-  async function handleGrabDailyInfo(day: string, event: any): Promise<void> {
+  async function handleGrabDailyInfo(day: string): Promise<void> {
     setCurrentDay(day);
 
     if (day === "Sunday") {
