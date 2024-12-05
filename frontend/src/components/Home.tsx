@@ -24,6 +24,13 @@ function WellnessPro() {
   const [goalWeight, setGoalWeight] = useState<number>(70);
   const [message, setMessage] = React.useState("");
   const [showAddFoodWindow, setShowAddFoodWindow] = useState(false);
+  const [Sunday, setSundayValue] = useState<number>(0);
+  const [Monday, setMondayValue] = useState<number>(0);
+  const [Tuesday, setTuesdayValue] = useState<number>(0);
+  const [Wednesday, setWednesdayValue] = useState<number>(0);
+  const [Thursday, setThursdayValue] = useState<number>(0);
+  const [Friday, setFridayValue] = useState<number>(0);
+  const [Saturday, setSaturdayValue] = useState<number>(0);
 
   //This is a useState that will set searchTerm to the input we provide it
   const [searchTerm, setSearchTerm] = useState("");
@@ -325,6 +332,14 @@ function WellnessPro() {
         handleSetListOfFoods(result.foodItem);
         console.log(result.updatedCaloriesData);
         console.log(result.updatedCaloriesData[0]);
+
+        setSundayValue(result.updatedCaloriesData[0]);
+        setMondayValue(result.updatedCaloriesData[1]);
+        setTuesdayValue(result.updatedCaloriesData[2]);
+        setWednesdayValue(result.updatedCaloriesData[3]);
+        setThursdayValue(result.updatedCaloriesData[4]);
+        setFridayValue(result.updatedCaloriesData[5]);
+        setSaturdayValue(result.updatedCaloriesData[6]);
       } else {
         console.error(
           "Error adding food item:",
@@ -357,13 +372,13 @@ function WellnessPro() {
   };
 
   const dailyCalories = {
-    Sunday: 0,
-    Monday: 0,
-    Tuesday: 0,
-    Wednesday: 0,
-    Thursday: 0,
-    Friday: 0,
-    Saturday: 0,
+    Sunday: Sunday,
+    Monday: Monday,
+    Tuesday: Tuesday,
+    Wednesday: Wednesday,
+    Thursday: Thursday,
+    Friday: Friday,
+    Saturday: Saturday,
   };
 
   return (
