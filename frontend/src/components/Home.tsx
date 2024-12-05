@@ -11,12 +11,12 @@ function editProfile() {
 }
 
 interface FoodItem {
-  id: Number;
+  id: number;
   description: string;
   brandName: string;
-  calories: Number; // Access calories by nutrient name
-  protein: Number; // Access protein by nutrient name
-  foodId: Number; // Store the food's unique fdcId
+  calories: number; // Access calories by nutrient name
+  protein: number; // Access protein by nutrient name
+  foodId: number; // Store the food's unique fdcId
 }
 
 function WellnessPro() {
@@ -33,7 +33,7 @@ function WellnessPro() {
   const [listOfFoods, setListOfFoods] = useState<FoodItem[]>([]);
 
   const [currentDay, setCurrentDay] = React.useState("Wednesday");
-  const [currentDayNumber, setCurrentDayNumber] = useState<Number>(1);
+  const [currentDayNumber, setCurrentDayNumber] = useState<number>(1);
 
   const [caloriesRemaining, setCurrentCalories] = useState<number>(2000);
   const [calorieGoal, setCalorieGoal] = useState<number>(2000);
@@ -160,7 +160,7 @@ function WellnessPro() {
   };
 
   //Create a handler to remove a food from the listOfFoods array
-  async function handleDeleteFood(foodId: Number): Promise<void> {
+  async function handleDeleteFood(foodId: number): Promise<void> {
     // event.preventDefault();
     setListOfFoods((prevFoods) =>
       prevFoods.filter((food) => food.id !== foodId)
@@ -278,8 +278,8 @@ function WellnessPro() {
   };
 
   async function modifyCalories(
-    foodId: number,
-    currentDayNumber: number
+    foodId: Number,
+    currentDayNumber: Number
   ): Promise<void> {
     if (!foodId) {
       console.error("Food ID is required.");
@@ -298,7 +298,7 @@ function WellnessPro() {
     const requestData = {
       id: parsedData.id,
       foodId: foodId,
-      day: currentDayNumber,
+      CurrentDayNumber: currentDayNumber,
       //day: new Date().toISOString().split("T")[0], // Set the day as today's date
     };
 
@@ -331,7 +331,7 @@ function WellnessPro() {
     }
   }
 
-  async function handleGrabDailyInfo(day: string, event: any): Promise<void> {
+  const handleGrabDailyInfo = (day: string) => {
     setCurrentDay(day);
 
     if (day === "Sunday") {
@@ -349,7 +349,7 @@ function WellnessPro() {
     } else if (day === "Saturday") {
       setCurrentDayNumber(7);
     }
-  }
+  };
 
   const dailyCalories = {
     Sunday: 0,
@@ -480,7 +480,7 @@ function WellnessPro() {
             <div className="mealInput">
               <p>Food</p>
 
-              <button className="addFoodButton" onClick={handleAddFoodClick()}>
+              <button className="addFoodButton" onClick={handleAddFoodClick}>
                 + Add Food
               </button>
               <div className="list-foods">
