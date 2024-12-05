@@ -278,8 +278,8 @@ function WellnessPro() {
   };
 
   async function modifyCalories(
-    foodId: Number,
-    currentDayNumber: Number
+    foodId: number,
+    currentDayNumber: number
   ): Promise<void> {
     if (!foodId) {
       console.error("Food ID is required.");
@@ -288,6 +288,7 @@ function WellnessPro() {
 
     // Get user data from local storage
     const storedData = localStorage.getItem("user_data");
+
     if (!storedData) {
       console.error("User data not found in local storage.");
       return;
@@ -295,12 +296,14 @@ function WellnessPro() {
     const parsedData = JSON.parse(storedData);
 
     // Create the request payload
-    const requestData = {
+    const obj = {
       id: parsedData.id,
       foodId: foodId,
       CurrentDayNumber: currentDayNumber,
       //day: new Date().toISOString().split("T")[0], // Set the day as today's date
     };
+
+    var js = JSON.stringify(obj);
 
     try {
       // Call the API
@@ -311,7 +314,7 @@ function WellnessPro() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(requestData),
+          body: js,
         }
       );
 
