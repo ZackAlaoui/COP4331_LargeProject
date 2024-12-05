@@ -334,7 +334,7 @@ function WellnessPro() {
   async function handleGrabDailyInfo(day: string, event: any): Promise<void> {
     setCurrentDay(day);
 
-    /*if (day === "Sunday") {
+    if (day === "Sunday") {
       setCurrentDayNumber(1);
     } else if (day === "Monday") {
       setCurrentDayNumber(2);
@@ -348,7 +348,7 @@ function WellnessPro() {
       setCurrentDayNumber(6);
     } else if (day === "Saturday") {
       setCurrentDayNumber(7);
-    }*/
+    }
   }
 
   const dailyCalories = {
