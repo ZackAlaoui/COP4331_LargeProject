@@ -33,7 +33,7 @@ function WellnessPro() {
   const [listOfFoods, setListOfFoods] = useState<FoodItem[]>([]);
 
   const [currentDay, setCurrentDay] = React.useState("Wednesday");
-  const [currentDayNumber, setCurrentDayNumber] = useState<Number>(1);
+  const [currentDayNumber, setCurrentDayNumber] = useState<number>(1);
 
   const [caloriesRemaining, setCurrentCalories] = useState<number>(2000);
   const [calorieGoal, setCalorieGoal] = useState<number>(2000);
