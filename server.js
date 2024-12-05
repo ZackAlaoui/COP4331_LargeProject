@@ -629,4 +629,32 @@ app.post('/api/delete', async (req, res) => {
     }
 });
 
+app.get('/api/getUserCaloriesData', async (req, res) => {
+    try {
+      // Get user id from the request (e.g., from query, headers, or token)
+      const userId = req.query.userId;
+  
+      // Check if userId is provided
+      if (!userId) {
+        return res.status(400).json({ error: 'User ID is required' });
+      }
+  
+      const db = client.db("LPN");
+      const User = await db.collection('Users').findOne({ id: req.body.id });
+  
+      if (!User) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+  
+      // Get the calories data from the user's profile (default to an array of zeros if not available)
+      const caloriesData = User.caloriesData || new Array(7).fill(0); // Sunday to Saturday
+  
+      // Return the calories data in the response
+      return res.status(200).json({ caloriesData });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Failed to fetch calories data', details: err.message });
+    }
+  });
+
 app.listen(5000); // Start Node + Express server on port 5000

@@ -204,7 +204,7 @@ function WellnessPro() {
     setCurrentWeight((currentWeight) => Number(currentWeight) + change);
   };
 
-  async function addCalories(newfoodId: number, currentDay: string): Promise<void> {
+  async function addCalories(newfoodId: number, Day: number): Promise<void> {
     //Get user_data from local storage
     var storedData = localStorage.getItem("user_data");
 
@@ -218,14 +218,14 @@ function WellnessPro() {
     // Extract foodId from the event or input (depending on your form setup)
     //const { foodId } = event.target; // Assuming foodId and currentCalories are available in the event
 
-    if (!newfoodId || !currentDay) {
-        console.log("Food ID and day is required");
-        return; // Exit if foodId or currentCalories is missing
+    if (!newfoodId || !Day) {
+      console.log("Food ID and day is required");
+      return; // Exit if foodId or currentCalories is missing
     }
 
     var obj = {
       foodId: newfoodId,
-      day: currentDay,
+      day: Day,
       id: parsedData.id
     };
 
@@ -264,7 +264,7 @@ function WellnessPro() {
     }
   }
 
-  async function subtractCalories(newfoodId: number, currentDay: string): Promise<void> {
+  async function subtractCalories(newfoodId: number, Day: number): Promise<void> {
     //Get user_data from local storage
     var storedData = localStorage.getItem("user_data");
 
@@ -278,14 +278,14 @@ function WellnessPro() {
     // Extract foodId from the event or input (depending on your form setup)
     //const { foodId } = event.target; // Assuming foodId and currentCalories are available in the event
 
-    if (!newfoodId || !currentDay) {
-        console.log("Food ID and day is required");
-        return; // Exit if foodId or currentCalories is missing
+    if (!newfoodId || !Day) {
+      console.log("Food ID and day is required");
+      return; // Exit if foodId or currentCalories is missing
     }
 
     var obj = {
       foodId: newfoodId,
-      day: currentDay,
+      day: Day,
       id: parsedData.id
     };
 
@@ -328,182 +328,210 @@ function WellnessPro() {
     setCurrentDay(day);
   }
 
-  const dailyCalories = {
-    Sunday: 0,
-    Monday: 0,
-    Tuesday: 0,
-    Wednesday: 0,
-    Thursday: 0,
-    Friday: 0,
-    Saturday: 0,
-  };
+    const DaysOfWeek = () => {
+      const [dailyCalories, setDailyCalories] = useState({
+        Sunday: 0,
+        Monday: 0,
+        Tuesday: 0,
+        Wednesday: 0,
+        Thursday: 0,
+        Friday: 0,
+        Saturday: 0,
+      });
+    }
 
-  return (
-    <div id="homeContainer">
-      {/* Navigation Bar */}
-      <div id="topNav">
-        <button id="profileButton" onClick={() => editProfile()}>
-          Profile
-        </button>
-        <button id="logoutButton" onClick={() => redirectPage()}>
-          Logout
-        </button>
-      </div>
+    // Fetch the user's daily calories data from the database/API
+    const fetchCaloriesData = async () => {
+      try {
+        const response = await fetch('lp.largeprojectnutrition.fit/api/getUserCaloriesData'); // Replace with your actual API endpoint
+        const data = await response.json();
 
-      {/* Wellness Pro Title */}
-      <h1 id="wellnessTitle">Wellness Pro</h1>
+        // Assuming the API returns caloriesData in this format
+        const caloriesData = data.caloriesData || new Array(7).fill(0); // Fallback if data is missing
 
-      {/* Days of the Week with Hardcoded Calories */}
-      <div className="daysOfWeek">
-        {Object.entries(dailyCalories).map(([day, calories]) => (
-          <div
-            key={day}
-            className="dayBox"
-            onClick={() => handleGrabDailyInfo(day)}
-          >
-            <p className="dayName">{day}</p>
-            <p>{calories} kcal</p>
-          </div>
-        ))}
-      </div>
+        // Map the array into an object with day names as keys
+        const caloriesByDay = {
+          Sunday: caloriesData[0],
+          Monday: caloriesData[1],
+          Tuesday: caloriesData[2],
+          Wednesday: caloriesData[3],
+          Thursday: caloriesData[4],
+          Friday: caloriesData[5],
+          Saturday: caloriesData[6],
+        };
 
-      {/* Current Weight and Goal Weight Section */}
-      <div className="weightInfo">
-        <div>
-          <p>
-            <strong>Current Weight:</strong>
-          </p>
-          <p>{currentWeight} lb</p>
+        setDailyCalories(caloriesByDay);
+      } catch (error) {
+        console.error('Error fetching calories data:', error);
+      }
+    };
+
+
+    return (
+      <div id="homeContainer">
+        {/* Navigation Bar */}
+        <div id="topNav">
+          <button id="profileButton" onClick={() => editProfile()}>
+            Profile
+          </button>
+          <button id="logoutButton" onClick={() => redirectPage()}>
+            Logout
+          </button>
         </div>
-        <div>
-          <p>
-            <strong>Goal Weight:</strong>
-          </p>
-          <p>{goalWeight} lb</p>
+
+        {/* Wellness Pro Title */}
+        <h1 id="wellnessTitle">Wellness Pro</h1>
+
+        {/* Days of the Week with Hardcoded Calories */}
+        <div className="daysOfWeek">
+          {Object.entries(DaysofWeek).map(([day, calories]) => (
+            <div
+              key={day}
+              className="dayBox"
+              onClick={() => handleGrabDailyInfo(day)}
+            >
+              <p className="dayName">{day}</p>
+              <p>{calories} kcal</p>
+            </div>
+          ))}
         </div>
-      </div>
 
-      {/* Main Content Layout */}
-      <div className="mainContent">
-        {/* Calorie Tracker Section */}
-        <div className="calorieTracker">
-          <p id="currentDayInBox">{currentDay}</p>
-          <div className="calorieGoalRow">
+        {/* Current Weight and Goal Weight Section */}
+        <div className="weightInfo">
+          <div>
             <p>
-              Calorie Goal: <strong>{calorieGoal}</strong>
+              <strong>Current Weight:</strong>
             </p>
-            <p>
-              Calorie Remaining: <strong>{caloriesRemaining}</strong>
-            </p>
+            <p>{currentWeight} lb</p>
           </div>
+          <div>
+            <p>
+              <strong>Goal Weight:</strong>
+            </p>
+            <p>{goalWeight} lb</p>
+          </div>
+        </div>
 
-          {/* Meal Inputs */}
+        {/* Main Content Layout */}
+        <div className="mainContent">
+          {/* Calorie Tracker Section */}
+          <div className="calorieTracker">
+            <p id="currentDayInBox">{currentDay}</p>
+            <div className="calorieGoalRow">
+              <p>
+                Calorie Goal: <strong>{calorieGoal}</strong>
+              </p>
+              <p>
+                Calorie Remaining: <strong>{caloriesRemaining}</strong>
+              </p>
+            </div>
 
-          {showAddFoodWindow && (
-            <div className="popupOverlay">
-              <div className="popupWindow">
-                <h2 id="TitlePopUp">Add Food</h2>
+            {/* Meal Inputs */}
 
-                {/*Search Bar */}
-                <div className="searchContainer">
-                  <input
-                    type="text"
-                    id="searchBar"
-                    placeholder="Search Food name"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                  <button id="searchButton" onClick={handleSearch}>
-                    Search Food
-                  </button>
-                </div>
+            {showAddFoodWindow && (
+              <div className="popupOverlay">
+                <div className="popupWindow">
+                  <h2 id="TitlePopUp">Add Food</h2>
 
-                {/*Display Food List */}
-                {foodList.length > 0 && (
-                  <ul className="foodList">
-                    {foodList.map((food, index) => (
-                      <li key={index} className="foodItem">
-                        <p>
-                          <strong>Brand:</strong> {food.brandName}
-                        </p>
-                        <p>
-                          <strong>Calories:</strong> {food.calories}(Kcal)
-                        </p>
-                        <p>
-                          <strong>Protein:</strong> {food.protein}(grams)
-                        </p>
-                        <button id="AddButton" onClick={addCalories(food.foodId, day)}>
-                          +
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-                <div className="popupActions">
-                  <button id="closeButton" onClick={handleClosePopUp}>
-                    &times;
-                  </button>
+                  {/*Search Bar */}
+                  <div className="searchContainer">
+                    <input
+                      type="text"
+                      id="searchBar"
+                      placeholder="Search Food name"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    <button id="searchButton" onClick={handleSearch}>
+                      Search Food
+                    </button>
+                  </div>
+
+                  {/*Display Food List */}
+                  {foodList.length > 0 && (
+                    <ul className="foodList">
+                      {foodList.map((food, index) => (
+                        <li key={index} className="foodItem">
+                          <p>
+                            <strong>Brand:</strong> {food.brandName}
+                          </p>
+                          <p>
+                            <strong>Calories:</strong> {food.calories}(Kcal)
+                          </p>
+                          <p>
+                            <strong>Protein:</strong> {food.protein}(grams)
+                          </p>
+                          <button id="AddButton" onClick={addCalories(food.foodId, day)}>
+                            +
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  <div className="popupActions">
+                    <button id="closeButton" onClick={handleClosePopUp}>
+                      &times;
+                    </button>
+                  </div>
                 </div>
               </div>
+            )}
+
+            <div className="mealInputs">
+              <div className="mealInput">
+                <p>Breakfast</p>
+
+                <button className="addFoodButton" onClick={handleAddFoodClick}>
+                  + Add Food
+                </button>
+                <button className="deleteFoodButton" onClick={subtractCalories(foodList.food.foodId, day)}>
+                  - Delete Food
+                </button>
+              </div>
             </div>
-          )}
+            <div className="mealInputs">
+              <div className="mealInput">
+                <p>Dinner</p>
 
-          <div className="mealInputs">
-            <div className="mealInput">
-              <p>Breakfast</p>
-
-              <button className="addFoodButton" onClick={handleAddFoodClick}>
-                + Add Food
-              </button>
-              <button className="deleteFoodButton" onClick={subtractCalories(foodList.food.foodId, day)}>
-                - Delete Food
-              </button>
+                <button className="addFoodButton" onClick={handleAddFoodClick}>
+                  + Add Food
+                </button>
+                <button className="deleteFoodButton" onClick={subtractCalories(foodList.foodId, day)}>
+                  - Delete Food
+                </button>
+              </div>
+              <div className="mealInput">
+                <p>Snacks</p>
+                <button className="addFoodButton">+ Add Food</button>
+                <button className="deleteFoodButton">- Delete Food</button>
+              </div>
             </div>
           </div>
-          <div className="mealInputs">
-            <div className="mealInput">
-              <p>Dinner</p>
 
-              <button className="addFoodButton" onClick={handleAddFoodClick}>
-                + Add Food
+          {/* Adjust Weight Section */}
+          <div className="adjustWeight lowerSection">
+            <p>
+              <button
+                onClick={() => handleWeightChange(1)}
+                className="circleButton"
+              >
+                +
               </button>
-              <button className="deleteFoodButton" onClick={subtractCalories(foodList.foodId, day)}>
-                - Delete Food
+              {currentWeight} lbs
+              <button
+                onClick={() => handleWeightChange(-1)}
+                className="circleButton"
+              >
+                -
               </button>
-            </div>
-            <div className="mealInput">
-              <p>Snacks</p>
-              <button className="addFoodButton">+ Add Food</button>
-              <button className="deleteFoodButton">- Delete Food</button>
-            </div>
+            </p>
+            <p>
+              <span className="updateResultWeight">{message}</span>
+              <button onClick={modifyWeight}>Update</button>
+            </p>
           </div>
-        </div>
-
-        {/* Adjust Weight Section */}
-        <div className="adjustWeight lowerSection">
-          <p>
-            <button
-              onClick={() => handleWeightChange(1)}
-              className="circleButton"
-            >
-              +
-            </button>
-            {currentWeight} lbs
-            <button
-              onClick={() => handleWeightChange(-1)}
-              className="circleButton"
-            >
-              -
-            </button>
-          </p>
-          <p>
-            <span className="updateResultWeight">{message}</span>
-            <button onClick={modifyWeight}>Update</button>
-          </p>
         </div>
       </div>
-    </div>
-  );
-}
-
+    );
+  }
 export default WellnessPro;
