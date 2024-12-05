@@ -323,6 +323,8 @@ function WellnessPro() {
       if (response.ok) {
         console.log("Food item added successfully:", result);
         handleSetListOfFoods(result.foodItem);
+        console.log(result.updatedCaloriesData);
+        console.log(result.updatedCaloriesData[0]);
       } else {
         console.error(
           "Error adding food item:",
