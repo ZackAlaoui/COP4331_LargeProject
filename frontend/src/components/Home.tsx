@@ -299,7 +299,7 @@ function WellnessPro() {
     const obj = {
       id: parsedData.id,
       foodId: foodId,
-      CurrentDayNumber: currentDayNumber,
+      day: currentDayNumber,
       //day: new Date().toISOString().split("T")[0], // Set the day as today's date
     };
 
