@@ -233,17 +233,24 @@ app.post('/api/goalWeight', async (req, res, next) => {
 
     var error = '';
 
-    const { id } = req.body;
+    const { id, CalorieGoal } = req.body;
+
 
     if (!id) {
         return res.status(400).json({ message: "id not found" });
     }
 
+
     try {
         const db = client.db("LPN");
 
+
         // Get the user credentials from the database
         const getDocument = await db.collection('Users').findOne({ id: req.body.id });
+
+        //Add calorie goal to the database
+        const addCalorieGoal = await db.collection('Users').findOneAndUpdate({ id: req.body.id },
+            { $set: { CalorieGoal: req.body.CalorieGoal } }, { returnDocument: 'after' });
 
         if (!getDocument) {
             return res.status(400).json({ message: "Id was not found in database" });
@@ -254,6 +261,7 @@ app.post('/api/goalWeight', async (req, res, next) => {
                 FirstName: getDocument.FirstName,
                 LastName: getDocument.LastName,
                 UserName: getDocument.Username,
+                CalorieGoal: addCalorieGoal.CalorieGoal,
                 Age: getDocument.Age,
                 Email: getDocument.Email,
                 Gender: getDocument.Gender,
@@ -425,7 +433,7 @@ app.post('/api/login', async (req, res, next) => {
 app.post('/api/search', async (req, res) => {
     // Incoming: query, pageSize
     // Outgoing: results[], error
-    const {query} = req.body;
+    const { query } = req.body;
     console.log(query);
 
     const numOfResults = 10;
@@ -479,6 +487,8 @@ app.post('/api/add', async (req, res) => {
 
     if (!id || !foodId || !day) {
         return res.status(400).json({ error: 'User ID , Food ID , and day are required' });
+    if (!id || !foodId) {
+        return res.status(400).json({ error: 'User ID , Food ID' });
     }
 
     try {
@@ -543,6 +553,11 @@ app.post('/api/add', async (req, res) => {
         { id: req.body.id },  // Find user by their ID
         { $set: { caloriesData: weeklyCalories } }  // Update the caloriesData array for that user
     );
+        // Save the updated calories data
+        await db.collection('Users').updateOne(
+            { id: req.body.id },
+            { $set: { caloriesData: updatedCaloriesData } }
+        );
 
         // Return success response with the updated food item and calories
         res.status(200).json({
@@ -576,10 +591,10 @@ app.post('/api/delete', async (req, res) => {
         }
 
         // Check if the food item exists in the user's foodItems array
-        /*const foodExists = User.foodItems.some(item => item.foodId === foodId);
+        const foodExists = User.foodItems.some(item => item.foodId === foodId);
         if (!foodExists) {
             return res.status(400).json({ error: 'Food item not found in user profile' });
-        }*/
+        }
 
         // Remove the food item from the user's foodItems array
         await db.collection('Users').updateOne(

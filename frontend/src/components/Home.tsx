@@ -23,6 +23,9 @@ function WellnessPro() {
   const [foodList, setFoodList] = useState([]);
   const [currentDay, setCurrentDay] = React.useState("Wednesday");
 
+  const [caloriesRemaining, setCurrentCalories] = useState<number>(2000);
+  const [calorieGoal, setCalorieGoal] = useState<number>(2000);
+
   useEffect(() => {
     async function fetchGoalWeight() {
       var storedData = localStorage.getItem("user_data");
@@ -38,11 +41,13 @@ function WellnessPro() {
         if (!parsedData.id) {
           throw new Error("ID not found in parsed data");
         }
+        console.log(calorieGoal);
 
         var obj = {
           id: parsedData.id,
+          CalorieGoal: calorieGoal, //Send value 2000 for goal calories
         };
-
+        console.log(calorieGoal);
         console.log(obj);
 
         //Converting our object to a string before sending to our API
@@ -65,13 +70,18 @@ function WellnessPro() {
         if (res.message === "Found") {
           setGoalWeight(res.GoalWeight);
           setCurrentWeight(Number(res.Weight));
+          setCalorieGoal(Number(res.CalorieGoal));
           console.log(typeof currentWeight);
+          console.log(res.calorieGoal);
           console.log(currentWeight);
-          var userId = {
+          var userData = {
             id: res.id,
+            CalorieGoal: res.CalorieGoal,
+            Weight: res.Weight,
+            GoalWeight: res.GoalWeight,
           };
 
-          localStorage.setItem("user_data", JSON.stringify(userId));
+          localStorage.setItem("user_data", JSON.stringify(userData));
           return;
         } else {
           setMessage(res.message);
@@ -194,6 +204,16 @@ function WellnessPro() {
     setCurrentWeight((currentWeight) => Number(currentWeight) + change);
   };
 
+  async function modifyCalories(foodId: number): Promise<void> {
+    if (!foodId) {
+      console.error("Food ID is required.");
+      return;
+    }
+
+    // Get user data from local storage
+    const storedData = localStorage.getItem("user_data");
+    if (!storedData) {
+      console.error("User data not found in local storage.");
   async function addCalories(newfoodId: number, currentDay: string): Promise<void> {
     //Get user_data from local storage
     var storedData = localStorage.getItem("user_data");
@@ -252,6 +272,32 @@ function WellnessPro() {
       alert(error.toString());
       return;
     }
+    const parsedData = JSON.parse(storedData);
+
+    // Create the request payload
+    const requestData = {
+      id: parsedData.id,
+      foodId: foodId,
+      //day: new Date().toISOString().split("T")[0], // Set the day as today's date
+    };
+
+    try {
+      // Call the API
+      const response = await fetch(
+        "https://lp.largeprojectnutrition.fit/api/add",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestData),
+        }
+      );
+
+      const result = await response.json();
+
+      if (response.ok) {
+        console.log("Food item added successfully:", result);
   }
 
   async function subtractCalories(newfoodId: number, currentDay: string): Promise<void> {
@@ -306,6 +352,10 @@ function WellnessPro() {
         localStorage.setItem("user_data", JSON.stringify(user));
         setMessage("subtracted Calories");
       } else {
+        console.error(
+          "Error adding food item:",
+          result.error || result.message
+        );
         setMessage(res.message);
       }
     } catch (error: any) {
@@ -313,6 +363,8 @@ function WellnessPro() {
       return;
     }
   }
+
+  async function handleGrabDailyInfo(day: string, event: any): Promise<void> {
 
   async function handleGrabDailyInfo(day: string): Promise<void> {
     setCurrentDay(day);
@@ -380,10 +432,10 @@ function WellnessPro() {
           <p id="currentDayInBox">{currentDay}</p>
           <div className="calorieGoalRow">
             <p>
-              Calorie Goal: <strong>2000</strong>
+              Calorie Goal: <strong>{calorieGoal}</strong>
             </p>
             <p>
-              Calorie Remaining: <strong>2000</strong>
+              Calorie Remaining: <strong>{caloriesRemaining}</strong>
             </p>
           </div>
 
@@ -422,6 +474,12 @@ function WellnessPro() {
                         <p>
                           <strong>Protein:</strong> {food.protein}(grams)
                         </p>
+                        <button
+                          id="AddButton"
+                          onClick={() => modifyCalories(food.foodId)}
+                        >
+                          {" "}
+                          +
                         <button id="AddButton" onClick={addCalories(food.foodId, day)}>
                           +
                         </button>
