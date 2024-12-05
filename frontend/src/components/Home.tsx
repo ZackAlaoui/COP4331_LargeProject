@@ -325,15 +325,16 @@ function WellnessPro() {
           id: res.id,
         };
 
-      if (response.ok) {
-        console.log("Food item added successfully:", result);
-        handleSetListOfFoods(result.foodItem);
-      } else {
-        setMessage(res.message);
-      }
-    } catch (error: any) {
+          if (response.ok) {
+            console.log("Food item added successfully:", result);
+            handleSetListOfFoods(result.foodItem);
+          } else {
+          setMessage(res.message);
+        }
+      }catch (error: any) {
       alert(error.toString());
       return;
+      }
     }
   }
 
