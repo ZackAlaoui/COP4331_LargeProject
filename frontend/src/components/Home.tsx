@@ -11,12 +11,12 @@ function editProfile() {
 }
 
 interface FoodItem {
-  id: number;
+  id: Number;
   description: string;
   brandName: string;
-  calories: number; // Access calories by nutrient name
-  protein: number; // Access protein by nutrient name
-  foodId: number; // Store the food's unique fdcId
+  calories: Number; // Access calories by nutrient name
+  protein: Number; // Access protein by nutrient name
+  foodId: Number; // Store the food's unique fdcId
 }
 
 function WellnessPro() {
@@ -85,8 +85,8 @@ function WellnessPro() {
 
         if (res.message === "Found") {
           setGoalWeight(res.GoalWeight);
-          setCurrentWeight(number(res.Weight));
-          setCalorieGoal(number(res.CalorieGoal));
+          setCurrentWeight(Number(res.Weight));
+          setCalorieGoal(Number(res.CalorieGoal));
           console.log(typeof currentWeight);
           console.log(res.calorieGoal);
           console.log(currentWeight);
@@ -160,7 +160,7 @@ function WellnessPro() {
   };
 
   //Create a handler to remove a food from the listOfFoods array
-  async function handleDeleteFood(foodId: number): Promise<void> {
+  async function handleDeleteFood(foodId: Number): Promise<void> {
     // event.preventDefault();
     setListOfFoods((prevFoods) =>
       prevFoods.filter((food) => food.id !== foodId)
@@ -255,7 +255,7 @@ function WellnessPro() {
       if (res.message === "Updated Weight") {
         console.log("Response ", res.message);
 
-        // setCurrentWeight(number(res.Weight));
+        // setCurrentWeight(Number(res.Weight));
 
         var user = {
           id: res.id,
@@ -274,7 +274,7 @@ function WellnessPro() {
 
   // Set current weight equal to the adjusted weight
   const handleWeightChange = (change: number): void => {
-    setCurrentWeight((currentWeight) => number(currentWeight) + change);
+    setCurrentWeight((currentWeight) => Number(currentWeight) + change);
   };
 
   async function modifyCalories(
@@ -334,7 +334,7 @@ function WellnessPro() {
   async function handleGrabDailyInfo(day: string, event: any): Promise<void> {
     setCurrentDay(day);
 
-    if (day === "Sunday") {
+    /*if (day === "Sunday") {
       setCurrentDayNumber(1);
     } else if (day === "Monday") {
       setCurrentDayNumber(2);
@@ -348,7 +348,7 @@ function WellnessPro() {
       setCurrentDayNumber(6);
     } else if (day === "Saturday") {
       setCurrentDayNumber(7);
-    }
+    }*/
   }
 
   const dailyCalories = {
