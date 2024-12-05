@@ -10,6 +10,15 @@ function editProfile() {
   window.location.href = "/editprofile";
 }
 
+interface FoodItem {
+  id: Number;
+  description: string;
+  brandName: string;
+  calories: Number; // Access calories by nutrient name
+  protein: Number; // Access protein by nutrient name
+  foodId: Number; // Store the food's unique fdcId
+}
+
 function WellnessPro() {
   const [currentWeight, setCurrentWeight] = useState<number>(70);
   const [goalWeight, setGoalWeight] = useState<number>(70);
@@ -21,10 +30,16 @@ function WellnessPro() {
 
   //foodList will contain the array of foods
   const [foodList, setFoodList] = useState([]);
+  const [listOfFoods, setListOfFoods] = useState<FoodItem[]>([]);
+
   const [currentDay, setCurrentDay] = React.useState("Wednesday");
 
   const [caloriesRemaining, setCurrentCalories] = useState<number>(2000);
   const [calorieGoal, setCalorieGoal] = useState<number>(2000);
+
+  const handleSetListOfFoods = (newFood: FoodItem) => {
+    setListOfFoods((prevFoods) => [...prevFoods, newFood]); //Add new food to the list
+  };
 
   useEffect(() => {
     async function fetchGoalWeight() {
@@ -143,6 +158,63 @@ function WellnessPro() {
     setShowAddFoodWindow(false);
   };
 
+  //Create a handler to remove a food from the listOfFoods array
+  async function handleDeleteFood(foodId: Number): Promise<void> {
+    // event.preventDefault();
+    setListOfFoods((prevFoods) =>
+      prevFoods.filter((food) => food.id !== foodId)
+    );
+    var storedData = localStorage.getItem("user_data");
+
+    if (storedData) {
+      var parsedData = JSON.parse(storedData);
+      console.log(parsedData);
+    } else {
+      console.log("No data was found in local storage using user_data as key");
+    }
+
+    var obj = {
+      id: parsedData.id,
+      foodId: foodId,
+    };
+
+    console.log(obj);
+
+    //Convert Javascript object to a JSON string
+    var js = JSON.stringify(obj);
+
+    try {
+      const response = await fetch(
+        "https://lp.largeprojectnutrition.fit/api/delete",
+        {
+          method: "POST",
+          body: js,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      var res = JSON.parse(await response.text());
+      console.log("Entire Response ", res);
+
+      if (res.message === "Food item deleted successfully") {
+        console.log("Response ", res.message);
+
+        var user = {
+          id: res.id,
+        };
+
+        localStorage.setItem("user_data", JSON.stringify(user));
+        setMessage("Updated listOfFoods array");
+      } else {
+        setMessage(res.message);
+      }
+    } catch (error: any) {
+      alert(error.toString());
+      return;
+    }
+  }
+
   // const goalWeight: number = 65;
 
   async function modifyWeight(event: any): Promise<void> {
@@ -253,8 +325,9 @@ function WellnessPro() {
           id: res.id,
         };
 
-        localStorage.setItem("user_data", JSON.stringify(user));
-        setMessage("added Calories");
+      if (response.ok) {
+        console.log("Food item added successfully:", result);
+        handleSetListOfFoods(result.foodItem);
       } else {
         setMessage(res.message);
       }
@@ -428,24 +501,23 @@ function WellnessPro() {
 
             {/* Meal Inputs */}
 
-            {showAddFoodWindow && (
-              <div className="popupOverlay">
-                <div className="popupWindow">
-                  <h2 id="TitlePopUp">Add Food</h2>
-
-                  {/*Search Bar */}
-                  <div className="searchContainer">
-                    <input
-                      type="text"
-                      id="searchBar"
-                      placeholder="Search Food name"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                    <button id="searchButton" onClick={handleSearch}>
-                      Search Food
-                    </button>
-                  </div>
+          {showAddFoodWindow && (
+            <div className="popupOverlay">
+              <div className="popupWindow">
+                <h2 id="TitlePopUp">Add Food</h2>
+                {/*Search Bar */}
+                <div className="searchContainer">
+                  <input
+                    type="text"
+                    id="searchBar"
+                    placeholder="Search Food name"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                  <button id="searchButton" onClick={handleSearch}>
+                    Search Food
+                  </button>
+                </div>
 
                   {/*Display Food List */}
                   {foodList.length > 0 && (
@@ -477,36 +549,62 @@ function WellnessPro() {
               </div>
             )}
 
-            <div className="mealInputs">
-              <div className="mealInput">
-                <p>Breakfast</p>
+          <div className="mealInputs">
+            <div className="mealInput">
+              <p>Food</p>
 
-                <button className="addFoodButton" onClick={handleAddFoodClick}>
-                  + Add Food
-                </button>
-                <button className="deleteFoodButton" onClick={subtractCalories(foodList.food.foodId, day)}>
-                  - Delete Food
-                </button>
+              <button className="addFoodButton" onClick={handleAddFoodClick}>
+                + Add Food
+              </button>
+              <div className="list-foods">
+                <ul>
+                  {listOfFoods.map((food) => (
+                    <li key={food.id}>
+                      <strong>{food.description}</strong> | Brand:{" "}
+                      {food.brandName} | Calories: {food.calories} | Protein:{" "}
+                      {food.protein}g
+                      <button
+                        onClick={() => handleDeleteFood(food.id)}
+                        style={{
+                          marginLeft: "10px",
+                          padding: "5px 10px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        Delete Item
+                      </button>
+                      <br />
+                      <br />
+                    </li>
+                  ))}
+                </ul>
               </div>
+              {/* <button className="deleteFoodButton">- Delete Food</button> */}
             </div>
-            <div className="mealInputs">
-              <div className="mealInput">
-                <p>Dinner</p>
-
-                <button className="addFoodButton" onClick={handleAddFoodClick}>
-                  + Add Food
-                </button>
-                <button className="deleteFoodButton" onClick={subtractCalories(foodList.foodId, day)}>
-                  - Delete Food
-                </button>
-              </div>
-              <div className="mealInput">
-                <p>Snacks</p>
-                <button className="addFoodButton">+ Add Food</button>
-                <button className="deleteFoodButton">- Delete Food</button>
-              </div>
-            </div>
+            {/* <div className="mealInput">
+              <p>Lunch</p>
+              <button className="addFoodButton" onClick={handleAddFoodClick}>
+                + Add Food
+              </button>
+              <button className="deleteFoodButton">- Delete Food</button>
+            </div> */}
           </div>
+          {/* <div className="mealInputs">
+            <div className="mealInput">
+              <p>Dinner</p>
+
+              <button className="addFoodButton" onClick={handleAddFoodClick}>
+                + Add Food
+              </button>
+              <button className="deleteFoodButton">- Delete Food</button>
+            </div>
+            <div className="mealInput">
+              <p>Snacks</p>
+              <button className="addFoodButton">+ Add Food</button>
+              <button className="deleteFoodButton">- Delete Food</button>
+            </div>
+          </div> */}
+        </div>
 
           {/* Adjust Weight Section */}
           <div className="adjustWeight lowerSection">
