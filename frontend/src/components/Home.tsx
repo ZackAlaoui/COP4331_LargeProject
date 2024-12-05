@@ -11,12 +11,12 @@ function editProfile() {
 }
 
 interface FoodItem {
-  id: Number;
+  id: number;
   description: string;
   brandName: string;
-  calories: Number; // Access calories by nutrient name
-  protein: Number; // Access protein by nutrient name
-  foodId: Number; // Store the food's unique fdcId
+  calories: number; // Access calories by nutrient name
+  protein: number; // Access protein by nutrient name
+  foodId: number; // Store the food's unique fdcId
 }
 
 function WellnessPro() {
@@ -33,6 +33,7 @@ function WellnessPro() {
   const [listOfFoods, setListOfFoods] = useState<FoodItem[]>([]);
 
   const [currentDay, setCurrentDay] = React.useState("Wednesday");
+  const [currentDayNumber, setCurrentDayNumber] = useState<number>(1);
 
   const [caloriesRemaining, setCurrentCalories] = useState<number>(2000);
   const [calorieGoal, setCalorieGoal] = useState<number>(2000);
@@ -159,7 +160,7 @@ function WellnessPro() {
   };
 
   //Create a handler to remove a food from the listOfFoods array
-  async function handleDeleteFood(foodId: Number): Promise<void> {
+  async function handleDeleteFood(foodId: number): Promise<void> {
     // event.preventDefault();
     setListOfFoods((prevFoods) =>
       prevFoods.filter((food) => food.id !== foodId)
@@ -276,40 +277,35 @@ function WellnessPro() {
     setCurrentWeight((currentWeight) => Number(currentWeight) + change);
   };
 
-  async function addCalories(newfoodId: number, Day: number): Promise<void> {
-    //Get user_data from local storage
-    var storedData = localStorage.getItem("user_data");
-
-    if (storedData) {
-      var parsedData = JSON.parse(storedData);
-      console.log(parsedData);
-    } else {
-      console.log("No data was found in local storage using user_data as key");
+  async function modifyCalories(foodId: number, currentDayNumber: number): Promise<void> {
+    if (!foodId) {
+      console.error("Food ID is required.");
+      return;
     }
 
-    // Extract foodId from the event or input (depending on your form setup)
-    //const { foodId } = event.target; // Assuming foodId and currentCalories are available in the event
-
-    if (!newfoodId || !Day) {
-      console.log("Food ID and day is required");
-      return; // Exit if foodId or currentCalories is missing
+    // Get user data from local storage
+    const storedData = localStorage.getItem("user_data");
+    if (!storedData) {
+      console.error("User data not found in local storage.");
+      return;
     }
+    const parsedData = JSON.parse(storedData);
 
-    var obj = {
-      foodId: newfoodId,
-      day: Day,
-      id: parsedData.id
+    // Create the request payload
+    const requestData = {
+      id: parsedData.id,
+      foodId: foodId,
+      day: currentDayNumber,
+      //day: new Date().toISOString().split("T")[0], // Set the day as today's date
     };
 
-    //Convert Javascript object to a JSON string
-    var js = JSON.stringify(obj);
-
     try {
+      // Call the API
       const response = await fetch(
         "https://lp.largeprojectnutrition.fit/api/add",
         {
           method: "POST",
-          body: js,
+          body: parsedData ,
           headers: {
             "Content-Type": "application/json",
           },
@@ -326,52 +322,47 @@ function WellnessPro() {
         };
 
           if (response.ok) {
-            console.log("Food item added successfully:", result);
-            handleSetListOfFoods(result.foodItem);
+            console.log("Food item added successfully:", res);
+            handleSetListOfFoods(res.foodItem);
           } else {
           setMessage(res.message);
         }
+      }
       }catch (error: any) {
       alert(error.toString());
       return;
       }
     }
-  }
 
-  async function subtractCalories(newfoodId: number, Day: number): Promise<void> {
-    //Get user_data from local storage
-    var storedData = localStorage.getItem("user_data");
-
-    if (storedData) {
-      var parsedData = JSON.parse(storedData);
-      console.log(parsedData);
-    } else {
-      console.log("No data was found in local storage using user_data as key");
+  async function subtractCalories(foodId: number, currentDayNumber: number): Promise<void> {
+    if (!foodId) {
+      console.error("Food ID is required.");
+      return;
     }
 
-    // Extract foodId from the event or input (depending on your form setup)
-    //const { foodId } = event.target; // Assuming foodId and currentCalories are available in the event
-
-    if (!newfoodId || !Day) {
-      console.log("Food ID and day is required");
-      return; // Exit if foodId or currentCalories is missing
+    // Get user data from local storage
+    const storedData = localStorage.getItem("user_data");
+    if (!storedData) {
+      console.error("User data not found in local storage.");
+      return;
     }
+    const parsedData = JSON.parse(storedData);
 
-    var obj = {
-      foodId: newfoodId,
-      day: Day,
-      id: parsedData.id
+    // Create the request payload
+    const requestData = {
+      id: parsedData.id,
+      foodId: foodId,
+      day: currentDayNumber,
+      //day: new Date().toISOString().split("T")[0], // Set the day as today's date
     };
 
-    //Convert Javascript object to a JSON string
-    var js = JSON.stringify(obj);
-
     try {
+      // Call the API
       const response = await fetch(
         "https://lp.largeprojectnutrition.fit/api/delete",
         {
           method: "POST",
-          body: js,
+          body: parsedData ,
           headers: {
             "Content-Type": "application/json",
           },
@@ -387,12 +378,14 @@ function WellnessPro() {
           id: res.id,
         };
 
-        localStorage.setItem("user_data", JSON.stringify(user));
-        setMessage("subtracted Calories");
-      } else {
-        setMessage(res.message);
+          if (response.ok) {
+            console.log("Food item added successfully:", res);
+            handleSetListOfFoods(res.foodItem);
+          } else {
+          setMessage(res.message);
+        }
       }
-    } catch (error: any) {
+      }catch (error: any) {
       alert(error.toString());
       return;
     }
@@ -400,46 +393,33 @@ function WellnessPro() {
 
   async function handleGrabDailyInfo(day: string): Promise<void> {
     setCurrentDay(day);
+
+    if (day === "Sunday") {
+      setCurrentDayNumber(1);
+    } else if (day === "Monday") {
+      setCurrentDayNumber(2);
+    } else if (day === "Tuesday") {
+      setCurrentDayNumber(3);
+    } else if (day === "Wednesday") {
+      setCurrentDayNumber(4);
+    } else if (day === "Thursday") {
+      setCurrentDayNumber(5);
+    } else if (day === "Friday") {
+      setCurrentDayNumber(6);
+    } else if (day === "Saturday") {
+      setCurrentDayNumber(7);
+    }
   }
 
-    const DaysOfWeek = () => {
-      const [dailyCalories, setDailyCalories] = useState({
-        Sunday: 0,
-        Monday: 0,
-        Tuesday: 0,
-        Wednesday: 0,
-        Thursday: 0,
-        Friday: 0,
-        Saturday: 0,
-      });
-    }
-
-    // Fetch the user's daily calories data from the database/API
-    const fetchCaloriesData = async () => {
-      try {
-        const response = await fetch('lp.largeprojectnutrition.fit/api/getUserCaloriesData'); // Replace with your actual API endpoint
-        const data = await response.json();
-
-        // Assuming the API returns caloriesData in this format
-        const caloriesData = data.caloriesData || new Array(7).fill(0); // Fallback if data is missing
-
-        // Map the array into an object with day names as keys
-        const caloriesByDay = {
-          Sunday: caloriesData[0],
-          Monday: caloriesData[1],
-          Tuesday: caloriesData[2],
-          Wednesday: caloriesData[3],
-          Thursday: caloriesData[4],
-          Friday: caloriesData[5],
-          Saturday: caloriesData[6],
-        };
-
-        setDailyCalories(caloriesByDay);
-      } catch (error) {
-        console.error('Error fetching calories data:', error);
-      }
-    };
-
+  const dailyCalories = {
+    Sunday: 0,
+    Monday: 0,
+    Tuesday: 0,
+    Wednesday: 0,
+    Thursday: 0,
+    Friday: 0,
+    Saturday: 0,
+  };
 
     return (
       <div id="homeContainer">
@@ -458,7 +438,7 @@ function WellnessPro() {
 
         {/* Days of the Week with Hardcoded Calories */}
         <div className="daysOfWeek">
-          {Object.entries(DaysofWeek).map(([day, calories]) => (
+          {Object.entries(dailyCalories).map(([day, calories]) => (
             <div
               key={day}
               className="dayBox"
@@ -473,10 +453,6 @@ function WellnessPro() {
         {/* Current Weight and Goal Weight Section */}
         <div className="weightInfo">
           <div>
-            <p>
-              <strong>Current Weight:</strong>
-            </p>
-            <p>{currentWeight} lb</p>
           </div>
           <div>
             <p>
@@ -520,35 +496,41 @@ function WellnessPro() {
                   </button>
                 </div>
 
-                  {/*Display Food List */}
-                  {foodList.length > 0 && (
-                    <ul className="foodList">
-                      {foodList.map((food, index) => (
-                        <li key={index} className="foodItem">
-                          <p>
-                            <strong>Brand:</strong> {food.brandName}
-                          </p>
-                          <p>
-                            <strong>Calories:</strong> {food.calories}(Kcal)
-                          </p>
-                          <p>
-                            <strong>Protein:</strong> {food.protein}(grams)
-                          </p>
-                          <button id="AddButton" onClick={addCalories(food.foodId, day)}>
-                            +
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                  <div className="popupActions">
-                    <button id="closeButton" onClick={handleClosePopUp}>
-                      &times;
-                    </button>
-                  </div>
+                {/*Display Food List */}
+                {foodList.length > 0 && (
+                  <ul className="foodList">
+                    {foodList.map((food, index) => (
+                      <li key={index} className="foodItem">
+                        <p>
+                          <strong>Brand:</strong> {food.brandName}
+                        </p>
+                        <p>
+                          <strong>Calories:</strong> {food.calories}(Kcal)
+                        </p>
+                        <p>
+                          <strong>Protein:</strong> {food.protein}(grams)
+                        </p>
+                        <button
+                          id="AddButton"
+                          onClick={() =>
+                            modifyCalories(food.foodId, currentDayNumber)
+                          }
+                        >
+                          {" "}
+                          +
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <div className="popupActions">
+                  <button id="closeButton" onClick={handleClosePopUp}>
+                    &times;
+                  </button>
                 </div>
               </div>
-            )}
+            </div>
+          )}
 
           <div className="mealInputs">
             <div className="mealInput">

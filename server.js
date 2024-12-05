@@ -480,16 +480,12 @@ app.post('/api/search', async (req, res) => {
     }
 });
 
-// API to add a selected food item to the user's profile
 app.post('/api/add', async (req, res) => {
-    const { id, foodId, day } = req.body;  // userId and foodId to identify the user and food item
+    const { id, foodId, day } = req.body;  // userId, foodId, and day required
     let error = '';
 
     if (!id || !foodId || !day) {
-        return res.status(400).json({ error: 'User ID , Food ID , and day are required' });
-    }
-    if (!id || !foodId) {
-        return res.status(400).json({ error: 'User ID , Food ID' });
+        return res.status(400).json({ error: 'User ID, Food ID, and day required' });
     }
 
     try {
@@ -498,56 +494,62 @@ app.post('/api/add', async (req, res) => {
             `https://api.nal.usda.gov/fdc/v1/food/${foodId}?nutrients=203&nutrients=208&api_key=NWgR0wlBc7YQOa8FcrSXGb3bPdXp9D0mE582U7SH`
         );
 
-        console.log(foodResponse.data);
-
         const foodItem = foodResponse.data;
 
         // Extract relevant food information
         const foodData = {
             description: foodItem.description,
             brandName: foodItem.brandName || null,
-            calories: foodItem.foodNutrients.find(n => n.nutrient.name === "Energy")?.amount || 0,  // Access calories directly
-            protein: foodItem.foodNutrients.find(n => n.nutrient.name === "Protein")?.amount || 0,   // Access protein directly
+            calories: parseFloat(foodItem.foodNutrients.find(n => n.nutrient.name === "Energy")?.amount) || 0, // Ensure calories is a number
+            protein: foodItem.foodNutrients.find(n => n.nutrient.name === "Protein")?.amount || 0, // Access protein by nutrient name
             foodId: foodItem.fdcId, // Store the food's unique fdcId
         };
 
+        // Check if calories is a valid number
+        if (isNaN(foodData.calories)) {
+            return res.status(400).json({ error: 'Invalid calories data received from the API' });
+        }
+
         // Update the user's profile with the new food item
         const db = client.db("LPN");
-        const User = await db.collection('Users').find({ id: req.body.id });
+        const User = await db.collection('Users').findOne({ id: req.body.id });
 
         // Check if the user exists
         if (!User) {
             return res.status(404).json({ error: 'User not found' });
-
         }
 
-        // Initialize foodItems if it doesn't exist
-        const foodItems = User.foodItems || [];
+        // Initialize foodItems if it doesn't exist, with an array for each day of the week (7 days)
+        let foodItems = User.foodItems || [];  // Each index holds an array of food items for that day
 
-        // Add the food item to the user's foodItems array
+        // Ensure foodItems[day] is an array
+        if (!Array.isArray(foodItems[day - 1])) {
+            foodItems[day - 1] = [];  // If it's not an array, initialize it as an empty array
+        }
+
+        // Add the food item to the appropriate day's array
+        foodItems[day - 1].push(foodData);  // Push the new food item for the specified day
+
+        // Add the food item to the user's foodItems array (now structured by day)
         await db.collection('Users').updateOne(
             { id: req.body.id },
-            { $push: { foodItems: foodData } }  // Add the food item to the user's foodItems array
+            { $set: { foodItems: foodItems } }  // Update the entire foodItems array with food for each day
         );
 
-    // Update the user's calories for the specified day
-    const weeklyCalories = User.caloriesData || new Array(7).fill(0); // Initialize array with 7 zeros if caloriesData is empty
+        // Update the user's calories for the specified day
+        let updatedCaloriesData = User.caloriesData || Array(7).fill(0);  // Initialize as an array with 7 zeros if not set
 
-    // Map days of the week to array indices
-    const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        // Ensure the 'day' is within a valid range (0 to 6, where 0 is Monday, 6 is Sunday)
+        if (day < 0 || day > 7 || isNaN(day - 1)) {
+            return res.status(400).json({ error: 'Invalid day. Please use values between 0 (Monday) and 6 (Sunday).' });
+        }
 
-    // Get the index corresponding to the day
-    const dayIndex = daysOfWeek.indexOf(day); // `day` should be a string like 'Sunday', 'Monday', etc.
+        // Add the food item's calories to the current calories for the day
+        updatedCaloriesData[day - 1] += foodData.calories;
 
-    if (dayIndex === -1) {
-        return res.status(400).json({ error: 'Invalid day provided' });
-    }
-
-    // Get current calories for the day (defaults to 0 if not set)
-    const currentCalories = weeklyCalories[dayIndex] || 0;
-
-    // Add the food item's calories to the current calories for the day
-    weeklyCalories[dayIndex] = currentCalories + foodData.calories;
+        if (updatedCaloriesData[day - 1] < 0){
+            updatedCaloriesData[day - 1] = 0;
+        }
 
     // Save the updated calories data back into the database
     await db.collection('Users').updateOne(
@@ -557,13 +559,14 @@ app.post('/api/add', async (req, res) => {
         // Save the updated calories data
         await db.collection('Users').updateOne(
             { id: req.body.id },
-            { $set: { caloriesData: updatedCaloriesData } }
+            { $set: { caloriesData: updatedCaloriesData } }  // Save the entire updated caloriesData array
         );
 
         // Return success response with the updated food item and calories
         res.status(200).json({
             message: 'Food item added successfully and calories updated',
             foodItem: foodData,
+            updatedFoodItems: foodItems,
             updatedCaloriesData: updatedCaloriesData,
         });
 
@@ -573,13 +576,13 @@ app.post('/api/add', async (req, res) => {
     }
 });
 
-// API for deleting a food
+
 app.post('/api/delete', async (req, res) => {
-    const { id, foodId, day} = req.body; // userId and foodId to identify the user and food item
+    const { id, foodId, day } = req.body; // userId, foodId, and day required
     let error = '';
 
     if (!id || !foodId || !day) {
-        return res.status(400).json({ error: 'User ID and Food ID are required' });
+        return res.status(400).json({ error: 'User ID, Food ID, and Day are required' });
     }
 
     try {
@@ -591,35 +594,52 @@ app.post('/api/delete', async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        // Check if the food item exists in the user's foodItems array
-        const foodExists = User.foodItems.some(item => item.foodId === foodId);
-        if (!foodExists) {
-            return res.status(400).json({ error: 'Food item not found in user profile' });
+        // Ensure that foodItems exists for each day and that foodItems[day] is an array
+        if (!Array.isArray(User.foodItems)) {
+            User.foodItems = Array(7).fill([]); // Initialize foodItems for all 7 days if it's not already an array
         }
 
-        // Remove the food item from the user's foodItems array
-        await db.collection('Users').updateOne(
-            {id: req.body.id},
-            { $pull: { foodItems: { foodId: foodId } } }, // Remove the food item by foodId
-        );
+        // Initialize foodItems[day] as an empty array if it doesn't exist
+        if (!Array.isArray(User.foodItems[day - 1])) {
+            User.foodItems[day - 1] = [];  // Ensure that the day has an array for food items
+        }
 
-        // Update the user's calories for the specified day
-        let updatedCaloriesData = User.caloriesData || {};
-        const currentCalories = updatedCaloriesData[day] || 0;
+        // Check if the food item exists in the user's foodItems array for the specific day
+        const foodIndex = User.foodItems[day - 1].findIndex(item => item.foodId === foodId);
+        if (foodIndex === -1) {
+            return res.status(400).json({ error: 'Food item not found in user profile for the specified day' });
+        }
 
-        // subtract the food item's calories to the current calories for the day
-        updatedCaloriesData[day] = currentCalories - foodData.calories;
+        // Get the calories of the food item to subtract
+        const foodItemToRemove = User.foodItems[day - 1][foodIndex];
+        const caloriesToRemove = foodItemToRemove.calories;
 
-        // Save the updated calories data
+        // Subtract the calories from the current total for the day
+        let updatedCaloriesData = User.caloriesData || Array(7).fill(0);
+        updatedCaloriesData[day - 1] -= caloriesToRemove;
+
+        if (updatedCaloriesData[day - 1] < 0){
+            updatedCaloriesData[day - 1] = 0;
+        }
+
+        // Remove the food item from the user's foodItems array for the specified day
+        User.foodItems[day - 1].splice(foodIndex, 1);  // Remove the food item from the array
+
+        // Update the database with the new foodItems and caloriesData
         await db.collection('Users').updateOne(
             { id: req.body.id },
-            { $set: { caloriesData: updatedCaloriesData } }
+            { 
+                $set: {
+                    foodItems: User.foodItems,  // Update the foodItems array with the modified day
+                    caloriesData: updatedCaloriesData  // Update the caloriesData array
+                }
+            }
         );
 
-        // Return success response with the updated food item and calories
+        // Return success response
         res.status(200).json({
-            message: 'Food item deleted successfully and calories updated',
-            foodItem: foodData,
+            message: 'Food item deleted successfully and calories removed',
+            updatedFoodItems: User.foodItems,
             updatedCaloriesData: updatedCaloriesData,
         });
 
@@ -629,32 +649,6 @@ app.post('/api/delete', async (req, res) => {
     }
 });
 
-app.get('/api/getUserCaloriesData', async (req, res) => {
-    try {
-      // Get user id from the request (e.g., from query, headers, or token)
-      const userId = req.query.userId;
-  
-      // Check if userId is provided
-      if (!userId) {
-        return res.status(400).json({ error: 'User ID is required' });
-      }
-  
-      const db = client.db("LPN");
-      const User = await db.collection('Users').findOne({ id: req.body.id });
-  
-      if (!User) {
-        return res.status(404).json({ error: 'User not found' });
-      }
-  
-      // Get the calories data from the user's profile (default to an array of zeros if not available)
-      const caloriesData = User.caloriesData || new Array(7).fill(0); // Sunday to Saturday
-  
-      // Return the calories data in the response
-      return res.status(200).json({ caloriesData });
-    } catch (err) {
-      console.error(err);
-      return res.status(500).json({ error: 'Failed to fetch calories data', details: err.message });
-    }
-  });
+
 
 app.listen(5000); // Start Node + Express server on port 5000
