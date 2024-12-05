@@ -11,12 +11,12 @@ function editProfile() {
 }
 
 interface FoodItem {
-  id: Number;
+  id: number;
   description: string;
   brandName: string;
-  calories: Number; // Access calories by nutrient name
-  protein: Number; // Access protein by nutrient name
-  foodId: Number; // Store the food's unique fdcId
+  calories: number; // Access calories by nutrient name
+  protein: number; // Access protein by nutrient name
+  foodId: number; // Store the food's unique fdcId
 }
 
 function WellnessPro() {
@@ -85,8 +85,8 @@ function WellnessPro() {
 
         if (res.message === "Found") {
           setGoalWeight(res.GoalWeight);
-          setCurrentWeight(Number(res.Weight));
-          setCalorieGoal(Number(res.CalorieGoal));
+          setCurrentWeight(number(res.Weight));
+          setCalorieGoal(number(res.CalorieGoal));
           console.log(typeof currentWeight);
           console.log(res.calorieGoal);
           console.log(currentWeight);
@@ -160,7 +160,7 @@ function WellnessPro() {
   };
 
   //Create a handler to remove a food from the listOfFoods array
-  async function handleDeleteFood(foodId: Number): Promise<void> {
+  async function handleDeleteFood(foodId: number): Promise<void> {
     // event.preventDefault();
     setListOfFoods((prevFoods) =>
       prevFoods.filter((food) => food.id !== foodId)
@@ -255,7 +255,7 @@ function WellnessPro() {
       if (res.message === "Updated Weight") {
         console.log("Response ", res.message);
 
-        // setCurrentWeight(Number(res.Weight));
+        // setCurrentWeight(number(res.Weight));
 
         var user = {
           id: res.id,
@@ -274,7 +274,7 @@ function WellnessPro() {
 
   // Set current weight equal to the adjusted weight
   const handleWeightChange = (change: number): void => {
-    setCurrentWeight((currentWeight) => Number(currentWeight) + change);
+    setCurrentWeight((currentWeight) => number(currentWeight) + change);
   };
 
   async function modifyCalories(
