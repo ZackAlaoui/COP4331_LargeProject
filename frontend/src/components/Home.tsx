@@ -10,15 +10,6 @@ function editProfile() {
   window.location.href = "/editprofile";
 }
 
-interface FoodItem {
-  id: Number;
-  description: string;
-  brandName: string;
-  calories: Number; // Access calories by nutrient name
-  protein: Number; // Access protein by nutrient name
-  foodId: Number; // Store the food's unique fdcId
-}
-
 function WellnessPro() {
   const [currentWeight, setCurrentWeight] = useState<number>(70);
   const [goalWeight, setGoalWeight] = useState<number>(70);
@@ -30,17 +21,7 @@ function WellnessPro() {
 
   //foodList will contain the array of foods
   const [foodList, setFoodList] = useState([]);
-  const [listOfFoods, setListOfFoods] = useState<FoodItem[]>([]);
-
   const [currentDay, setCurrentDay] = React.useState("Wednesday");
-  const [currentDayNumber, setCurrentDayNumber] = useState<Number>(1);
-
-  const [caloriesRemaining, setCurrentCalories] = useState<number>(2000);
-  const [calorieGoal, setCalorieGoal] = useState<number>(2000);
-
-  const handleSetListOfFoods = (newFood: FoodItem) => {
-    setListOfFoods((prevFoods) => [...prevFoods, newFood]); //Add new food to the list
-  };
 
   useEffect(() => {
     async function fetchGoalWeight() {
@@ -57,13 +38,11 @@ function WellnessPro() {
         if (!parsedData.id) {
           throw new Error("ID not found in parsed data");
         }
-        console.log(calorieGoal);
 
         var obj = {
           id: parsedData.id,
-          CalorieGoal: calorieGoal, //Send value 2000 for goal calories
         };
-        console.log(calorieGoal);
+
         console.log(obj);
 
         //Converting our object to a string before sending to our API
@@ -86,18 +65,13 @@ function WellnessPro() {
         if (res.message === "Found") {
           setGoalWeight(res.GoalWeight);
           setCurrentWeight(Number(res.Weight));
-          setCalorieGoal(Number(res.CalorieGoal));
           console.log(typeof currentWeight);
-          console.log(res.calorieGoal);
           console.log(currentWeight);
-          var userData = {
+          var userId = {
             id: res.id,
-            CalorieGoal: res.CalorieGoal,
-            Weight: res.Weight,
-            GoalWeight: res.GoalWeight,
           };
 
-          localStorage.setItem("user_data", JSON.stringify(userData));
+          localStorage.setItem("user_data", JSON.stringify(userId));
           return;
         } else {
           setMessage(res.message);
@@ -158,63 +132,6 @@ function WellnessPro() {
   const handleClosePopUp = () => {
     setShowAddFoodWindow(false);
   };
-
-  //Create a handler to remove a food from the listOfFoods array
-  async function handleDeleteFood(foodId: Number): Promise<void> {
-    // event.preventDefault();
-    setListOfFoods((prevFoods) =>
-      prevFoods.filter((food) => food.id !== foodId)
-    );
-    var storedData = localStorage.getItem("user_data");
-
-    if (storedData) {
-      var parsedData = JSON.parse(storedData);
-      console.log(parsedData);
-    } else {
-      console.log("No data was found in local storage using user_data as key");
-    }
-
-    var obj = {
-      id: parsedData.id,
-      foodId: foodId,
-    };
-
-    console.log(obj);
-
-    //Convert Javascript object to a JSON string
-    var js = JSON.stringify(obj);
-
-    try {
-      const response = await fetch(
-        "https://lp.largeprojectnutrition.fit/api/delete",
-        {
-          method: "POST",
-          body: js,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      var res = JSON.parse(await response.text());
-      console.log("Entire Response ", res);
-
-      if (res.message === "Food item deleted successfully") {
-        console.log("Response ", res.message);
-
-        var user = {
-          id: res.id,
-        };
-
-        localStorage.setItem("user_data", JSON.stringify(user));
-        setMessage("Updated listOfFoods array");
-      } else {
-        setMessage(res.message);
-      }
-    } catch (error: any) {
-      alert(error.toString());
-      return;
-    }
-  }
 
   // const goalWeight: number = 65;
 
@@ -277,78 +194,128 @@ function WellnessPro() {
     setCurrentWeight((currentWeight) => Number(currentWeight) + change);
   };
 
-  async function modifyCalories(
-    foodId: number,
-    currentDayNumber: number
-  ): Promise<void> {
-    if (!foodId) {
-      console.error("Food ID is required.");
-      return;
+  async function addCalories(newfoodId: Number, currentDay: Number): Promise<void> {
+    //Get user_data from local storage
+    var storedData = localStorage.getItem("user_data");
+
+    if (storedData) {
+      var parsedData = JSON.parse(storedData);
+      console.log(parsedData);
+    } else {
+      console.log("No data was found in local storage using user_data as key");
     }
 
-    // Get user data from local storage
-    const storedData = localStorage.getItem("user_data");
-    if (!storedData) {
-      console.error("User data not found in local storage.");
-      return;
-    }
-    const parsedData = JSON.parse(storedData);
+    // Extract foodId from the event or input (depending on your form setup)
+    //const { foodId } = event.target; // Assuming foodId and currentCalories are available in the event
 
-    // Create the request payload
-    const requestData = {
-      id: parsedData.id,
-      foodId: foodId,
-      day: currentDayNumber,
-      //day: new Date().toISOString().split("T")[0], // Set the day as today's date
+    if (!newfoodId || !currentDay) {
+        console.log("Food ID and day is required");
+        return; // Exit if foodId or currentCalories is missing
+    }
+
+    var obj = {
+      foodId: newfoodId,
+      day: currentDay,
+      id: parsedData.id
     };
 
+    //Convert Javascript object to a JSON string
+    var js = JSON.stringify(obj);
+
     try {
-      // Call the API
       const response = await fetch(
         "https://lp.largeprojectnutrition.fit/api/add",
         {
           method: "POST",
+          body: js,
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(requestData),
         }
       );
+      var res = JSON.parse(await response.text());
+      console.log("Entire Response ", res);
 
-      const result = await response.json();
+      if (res.message === "added Calories") {
+        console.log("Response ", res.message);
 
-      if (response.ok) {
-        console.log("Food item added successfully:", result);
-        handleSetListOfFoods(result.foodItem);
+        var user = {
+          id: res.id,
+        };
+
+        localStorage.setItem("user_data", JSON.stringify(user));
+        setMessage("added Calories");
       } else {
-        console.error(
-          "Error adding food item:",
-          result.error || result.message
-        );
+        setMessage(res.message);
       }
-    } catch (error) {
-      console.error("Error:", error);
+    } catch (error: any) {
+      alert(error.toString());
+      return;
     }
   }
 
-  async function handleGrabDailyInfo(day: string, event: any): Promise<void> {
-    setCurrentDay(day);
+  async function subtractCalories(newfoodId: Number, currentDay: Number): Promise<void> {
+    //Get user_data from local storage
+    var storedData = localStorage.getItem("user_data");
 
-    if (day === "Sunday") {
-      setCurrentDayNumber(1);
-    } else if (day === "Monday") {
-      setCurrentDayNumber(2);
-    } else if (day === "Tuesday") {
-      setCurrentDayNumber(3);
-    } else if (day === "Wednesday") {
-      setCurrentDayNumber(4);
-    } else if (day === "Thursday") {
-      setCurrentDayNumber(5);
-    } else if (day === "Friday") {
-      setCurrentDayNumber(6);
-    } else if (day === "Saturday") {
-      setCurrentDayNumber(7);
+    if (storedData) {
+      var parsedData = JSON.parse(storedData);
+      console.log(parsedData);
+    } else {
+      console.log("No data was found in local storage using user_data as key");
     }
+
+    // Extract foodId from the event or input (depending on your form setup)
+    //const { foodId } = event.target; // Assuming foodId and currentCalories are available in the event
+
+    if (!newfoodId || !currentDay) {
+        console.log("Food ID and day is required");
+        return; // Exit if foodId or currentCalories is missing
+    }
+
+    var obj = {
+      foodId: newfoodId,
+      day: currentDay,
+      id: parsedData.id
+    };
+
+    //Convert Javascript object to a JSON string
+    var js = JSON.stringify(obj);
+
+    try {
+      const response = await fetch(
+        "https://lp.largeprojectnutrition.fit/api/delete",
+        {
+          method: "POST",
+          body: js,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      var res = JSON.parse(await response.text());
+      console.log("Entire Response ", res);
+
+      if (res.message === "subtracted Calories") {
+        console.log("Response ", res.message);
+
+        var user = {
+          id: res.id,
+        };
+
+        localStorage.setItem("user_data", JSON.stringify(user));
+        setMessage("subtracted Calories");
+      } else {
+        setMessage(res.message);
+      }
+    } catch (error: any) {
+      alert(error.toString());
+      return;
+    }
+  }
+
+  async function handleGrabDailyInfo(day: string): Promise<void> {
+    setCurrentDay(day);
   }
 
   const dailyCalories = {
@@ -413,10 +380,10 @@ function WellnessPro() {
           <p id="currentDayInBox">{currentDay}</p>
           <div className="calorieGoalRow">
             <p>
-              Calorie Goal: <strong>{calorieGoal}</strong>
+              Calorie Goal: <strong>2000</strong>
             </p>
             <p>
-              Calorie Remaining: <strong>{caloriesRemaining}</strong>
+              Calorie Remaining: <strong>2000</strong>
             </p>
           </div>
 
@@ -426,6 +393,7 @@ function WellnessPro() {
             <div className="popupOverlay">
               <div className="popupWindow">
                 <h2 id="TitlePopUp">Add Food</h2>
+
                 {/*Search Bar */}
                 <div className="searchContainer">
                   <input
@@ -454,13 +422,7 @@ function WellnessPro() {
                         <p>
                           <strong>Protein:</strong> {food.protein}(grams)
                         </p>
-                        <button
-                          id="AddButton"
-                          onClick={() =>
-                            modifyCalories(food.foodId, currentDayNumber)
-                          }
-                        >
-                          {" "}
+                        <button id="AddButton" onClick={addCalories(food.foodId, day)}>
                           +
                         </button>
                       </li>
@@ -478,59 +440,42 @@ function WellnessPro() {
 
           <div className="mealInputs">
             <div className="mealInput">
-              <p>Food</p>
+              <p>Breakfast</p>
 
-              <button className="addFoodButton" onClick={handleAddFoodClick()}>
+              <button className="addFoodButton" onClick={handleAddFoodClick}>
                 + Add Food
               </button>
-              <div className="list-foods">
-                <ul>
-                  {listOfFoods.map((food) => (
-                    <li key={food.id}>
-                      <strong>{food.description}</strong> | Brand:{" "}
-                      {food.brandName} | Calories: {food.calories} | Protein:{" "}
-                      {food.protein}g
-                      <button
-                        onClick={() => handleDeleteFood(food.id)}
-                        style={{
-                          marginLeft: "10px",
-                          padding: "5px 10px",
-                          cursor: "pointer",
-                        }}
-                      >
-                        Delete Item
-                      </button>
-                      <br />
-                      <br />
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              {/* <button className="deleteFoodButton">- Delete Food</button> */}
+              <button className="deleteFoodButton" onClick={subtractCalories(food.foodId, day)}>
+                - Delete Food
+              </button>
             </div>
-            {/* <div className="mealInput">
+            <div className="mealInput">
               <p>Lunch</p>
               <button className="addFoodButton" onClick={handleAddFoodClick}>
                 + Add Food
               </button>
-              <button className="deleteFoodButton">- Delete Food</button>
-            </div> */}
+              <button className="deleteFoodButton" onClick={subtractCalories(food.foodId, day)}>
+                - Delete Food
+              </button>
+            </div>
           </div>
-          {/* <div className="mealInputs">
+          <div className="mealInputs">
             <div className="mealInput">
               <p>Dinner</p>
 
               <button className="addFoodButton" onClick={handleAddFoodClick}>
                 + Add Food
               </button>
-              <button className="deleteFoodButton">- Delete Food</button>
+              <button className="deleteFoodButton" onClick={subtractCalories(food.foodId, day)}>
+                - Delete Food
+              </button>
             </div>
             <div className="mealInput">
               <p>Snacks</p>
               <button className="addFoodButton">+ Add Food</button>
               <button className="deleteFoodButton">- Delete Food</button>
             </div>
-          </div> */}
+          </div>
         </div>
 
         {/* Adjust Weight Section */}
