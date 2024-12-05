@@ -518,19 +518,31 @@ app.post('/api/add', async (req, res) => {
             { id: req.body.id },
             { $push: { foodItems: foodData } }  // Add the food item to the user's foodItems array
         );
-        
-        // Update the user's calories for the specified day
-        let updatedCaloriesData = User.caloriesData || {};
-        const currentCalories = updatedCaloriesData[day] || 0;
 
-        // Add the food item's calories to the current calories for the day
-        updatedCaloriesData[day] = currentCalories + foodData.calories;
+    // Update the user's calories for the specified day
+    const weeklyCalories = User.caloriesData || new Array(7).fill(0); // Initialize array with 7 zeros if caloriesData is empty
 
-        // Save the updated calories data
-        await db.collection('Users').updateOne(
-            { id: req.body.id },
-            { $set: { caloriesData: updatedCaloriesData } }
-        );
+    // Map days of the week to array indices
+    const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+    // Get the index corresponding to the day
+    const dayIndex = daysOfWeek.indexOf(day); // `day` should be a string like 'Sunday', 'Monday', etc.
+
+    if (dayIndex === -1) {
+        return res.status(400).json({ error: 'Invalid day provided' });
+    }
+
+    // Get current calories for the day (defaults to 0 if not set)
+    const currentCalories = weeklyCalories[dayIndex] || 0;
+
+    // Add the food item's calories to the current calories for the day
+    weeklyCalories[dayIndex] = currentCalories + foodData.calories;
+
+    // Save the updated calories data back into the database
+    await db.collection('Users').updateOne(
+        { id: req.body.id },  // Find user by their ID
+        { $set: { caloriesData: weeklyCalories } }  // Update the caloriesData array for that user
+    );
 
         // Return success response with the updated food item and calories
         res.status(200).json({

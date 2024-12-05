@@ -205,6 +205,9 @@ function WellnessPro() {
       console.log("No data was found in local storage using user_data as key");
     }
 
+    // Extract foodId from the event or input (depending on your form setup)
+    //const { foodId } = event.target; // Assuming foodId and currentCalories are available in the event
+
     if (!newfoodId || !currentDay) {
         console.log("Food ID and day is required");
         return; // Exit if foodId or currentCalories is missing
@@ -442,12 +445,26 @@ function WellnessPro() {
               <button className="addFoodButton" onClick={handleAddFoodClick}>
                 + Add Food
               </button>
-              {foodList.map((food, index) => (
-                <li key={index}></li>
-              <button className="deleteFoodButton" onClick={subtractCalories(food.foodId, day)}>
+              <button className="deleteFoodButton" onClick={subtractCalories(foodList.food.foodId, day)}>
                 - Delete Food
               </button>
-              )}
+            </div>
+          </div>
+          <div className="mealInputs">
+            <div className="mealInput">
+              <p>Dinner</p>
+
+              <button className="addFoodButton" onClick={handleAddFoodClick}>
+                + Add Food
+              </button>
+              <button className="deleteFoodButton" onClick={subtractCalories(foodList.foodId, day)}>
+                - Delete Food
+              </button>
+            </div>
+            <div className="mealInput">
+              <p>Snacks</p>
+              <button className="addFoodButton">+ Add Food</button>
+              <button className="deleteFoodButton">- Delete Food</button>
             </div>
           </div>
         </div>
